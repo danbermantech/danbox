@@ -1,17 +1,26 @@
-import {useCallback} from 'react';
+import { useCallback } from "react";
 
-const RemoteControl = ({onClick, value, label}: {onClick: (value:unknown)=>void, value:string, label:string}) => {
-
+const RemoteControl = ({
+  onClick,
+  value,
+  label,
+}: {
+  onClick: (value: unknown) => void;
+  value: string;
+  label: string;
+}) => {
   const onPress = useCallback(() => {
     onClick(value);
-  },[onClick, value]);
+  }, [onClick, value]);
 
   return (
     // <div style={{width:'100%'}}>
 
-      <button style={{width:'100%', minHeight: '4rem'}} onClick={onPress}>{label}</button>
+    <button className="w-full text-2xl bg-gray-200 rounded-2xl min-h-max flex-grow border-black border-2 border-solid text-black" onClick={onPress}>
+      {label}
+    </button>
     // </div>
-  )
+  );
 };
 
 export default RemoteControl;
