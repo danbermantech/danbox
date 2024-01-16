@@ -36,7 +36,7 @@ export type PeerContextValue = {
 
 export type PeerConnectRef = Record<string, (...args: DataConnection[]) => void>
 
-const PeerContext = createContext<PeerContextValue>({} as PeerContextValue);
+const PeerContext = createContext<PeerContextValue>({} as unknown as PeerContextValue);
 
 const peerOptions = import.meta.env.VITE_DEV_MODE
   ? {
