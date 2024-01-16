@@ -64,7 +64,7 @@ export const gameSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(setState, (state, action) => {
+      .addCase(setState, (_, action) => {
         console.log(action);
         return action.payload.game;
         // action is inferred correctly here if using TS

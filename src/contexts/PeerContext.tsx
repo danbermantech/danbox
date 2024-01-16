@@ -7,12 +7,12 @@ import { addPlayer } from "../store/slices/playerSlice";
 import { useDispatch } from "react-redux";
 import { getCookie } from "../utilities/cookies";
 // import { useMIDI } from 'react-midi-context';
-export type OnDataReceivedPayload<T=void> ={
+export type OnDataReceivedPayload ={
   type: string;
-  payload: T extends void ? { deviceName: string} : {deviceName:string} & T;
+  payload: { deviceName: string, peerId?:string};
 }
 export type PeerContextValue = {
-  connect: (peerId: string, req?: unknown) => void;
+  connect: (peerId: string, options: {deviceName: string}, req: unknown) => void;
   sendPeersMessage: (
     msg: unknown,
     filter: (
@@ -21,14 +21,8 @@ export type PeerContextValue = {
       connections: DataConnection[],
     ) => DataConnection[],
   ) => void;
-  onDataReceived: (
-    callback: (connection: DataConnection) => void,
-    id: string,
-  ) => void;
-  onPeerConnect: (
-    callback: (connection: DataConnection) => void,
-    id: string,
-  ) => void;
+  onDataReceived: (callback: (connection: OnDataReceivedPayload) => void, id: string) => void,
+  onPeerConnect: (callback: (connection: string) => void, id: string) => void,
   peerReady: boolean;
   peerConnected: boolean;
   connections: DataConnection[];
@@ -81,7 +75,7 @@ const PeerContextProvider = ({
   >({});
 
   const onDataReceived = useCallback(
-    (callback: (connection: OnDataReceivedPayload) => void, id: string) => {
+    ( callback: (connection: OnDataReceivedPayload) => void, id: string) =>{
       callbackRef.current[id] = callback;
     },
     [callbackRef],
@@ -152,7 +146,7 @@ const PeerContextProvider = ({
             Object.values(onPeerConnectRef.current).forEach((cb) => {
               const result = cb(conn.peer);
               // console.log('send result')
-              if (result) conn.send(result);
+              if (result as unknown) conn.send(result);
             });
             console.log(onConnectSendValue);
             if (onConnectSendValue) {
@@ -269,7 +263,7 @@ const PeerContextProvider = ({
 
           conn.on("data", (data) => {
             console.log("data received", data);
-            const { type, payload } = data as OnDataReceivedPayload
+            const { type, payload } = data as OnDataReceivedPayload & {payload:{peerId:string}};
             Object.values(callbackRef.current).forEach((cb) => {
               console.log(cb);
               cb({type, payload:{...payload, peerId: conn.peer}});

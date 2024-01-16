@@ -78,7 +78,7 @@ export const boardSlice = createSlice({
   name: "board",
   initialState: boardLayout,
   reducers:{
-    setBoard: (state, action) => {
+    setBoard: (_, action) => {
       return action.payload;
     }
   },

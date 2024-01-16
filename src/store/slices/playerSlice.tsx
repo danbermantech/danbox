@@ -41,7 +41,7 @@ export const teamsSlice = createSlice({
     removePlayer: (state, action) => {
       return state.filter((team) => team.id !== action.payload);
     },
-    setPlayers: (state, action) => {
+    setPlayers: (_, action) => {
       return action.payload;
     },
     renamePlayer: (state, action) => {
@@ -78,7 +78,7 @@ export const teamsSlice = createSlice({
       player.items.push(item);
     },
     clearAllPlayerControls: (state) => {
-      state.forEach((player,i) => {
+      state.forEach((_,i) => {
         state[i].controls = [];
       });
       return state;
@@ -173,7 +173,7 @@ export const teamsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(setState, (state, action) => {
+      .addCase(setState, (_, action) => {
         console.log(action);
         return action.payload.players;
         // action is inferred correctly here if using TS
@@ -185,12 +185,12 @@ export const teamsSlice = createSlice({
         player.hasMoved = true;
       })
       .addCase(triggerNextQueuedAction, (state) => {
-        state.forEach((x, i)=>{
+        state.forEach((_, i)=>{
           state[i].hasMoved = false;
         })
       })
       .addCase(triggerNextRound, (state) => {
-        state.forEach((x, i)=>{
+        state.forEach((_, i)=>{
           state[i].hasMoved = false;
         })
       })
