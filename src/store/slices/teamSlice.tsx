@@ -19,7 +19,7 @@ export const teamsSlice = createSlice({
     removeTeam: (state, action) => {
       return state.filter((team) => team.id !== action.payload);
     },
-    setTeams: (state, action) => {
+    setTeams: (_, action) => {
       return action.payload;
     },
     renameTeam: (state, action) => {
