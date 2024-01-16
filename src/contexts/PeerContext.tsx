@@ -34,9 +34,25 @@ export type PeerContextValue = {
   removeOnDataReceivedListener: (id: string) => void;
 };
 
+const defaultState:PeerContextValue = {
+  connect: () => {},
+  sendPeersMessage: () => {},
+  onDataReceived: () => {},
+  onPeerConnect: () => {},
+  peerReady: false,
+  peerConnected: false,
+  connections: [],
+  sendOnGuestConnected: () => {},
+  setOnConnectSendValue: () => {},
+  myPeerId: "",
+  initialize: () => {},
+  peerErrors: [],
+  removeOnDataReceivedListener: () => {},
+};
+
 export type PeerConnectRef = Record<string, (...args: DataConnection[]) => void>
 
-const PeerContext = createContext<PeerContextValue>({} as unknown as PeerContextValue);
+const PeerContext = createContext<PeerContextValue>({defaultState} as unknown as PeerContextValue);
 
 const peerOptions = import.meta.env.VITE_DEV_MODE
   ? {
