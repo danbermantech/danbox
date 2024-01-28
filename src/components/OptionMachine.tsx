@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState, forwardRef } from "react";
-import { usePeer } from "$hooks/usePeer";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-// import { setCurrentPlayerActions } from "$store/slices/gameProgressSlice";
-import { clearAllPlayerControls, givePlayerControls } from "$store/slices/playerSlice";
-import useForwardedRef from "$hooks/useForwardedRef";
-const OptionMachine = forwardRef(
+import { clearAllPlayerControls, setPlayerControls } from "$store/slices/playerSlice";
+import usePeerDataReceived from "$hooks/useDataReceived";
+import { v4 as uuidv4 } from "uuid";
+
+const OptionMachine =
   (
     {
       options,
@@ -12,7 +12,6 @@ const OptionMachine = forwardRef(
       onChange,
       spinRate = 100,
       forPlayer,
-      // hostMode = false
     }: {
       options: { label: string; options: string[] }[];
       onComplete: (value: {
@@ -24,8 +23,7 @@ const OptionMachine = forwardRef(
       onChange: (key: string, value: string) => void;
       spinRate?: number;
       forPlayer: string
-    },
-    forwardedRef: React.ForwardedRef<HTMLDivElement>,
+    }
   ): React.ReactNode => {
     const [selections, setSelections] = useState(
       Array.from({ length: options.length }, () => 0),
@@ -34,35 +32,21 @@ const OptionMachine = forwardRef(
       Array.from({ length: options.length }, () => false),
     );
     const [started, setStarted] = useState(false);
-    const [changeSent, setChangeSent] = useState(
-      Array.from({ length: options.length }, () => false),
-    );
+
     const [completed, setCompleted] = useState(false);
     const [resultsSent, setResultsSent] = useState(false);
-    const onDataReceived = usePeer((cv) => cv.onDataReceived) as (
-      cb: (
-        data: {
-          type: string;
-          payload: { action: string; value: string };
-        }
-      ) => void,
-      id:string
-    ) => void;
 
-    const removeOnDataReceivedListener = usePeer((cv) => cv.removeOnDataReceivedListener) as (listenerId:string)=>void
-
+    const [actionId] = useState(()=>uuidv4());
     useEffect(() => {
       const interval = setInterval(() => {
         const firstSpinning = spinning.findIndex((s) => s);
-        if (spinning.every((s) => !s) && started && !completed)
-          return
-        if (firstSpinning == -1) return;
+        console.log(firstSpinning, started, completed)
+        if (!started ||  firstSpinning == -1 || completed) return;
         setSelections((prevSelections) => {
           const nextSelections = [...prevSelections];
 
           for (let i = firstSpinning; i < options.length; i++) {
             const values = options[i].options;
-            // console.log(values, values.length);
             nextSelections[i] = (nextSelections[i] + 1) % values.length;
           }
           return nextSelections;
@@ -85,26 +69,27 @@ const OptionMachine = forwardRef(
       if (!started && !completed) {
         dispatch(clearAllPlayerControls());
         dispatch(
-          givePlayerControls({playerId: forPlayer,
+          setPlayerControls({playerId: forPlayer,
             controls:[
-            { label: "SPIN", value: "stop", filters: {} },
+            { label: "SPIN", value: "stop", action:actionId, filters: {} },
           ]}),
         );
         return;
       }
       if (started && !completed) {
         dispatch(
-          givePlayerControls({playerId:forPlayer,
+          setPlayerControls({playerId:forPlayer,
             controls: [
-            { label: "STOP", value: "stop", filters: {} },
+            { label: "STOP", value: "stop",action:actionId,  filters: {} },
           ]}),
         );
         return;
       }
       dispatch(clearAllPlayerControls());
-    }, [started, completed, dispatch, forPlayer]);
+    }, [started, completed, dispatch, forPlayer, actionId]);
 
     const handleOnComplete = useCallback(() => {
+      setCompleted(true);
       console.log(completed, resultsSent);
         console.log("completed");
         setResultsSent(true);
@@ -130,42 +115,31 @@ const OptionMachine = forwardRef(
 
     const handleClick = useCallback(() => {
       console.log('clicked')
+      let _nextSpinning = [...spinning];
       setSpinning((prevSpinning) => {
         const nextSpinning = [...prevSpinning];
         const firstSpinning = nextSpinning.findIndex((s) => s);
-        console.log(firstSpinning);
-        if (firstSpinning == -1) return prevSpinning.map(() => true);
         nextSpinning[firstSpinning] = false;
+        _nextSpinning = nextSpinning
+        if (firstSpinning == -1) {
+          _nextSpinning = nextSpinning.map(() => true);
+          return nextSpinning.map(() => true);
+        }
         return nextSpinning;
       });
-      if (spinning.findIndex((x)=>x == true) == (spinning.length - 1) && started) return handleOnComplete();
-        if (started == false) {
-          setStarted(true);
-          setCompleted(false);
-          setResultsSent(false);
-          return;
-        }
-
-      if (
-        started
-      ) {
-        setChangeSent(() => spinning.map((s) => !s));
-        if (spinning.every((s) => !s) || spinning.every((s) => s)) return;
-        console.log('key: ',options[spinning.findIndex((isSpinning) => !isSpinning)].label,
-        'value:',options[spinning.findIndex((isSpinning) => !isSpinning)].options[
-          selections[spinning.findIndex((isSpinning) => !isSpinning)]
-        ],)
-        console.log('option machine changing ', options[spinning.findIndex((isSpinning) => !isSpinning)].label,
-        options[spinning.findIndex((isSpinning) => !isSpinning)].options[
-          selections[spinning.findIndex((isSpinning) => !isSpinning)]
-        ],)
-        onChange(
-          options[spinning.findIndex((isSpinning) => !isSpinning)].label,
-          options[spinning.findIndex((isSpinning) => !isSpinning)].options[
-            selections[spinning.findIndex((isSpinning) => !isSpinning)]
-          ],
-        );
-      }
+      if(!started) return setStarted(true)
+      if (_nextSpinning.findIndex((x)=>x) == (spinning.length - 1) && started) return handleOnComplete();
+      if (!started) return
+      // setChangeSent(() => _nextSpinning.map((s) => !s));
+      console.log(_nextSpinning)
+      if (_nextSpinning.every((s) => !s) ) return;
+      onChange(
+        options[spinning.findIndex((x)=>x)].label,
+        options[spinning.findIndex((x)=>x)].options[
+          selections[spinning.findIndex((x)=>x)]
+        ],
+      );
+      return;
     }, [
       spinning,
       setSpinning,
@@ -174,42 +148,20 @@ const OptionMachine = forwardRef(
       selections,
       onChange,
       options,
-      setChangeSent,
-      setCompleted,
-      setResultsSent,
+      // setChangeSent,
       handleOnComplete,
     ]);
 
-    useEffect(() => {
-      // console.log(changeSent, spinning, selections);
-      onDataReceived &&
-        onDataReceived(
-          (data) => {
-            console.log(data);
-            if (data.type == "playerAction" && data.payload.value == "stop") {
-              handleClick();
-            }
-          },
-          'optionMachine'
-        );
-        return ()=>{removeOnDataReceivedListener('optionMachine')};
-    }, [
-      onDataReceived,
-      removeOnDataReceivedListener,
-      handleClick,
-      changeSent,
-      spinning,
-      selections,
-      setChangeSent,
-      setSpinning,
-      setSelections,
-    ]);
+    // const dataReceivedCallback = useCallback((data:{type:string, payload:{value:string}}) => {
+    //     handleClick();
+    //   }
+    // }, [handleClick]);
 
-    const ref = useForwardedRef(forwardedRef);
+    usePeerDataReceived(handleClick,actionId)
+
     return (
       <div
         className="contents"  
-        ref={ref}
         onClick={handleClick}
       >
         {options.map(({ label, options }, i) => (
@@ -247,7 +199,6 @@ const OptionMachine = forwardRef(
         ))}
       </div>
     );
-  },
-);
+  };
 
 export default OptionMachine;

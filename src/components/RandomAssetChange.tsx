@@ -1,5 +1,5 @@
 import OptionMachine from "./OptionMachine";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {  Player, StoreData } from "$store/types";
 import { handleTransfer } from "$store/slices/playerSlice";
@@ -7,12 +7,12 @@ import { closeModal } from "$store/slices/gameProgressSlice";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 
 const RandomAssetChange = () => {
-  const ref = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<Record<string, string>>({});
 
   const players = useSelector((state:StoreData) => state.players);
   console.log(players);
 
+  console.log(state);
 const dispatch = useDispatch();
 const activePlayerName = useSelector((state:StoreData) => state.game.activePlayers[0]);
 const activePlayer = useSelector((state:StoreData) => state.players.find((player)=>(player.name == activePlayerName || player.id == activePlayerName))) as Player;
@@ -30,7 +30,6 @@ return (
     </div>
     <div className="flex flex-row gap-4">
     <OptionMachine
-      ref={ref}
       options={[
         { label: "type", options: ['give', 'take', 'swap'] },
         {
@@ -63,7 +62,6 @@ return (
           dispatch(closeModal());
           dispatch(handleTransfer({from: activePlayerName, ...value.obj}))
           setTimeout(()=>{
-
             dispatch(triggerNextQueuedAction());
           }, 1000)
           // onComplete(value);

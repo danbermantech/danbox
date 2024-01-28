@@ -5,10 +5,10 @@ import QRCode from "react-qr-code";
 
 
 const QRShare = ({className}:{className?:string}) => {
-  const myPeerId = usePeer((cv) => cv.myPeerId) as string;
+  const myShortId = usePeer((cv) => cv.myShortId) as string;
   const qrValue = useMemo(
-    () => `${window.location.host}/play?hostId=${myPeerId}`,
-    [myPeerId]
+    () => `${window.location.host}/play?hostId=${myShortId}`,
+    [myShortId]
   );
   return (<QRCode
   value={qrValue}

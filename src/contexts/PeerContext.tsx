@@ -1,11 +1,11 @@
 import { createContext, useMemo, useCallback, useState, useRef } from "react";
 import { Peer } from "peerjs";
 // import PropTypes from 'prop-types'
-import { v4 as uuidv4 } from "uuid";
 import type { DataConnection } from "peerjs";
 import { addPlayer } from "../store/slices/playerSlice";
 import { useDispatch } from "react-redux";
-import { getCookie } from "../utilities/cookies";
+import { getCookie, setCookie } from "../utilities/cookies";
+import { useLocation } from "react-router-dom";
 // import { useMIDI } from 'react-midi-context';
 export type OnDataReceivedPayload ={
   type: string;
@@ -29,6 +29,7 @@ export type PeerContextValue = {
   sendOnGuestConnected: (value: unknown) => void;
   setOnConnectSendValue: (value: unknown) => void;
   myPeerId: string;
+  myShortId: string;
   initialize: (func?: () => void) => void;
   peerErrors: { message: string }[];
   removeOnDataReceivedListener: (id: string) => void;
@@ -45,6 +46,7 @@ const defaultState:PeerContextValue = {
   sendOnGuestConnected: () => {},
   setOnConnectSendValue: () => {},
   myPeerId: "",
+  myShortId: '',
   initialize: () => {},
   peerErrors: [],
   removeOnDataReceivedListener: () => {},
@@ -63,6 +65,12 @@ const peerOptions = import.meta.env.VITE_DEV_MODE
     }
   : {};
 
+const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const idPrefix = `danbox00000000000000000000000000`
+
+function generateShortId(){
+  return [...Array(4)].map(()=>(chars[Math.floor(Math.random()*chars.length)])).join('');
+}
 const PeerContextProvider = ({
   children,
 }: {
@@ -70,7 +78,25 @@ const PeerContextProvider = ({
 }): React.ReactNode => {
   // const { user } = useSupabase()
   // const myId = useMemo(() => user.id, [user]);
-  const myPeerId = useMemo(uuidv4, []);
+  // const location = useLocation();
+  // console.log(location)
+
+  const location = useLocation();
+  // const [searchParams] = useSearchParams();
+
+  const myShortId = useMemo(()=>{
+    if(location.pathname == '/host') return generateShortId();
+      if(getCookie('deviceId')) return getCookie('deviceId');
+      const newShortId = generateShortId();
+      setCookie('deviceId', newShortId, 14);
+    // }
+    return newShortId;
+  },[location.pathname]);
+
+  const myPeerId = useMemo(()=>{
+    return `${idPrefix}${myShortId}`
+  },[myShortId]);
+
   const [connections, setConnections] = useState<DataConnection[]>([]);
   const { addNotification } = useMemo(() => {
     return {
@@ -126,7 +152,7 @@ const PeerContextProvider = ({
       if (peerInitialized) return;
 
       const initializePeer = (id: string): Peer => {
-        console.log("initializing peer", getCookie("deviceId"));
+        console.log("initializing peer", id);
         const newPeer = new Peer(id, peerOptions);
 
         newPeer.on("open", () => {
@@ -267,8 +293,8 @@ const PeerContextProvider = ({
       function connectToPeer() {
         const peer = peerRef.current.value;
         if (!peer) return;
-        console.log("connecting to peer", peerId);
-        const conn = peer.connect(peerId);
+        console.log("connecting to peer", `${idPrefix}${peerId}`);
+        const conn = peer.connect(`${idPrefix}${peerId}`);
         conn.on("open", () => {
           console.log("open");
           conn.send({
@@ -304,7 +330,7 @@ const PeerContextProvider = ({
           setPeerErrors((prev) => [...prev, err]);
         });
       }
-
+      setCookie('lastHostId', peerId, 14)
       // connectToPeer();
       if (!peerInitialized) {
         initialize(connectToPeer);
@@ -364,6 +390,8 @@ const PeerContextProvider = ({
     [peerRef],
   );
 
+
+
   const contextValue = useMemo(
     () => ({
       connect,
@@ -375,6 +403,7 @@ const PeerContextProvider = ({
       setOnConnectSendValue,
       onPeerConnect,
       myPeerId,
+      myShortId,
       initialize,
       peerErrors,
       peerConnected,
@@ -390,6 +419,7 @@ const PeerContextProvider = ({
       sendOnGuestConnected,
       onPeerConnect,
       myPeerId,
+      myShortId,
       initialize,
       peerErrors,
       peerConnected,

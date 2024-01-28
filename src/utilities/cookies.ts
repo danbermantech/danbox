@@ -30,4 +30,13 @@ function removeCookie(cname: string): void {
     cname + "=" + " " + ";" + new Date().toUTCString() + ";path=/";
 }
 
-export { setCookie, getCookie, removeCookie };
+
+function useCookie(name: string): [string, (value:string, expDays?:number)=>void, ()=>void] {
+  return [
+    getCookie(name),
+    (value:string, expDays?:number)=> {setCookie(name, value, expDays || 365)},
+    ()=>{removeCookie(name)},
+  ];
+}
+
+export { setCookie, getCookie, removeCookie, useCookie };

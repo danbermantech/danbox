@@ -1,11 +1,11 @@
 import { createSlice, Action } from "@reduxjs/toolkit";
 import { BoardSpaceConfig, GameMode, type GameState, type RejectedAction } from "../types";
 import setState from "$store/actions/setState";
-import triggerNextRound from "$store/actions/triggerNextRound";
 import addQueuedAction from "$store/actions/addQueuedAction";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import boardLayout from "$constants/boardLayout";
 import movePlayer from "$store/actions/movePlayer";
+import restart from "$store/actions/restart";
 function isRejectedAction(action: Action): action is RejectedAction {
   return action.type.endsWith("rejected");
 }
@@ -18,8 +18,8 @@ const defaultState: GameState = {
   modalOpen: true,
   queuedActions: [],
   activePlayers: [],
-  board: boardLayout
-  // currentPlayerActions: [],
+  board: boardLayout,
+  maxRounds: 10,
 };
 export const gameSlice = createSlice({
   name: "game",
@@ -69,12 +69,6 @@ export const gameSlice = createSlice({
         return action.payload.game;
         // action is inferred correctly here if using TS
       })
-      .addCase(triggerNextRound, (state) => {
-        state.currentRound += 1;
-        state.mode = 'MOVEMENT'
-        state.modalOpen = false;
-        // return state;
-      })
       .addCase(addQueuedAction, (state, action) => {
         state.queuedActions.push(action.payload);
         return state;
@@ -84,23 +78,27 @@ export const gameSlice = createSlice({
         state.queuedActions.push({mode: GameMode.MINIGAME, modalContent:space.type, for: [action.payload.playerId], when:'start'});
         return state;
       })
+      .addCase(restart, ()=>{
+        return defaultState;
+      })
       .addCase(triggerNextQueuedAction, (state) => {
         const nextAction = state.queuedActions.shift();
         console.log(nextAction)
         if(!nextAction) {
           state.currentRound += 1;
+          if(state.currentRound > state.maxRounds){
+            state.mode = 'GAME_OVER'
+            state.modalOpen = true;
+            return;
+          }
           state.mode = 'MOVEMENT'
           state.modalOpen = false;
           return;
         }
         if(nextAction.mode) state.mode = nextAction.mode;
-        // if(nextAction.modalContent) {
-          state.modalContent = nextAction.modalContent ?? null;
-          state.modalOpen = !!nextAction.modalContent;
-        // }
-        if(nextAction.for){
-          state.activePlayers = nextAction.for
-        }
+        state.modalContent = nextAction.modalContent ?? null;
+        state.modalOpen = !!nextAction.modalContent;
+        if(nextAction.for) state.activePlayers = nextAction.for
       })
       .addMatcher(
         isRejectedAction,
@@ -122,8 +120,6 @@ export const {
   setGameMode,
   openModal,
   closeModal,
-  // setCurrentPlayerActions,
-  // clearCurrentPlayerActions,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

@@ -5,19 +5,9 @@ import PlayPage from "./play/Page";
 import PlayLayout from "./play/Layout";
 import HostLayout from "./host/Layout";
 import { PeerContextProvider } from "../contexts/PeerContext";
-import { getCookie, setCookie } from "../utilities/cookies";
-import {v4 as uuidv4} from "uuid"
 const router = createBrowserRouter([
   {
     path: "/",
-    loader:async()=>{
-      const deviceId = getCookie("deviceId");
-      if(!deviceId) {
-        setCookie("deviceId", uuidv4(), 365);
-      }
-      console.log(deviceId)
-      return null;
-    },
     element: (
       <Suspense fallback={<div>Loading...</div>}>
         <PeerContextProvider>

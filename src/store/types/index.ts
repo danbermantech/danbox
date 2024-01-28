@@ -7,18 +7,44 @@ export type PlayerAction = {
   styles?: React.CSSProperties;
 };
 
+export type ItemDefinition = {
+  name: string,
+  description: string,
+  price: number,
+  image: string,
+  action: (args:{user:string, target:string, value?:unknown})=>{payload:{user:string, target:string, value?:unknown}, type:string},
+  cost?: number,
+  weight: number,
+}
+
+export type AssetDefinition = {
+  name: string,
+  value: number,
+  asset: string,
+  image: string,
+  action: <T=unknown>(target:string)=>{payload:T, type:string},
+  weight:number
+}
+
+export type Item = ItemDefinition & {id: string};
+
+export type Effect = 'SHRIMPED' | 'MAGIC_HAT' | 'TELEPORT' | 'CHEAT'
+
 export type Player = {
   name: string;
   id: string;
   points: number;
   gold: number;
   teamId: string;
-  items: {name:string, description:string, image:string}[];
-  history: string[];
-  spaceId: string,
+  items: Item[];
+  history: Player[];
+  spaceId: string;
+  effects?: Effect[];
+  previousSpaceId: string;
   image: string;
   controls: PlayerAction[];
   hasMoved: boolean;
+  instructions: string;
 };
 
 export type Players = Player[];
@@ -42,6 +68,9 @@ export enum ModalContent {
   BANK = 'BANK',
   START = 'START',
   END = 'END',
+  RACE = 'RACE',
+  GET_ASSET = 'GET_ASSET',
+  LOSE_ASSET = 'LOSE_ASSET',
 }
 
 export type QueueAction =  {
@@ -73,8 +102,8 @@ export type GameState = {
   queuedActions: QueueAction[];
   activePlayers: string[];
   board: BoardSpaceConfig[];
-  mode: 'MOVEMENT' | 'REGISTRATION' | 'GAME_OVER' | 'MINIGAME' | 'MINIGAME_RESULTS'
-  // currentPlayerActions: PlayerAction[];
+  mode: 'MOVEMENT' | 'REGISTRATION' | 'GAME_OVER' | 'MINIGAME' | 'MINIGAME_RESULTS',
+  maxRounds: number;
 };
 
 

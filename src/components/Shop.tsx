@@ -1,101 +1,111 @@
 import shrimp from '$assets/shrimp.png';
 import magicHat from '$assets/magicHat.png';
 import { useDispatch, useSelector } from 'react-redux';
-import { StoreData } from '$store/types';
-import { useEffect } from 'react';
-import { clearAllPlayerControls, givePlayerControls, givePlayerGold, givePlayerItem } from '$store/slices/playerSlice';
-import { usePeer } from '$hooks/usePeer';
+import type { StoreData, Item, ItemDefinition } from '$store/types';
+import { useCallback, useEffect, useState } from 'react';
+import { clearAllPlayerControls, setPlayerControls, givePlayerGold, givePlayerItem } from '$store/slices/playerSlice';
 import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
-const items = [
+import useAudio from '$hooks/useAudio';
+import usePeerDataReceived, { PeerDataCallbackPayload } from '$hooks/useDataReceived';
+import {v4 as uuidv4} from 'uuid'
+import activateItem from '$store/actions/activateItem';
+
+
+const items:ItemDefinition[] = [
   {
     name: 'shrimp',
     description: 'throw a shrimp at somebody (they will be very confused)',
     price: 10,
     image: shrimp,
-    action: (target:string)=>{
-      return {target}
+    action: ({user, target}:{user:string, target:string, value?:unknown}) => {
+      return activateItem({ user, target, item: 'shrimp' });
     },
-    cost: 10
+    cost: 10,
+    weight: 5,
   },
   {
     name: 'magic hat', 
-    description: 'get a random item',
+    description: 'Swap places with somebody',
     price: 20,
     image: magicHat,
-    action: (target:string)=>{
-      return {target}
+    action: ({user, target}:{user:string, target:string, value?:unknown}) => {
+      return activateItem({ user, target, item: 'magic hat'});
     },
+    weight: 1,
   }
 ]
 
+function createOptions(options: ItemDefinition[], count: number = 3) {
+  const weightedOptions = options
+    .map((option) =>
+      Array(option.weight).fill(0).map(() => ({ ...option, id: uuidv4() }))
+    )
+    .flat();
 
+  return weightedOptions.sort(() => Math.random() - 0.5).slice(0, count);
+}
 
 const Shop = ()=>{
   
   const activePlayers = useSelector((state:StoreData) => state.game.activePlayers);
   const dispatch = useDispatch();
+  const {triggerSoundEffect} = useAudio();
+  const [actionId] = useState(()=>uuidv4());
+
+  const [options] = useState<Item[]>(createOptions(items, 3));
 
   useEffect(()=>{
     console.log(activePlayers);
     console.log(items)
-    dispatch(givePlayerControls({playerId: activePlayers[0], controls: [{name:'none'},...items].map((item)=>({label: item.name, value: item.name, action: 'buy'}))}))
+    dispatch(setPlayerControls({playerId: activePlayers[0], controls: [{name:'none', id: 'none'},...options].map((item)=>({label: item.name, value: item.id, action: actionId}))}))
   }
-  ,[activePlayers, dispatch ])
-
-  const onDataReceived = usePeer((cv) => cv.onDataReceived) as (
-    cb: (
-      data: {
-        type: string;
-        payload: { action: string; value: string, peerId: string };
-      },
-      peerId: string
-    ) => void,
-    id:string
-  ) => void;
+  ,[activePlayers, dispatch, actionId, options])
 
   const player = useSelector((state:StoreData) => state.players.find((player)=>(player.id == activePlayers[0] || player.name == activePlayers[0])));
-  const removeOnDataReceivedListener = usePeer((cv) => cv.removeOnDataReceivedListener) as (listenerId:string)=>void
 
-  useEffect(()=>{
-    onDataReceived &&
-    onDataReceived(
-      (data, peerId) => {
-        console.log(data, peerId);
-        if (data.type == "playerAction"){
-          if(data.payload.action == "buy"){
-            const item = items.find((item)=>(item.name == data.payload.value));
-            console.log(player, item)
-            if(data.payload.value == 'none'){
-              dispatch(clearAllPlayerControls());
-              setTimeout(()=>{
-                dispatch(triggerNextQueuedAction());
-              }, 2000)
-              return;    
-            }
-            if(!player || !item) return;
-            if(player.gold >= item.price){
-              console.log('purchasing')
-              dispatch(givePlayerItem({playerId: player.id, item: {name: item.name, image: item.image, description: item.description}}))
-              dispatch(givePlayerGold({playerId: player.id, gold: -item.price}))
-              setTimeout(()=>{
-                dispatch(triggerNextQueuedAction());
-              }, 2000)
-            }
-            // dispatch(givePlayerControls({playerId: peerId, controls: []}))
-            // dispatch(givePlayerControls({playerId: peerId, controls: [{label: 'SHOP', value: 'shop', action: 'shop'}]}))
-          }
-        }
-      },
-      'shop'
-    );
-    return ()=>{removeOnDataReceivedListener('shop')}
-  })
+  const [selectedOption, setSelectedOption] = useState<Item>();
+
+
+  const dataReceivedCallback = useCallback((data: PeerDataCallbackPayload, peerId:string) => {
+    console.log(data, peerId);
+    const item = options.find((item)=>(item.id == data.payload.value));
+    console.log(player, item)
+    if(data.payload.value == 'none'){
+      dispatch(clearAllPlayerControls());
+      setTimeout(()=>{
+        dispatch(triggerNextQueuedAction());
+      }, 2000)
+      return;    
+    }
+    if(!player || !item) return;
+    if(player.gold >= item.price){
+      console.log('purchasing')
+      dispatch(givePlayerItem({playerId: player.id, item: {name: item.name, image: item.image, description: item.description}}))
+      dispatch(givePlayerGold({playerId: player.id, gold: -item.price}))
+      setSelectedOption(item);
+      triggerSoundEffect('victory4')
+      setTimeout(()=>{
+        dispatch(triggerNextQueuedAction());
+      }, 2000)
+    }
+  }, [dispatch, player, triggerSoundEffect, options])
+
+  usePeerDataReceived(dataReceivedCallback,actionId);
+
   return (<div className="w-full flex flex-col text-black">
     <h1 className="text-4xl text-center">
       SHOP
     </h1>
+    {selectedOption ? 
+      <div key={selectedOption.name} className="max-w-48 bg-green-200 p-2 flex flex-col border-2 border-green-400">
+        <h2 className="text-xl">{selectedOption.name}</h2>
+        <h3 className="text-md">{selectedOption.description}</h3>
+        <h3 className="text-md">{`Price: ${selectedOption.price}`}</h3>
+        <img width={100} height={100} className="mx-auto p-2 items flex-grow" src={selectedOption.image} />
+      </div> 
+    : 
     <div className="grid grid-cols-2 gap-2">
-    {items.map(item=>{
+    {options.map(item=>{
       return <div key={item.name} className="max-w-48 bg-white p-2 flex flex-col  border-2 border-black">
         <h2 className="text-xl">{item.name}</h2>
         <h3 className="text-md">{item.description}</h3>
@@ -104,7 +114,7 @@ const Shop = ()=>{
         </div>
     })}
     </div>
-
+    }
   </div>)
 }
 

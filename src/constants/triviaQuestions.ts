@@ -2,7 +2,7 @@ export type TriviaQuestion = {
   question: string;
   answer: string;
   category: string;
-  difficulty: string;
+  difficulty: 'easy' | 'medium' | 'hard' | 'expert';
   type: string;
   incorrect_answers: string[];
 };
@@ -156,7 +156,59 @@ const TriviaQuestions:TriviaQuestion[] =[
     ]
   },
   {
-    question: 'How many pockets are there on a standard bumpter pool table?',
+    question: 'Which of the following does not make a guest appearance in "Detroiters"?',
+    answer: 'James Carvell',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Keegan Michael Key',
+      'Jason Sudeikis',
+      'Tim Meadows',
+      'Conner O\'Malley'
+    ]
+  },
+  {
+    question: 'Who directed the movie "The Lord of The Rings"?',
+    answer: 'Ralph Bakshi',
+    category: 'Entertainment',
+    difficulty: 'hard',
+    type: 'multiple',
+    incorrect_answers: [
+      'Peter Jackson',
+      'George Lucas',
+      'Steven Spielberg',
+      'James Cameron'
+    ]
+  },
+  {
+    question: 'How tall was Leon Trotsky?',
+    answer: '5\'9"',
+    category: 'History',
+    difficulty: 'hard',
+    type: 'multiple',
+    incorrect_answers: [
+      '5\'6"',
+      '5\'3"',
+      '5\'10"',
+      '5\'7"'
+    ]
+  },
+  {
+    question: 'What are the geographic coordinates of Philadelphia City Hall?',
+    answer: '39.9526° N, 75.1652° W',
+    category: 'Geography',
+    difficulty: 'expert',
+    type: 'multiple',
+    incorrect_answers: [
+      '51.7118° N, 72.6071° W',
+      '40.6428° N, 74.0260° W',
+      '42.9321° N, 76.6556° W',
+      '31.2528° N, 75.1152° W'
+    ]
+  },
+  {
+    question: 'How many pockets are there on a standard bumper pool table?',
     answer: '2',
     category: 'Sports',
     difficulty: 'medium',
@@ -242,6 +294,57 @@ const TriviaQuestions:TriviaQuestion[] =[
       'A bird',
       'A solider',
       'A villager'
+    ]
+  },
+  {
+    question: 'Which of the following represents the character "A" in ASCII?',
+    answer: '65',
+    category: 'Modernity',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      '00',
+      '01',
+      '64',
+      '127'
+    ]
+  },
+  {
+    question: 'Which of the following represents the character "a" in ASCII?',
+    answer: '97',
+    category: 'Modernity',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      '00',
+      '01',
+      '64',
+      '127'
+    ]
+  },
+  {
+    question: 'What is the chemical formula for TNT?',
+    answer: 'C7H5N3O6',
+    category: 'Science',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'C6H12O6',
+      'C2H5OH',
+      'C2H6O2',
+      'C4H10'
+    ]
+  },
+  {
+    question: 'Why did Steve Jobs name his company Apple?',
+    answer: 'To be petty',
+    category: 'Modernity',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'For Isaac newton',
+      'For the Beatles',
+      'Exposure therapy for his fructophobia',
     ]
   },
 ]

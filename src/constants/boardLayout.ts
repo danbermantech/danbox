@@ -12,7 +12,7 @@ const boardLayout: BoardSpaceConfig[] = [
     color: '#8888ff',
     id: "trivia",
     label: 'trivia',
-    connections: ['duel', 'shop', 'home', 'bl'],
+    connections: ['middleLeft', 'middleTop'],
     type: ModalContent.TRIVIA,
   },
   {
@@ -20,10 +20,10 @@ const boardLayout: BoardSpaceConfig[] = [
     y: boardHeight * .2,
     width: 100,
     height: 100,
-    color: '#ff0000',
+    color: '#5588aa',
     id: "duel",
-    label: 'duel',
-    connections: ['home', 'shop', 'trivia', 'br'],
+    label: 'Showdown',
+    connections: ['middleRight', 'middleTop',],
     type: ModalContent.DUEL,
   },
   {
@@ -34,7 +34,7 @@ const boardLayout: BoardSpaceConfig[] = [
     color: '#00ff00',
     id: "shop",
     label: 'shop',
-    connections: ['bl', 'br', 'trivia', 'duel', 'home'],
+    connections: ['home', 'middleLeft', 'middleRight'],
     type: ModalContent.SHOP,
   },
   {
@@ -45,19 +45,8 @@ const boardLayout: BoardSpaceConfig[] = [
     color: '#ff00ff',
     id: 'home',
     label: 'home',
-    connections: ['trivia', 'duel', 'shop'],
-    type: ModalContent.HOME
-  },
-  {
-    x: boardWidth*.8,
-    y: boardHeight * .8,
-    width: 100,
-    height: 100,
-    color: '#ffff00',
-    id: 'br',
-    label: 'random',
-    connections: ['duel', 'shop'],
-    type: ModalContent.RANDOM_ASSET_CHANGE
+    connections: ['middleLeft', 'middleTop', 'middleRight'],
+    type: ModalContent.GET_ASSET
   },
   {
     x: boardWidth*.2,
@@ -66,9 +55,53 @@ const boardLayout: BoardSpaceConfig[] = [
     height: 100,
     color: '#ffff00',
     id: 'bl',
-    label: 'random',
-    connections: ['trivia', 'shop'],
+    label: "Rhiannon's Casino",
+    connections: ['middleLeft', 'shop',],
     type: ModalContent.RANDOM_ASSET_CHANGE
   },
+  {
+    x: boardWidth*.8,
+    y: boardHeight * .8,
+    width: 100,
+    height: 100,
+    color: '#ffff00',
+    id: 'br',
+    label: "Stormy's \rSlots",
+    connections: ['middleRight', 'shop'],
+    type: ModalContent.RANDOM_ASSET_CHANGE
+  },
+  {
+    x: boardWidth*.2,
+    y: boardHeight * .5,
+    width: 50,
+    height: 50,
+    color: "#228822",
+    id: 'middleLeft',
+    label: '😊',
+    connections: ['home', 'trivia', 'bl',],
+    type: ModalContent.GET_ASSET
+  },
+  {
+    x: boardWidth*.8,
+    y: boardHeight * .5,
+    width: 50,
+    height: 50,
+    color: "#228822",
+    id: 'middleRight',
+    label: 'RACE',
+    connections: ['duel', 'home', 'br'],
+    type: ModalContent.RACE,
+  },
+  {
+    x: boardWidth*.5,
+    y: boardHeight * .2,
+    width: 50,
+    height: 50,
+    color: "#ff2222",
+    id: 'middleTop',
+    label: '🙁',
+    connections: ['trivia', 'duel', 'home'],
+    type: ModalContent.LOSE_ASSET,
+  }
 ]
 export default boardLayout;

@@ -1,30 +1,47 @@
-// import { BlurFilter } from 'pixi.js';
-import { Stage, Sprite, Text, Container, } from '@pixi/react';
-// import { useMemo, } from 'react';
+import { Stage, Sprite, Text, } from '@pixi/react';
 import Line from '$components/pixi/Line';
 import Circle from '$components/pixi/Circle';
-// import red_circle from '$assets/red_circle.png' 
 import { useSelector } from 'react-redux';
-import { StoreData } from '$store/types';
+import { BoardSpaceConfig, StoreData } from '$store/types';
 import { Fragment } from 'react';
 import bg from '$assets/bg.png';
-
-// import { Circle } from 'pixi.js';
-
-
+import { TextStyle } from 'pixi.js';
+import PlayerPiece from './PlayerPiece';
 
 const boardWidth = (()=>window.innerWidth - 512)();
 const boardHeight = (()=>window.innerHeight - 32)();
-
-
 
 
 export const PixiHost = () =>
 {
   const players = useSelector((state:StoreData) => state.players);
   const board = useSelector((state:StoreData) => state.game.board);
+  const currentRound = useSelector((state:StoreData) => state.game.currentRound);
+  const maxRounds = useSelector((state:StoreData) => state.game.maxRounds);
   return (
-    <Stage className="w-full mx-auto rounded-xl" width={boardWidth} height={boardHeight} options={{ backgroundColor: 0xffffff }}>
+    <Stage className="w-full mx-auto rounded-xl" width={boardWidth} height={boardHeight} options={{ backgroundColor: 0xffffff, antialias: true }}>
+      <Text 
+            text={`${currentRound}/${maxRounds}`} 
+            style={new TextStyle({align: 'center',
+            fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
+            fontSize: 100,
+            fontWeight: '400',
+            fill: ['#880000', '#000000'], // gradient
+            stroke: '#880000',
+            strokeThickness: 5,
+            letterSpacing: 20,
+            dropShadow: true,
+            dropShadowColor: '#FF0000',
+            dropShadowBlur: 4,
+            dropShadowAngle: Math.PI / 6,
+            dropShadowDistance: 6,
+            wordWrap: true,
+            wordWrapWidth: 440,})} 
+            width={400}
+            height={200} 
+            x={boardWidth* 0.9} y={boardHeight * 0.1} 
+            anchor={{x:0.5, y: 0}} 
+          />
       <Sprite x={0} y={0} width={boardWidth} height={boardHeight} image={bg} scale={{x:boardWidth/1920, y: boardHeight/1080}} />
       {board.map((location) => {
         return location.connections.map((connection) => {
@@ -32,12 +49,10 @@ export const PixiHost = () =>
           if (!connectedLocation) return null;
           return <Line
             key={location.id + '_' + connection}
-            x1={location.x}
-            y1={location.y}
-            x2={connectedLocation.x}
-            y2={connectedLocation.y}
-            color="#000000"
-            width={10}
+            from={location}
+            to={connectedLocation}
+            color={location.color}
+            width={1}
           />
         })
       })}
@@ -53,61 +68,40 @@ export const PixiHost = () =>
           />
           {
             players.filter((player)=>player.spaceId == location.id).map((player, index, arr)=>{
-              
-              const xOffset = (()=>{
-                if(arr.length == 1) return 0;
-                return (index - ((arr.length-1) / 2)) * (arr.length / (location.width * 1.5)) * 100 * location.width / arr.length ;
-              })()
-              return (
-                <Container
-                  x={location.x + xOffset}
-                  y={location.y - location.width * .5}
-                  width={(location.width ?? 100) * .5}
-                  height={(location.width ?? 100) * .5}
-                  key={player.id}
-                >
-                  <Sprite
-                  anchor={0.5}
-                  x={0}
-                  y={0}
-                  width={(location.width ?? 100) * .5}
-                  height={(location.width ?? 100) * .5}
-                  image={player.image}
-                  />
-                  <Text text={player.name.toLocaleUpperCase()}  width={(location.width ?? 100) * .5} height={30} x={0} y={10} anchor={{x:0.5, y: 0}} />
-                </Container>
-              )
+              return (<PlayerPiece 
+                key={player.id}
+                player={player} 
+                location={location} 
+                previousLocation={board.find((space)=>(space.id == player.previousSpaceId)) as BoardSpaceConfig} 
+                xOffset={arr.length >= 1 ? (index - ((arr.length-1) / 2)) * (arr.length / (location.width * 1.5)) * 100 * location.width / arr.length : 0} 
+                />)
           })
         }
-          <Text text={location.label.toLocaleUpperCase()} width={location.width} height={location.width/2} x={location.x} y={location.y} anchor={{x:0.5, y: 0}} />
+          <Text 
+            text={location.label.toLocaleUpperCase()} 
+            style={new TextStyle({align: 'center',
+            fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
+            fontSize: 100,
+            fontWeight: '400',
+            fill: ['#880000', '#000000'], // gradient
+            stroke: '#880000',
+            strokeThickness: 5,
+            letterSpacing: 20,
+            dropShadow: true,
+            dropShadowColor: '#FF0000',
+            dropShadowBlur: 4,
+            dropShadowAngle: Math.PI / 6,
+            dropShadowDistance: 6,
+            wordWrap: true,
+            wordWrapWidth: 440,})} 
+            width={location.width}
+            height={location.width*.5} 
+            x={location.x} y={location.y + location.width * .4} 
+            anchor={{x:0.5, y: 0}} 
+          />
         </Fragment>
       )
       })}
-      {/* <Container x={0} y={boardHeight - 50} width={boardHeight } height={100}>
-        {players.map((player, index, arr)=>(
-          <Container
-            x={((index+1)/arr.length) * boardWidth * .8}
-            y={0}
-            width={250}
-            height={100}
-            key={player.id}
-            >
-              <Sprite
-              anchor={0.5}
-              x={0}
-              y={-20}
-              width={50}
-              height={50}
-              image={player.image}
-              />
-              <Text text={player.name.toLocaleUpperCase()}  width={100} height={30} x={0} y={10} anchor={{x:0.5, y: 0}} />
-              <Text text={`gold : ${player.gold}`} width={150} height={30} x={150} y={-50} anchor={{x:0.5, y: 0}} />
-              <Text text={`points : ${player.points}`} width={150} height={30} x={150} y={-20} anchor={{x:0.5, y: 0}} />
-              <Text text={`items : ${player.items.length ? player.items.join(', ') : 'none'}`} width={150} height={30} x={150} y={10} anchor={{x:0.5, y: 0}} />
-
-          </Container>
-        ))}
-     </Container> */}
     </Stage>
   );
 };

@@ -1,34 +1,23 @@
-import { useEffect, useState, useMemo } from "react";
-import { usePeer } from "$hooks/usePeer";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clearAllPlayerControls, givePlayerControls, givePlayerGold, givePlayerPoints } from "$store/slices/playerSlice";
+import { clearAllPlayerControls, setPlayerControls, givePlayerGold, givePlayerPoints } from "$store/slices/playerSlice";
 import TriviaQuestions from "constants/triviaQuestions";
 import { StoreData } from "$store/types";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import { closeModal } from "$store/slices/gameProgressSlice";
 import PlayerCard from "./PlayerCard";
-
+import usePeerDataReceived, { PeerDataCallbackPayload } from "$hooks/useDataReceived";
+import {v4 as uuidv4} from 'uuid'
+import useAudio from "$hooks/useAudio";
 const Trivia =
   () => {
-    const onDataReceived = usePeer((cv) => cv.onDataReceived) as (
-      cb: (
-        data: {
-          // peerId: string;
-          type: string;
-          payload: { action: string; value: string, peerId: string };
-        },
-        peerId: string
-      ) => void,
-      id: string,
-    ) => void;
-
-    const removeOnDataReceivedListener = usePeer((cv) => cv.removeOnDataReceivedListener) as (listenerId:string)=>void
 
     const triviaQuestion = useMemo(() => {
       const triviaQuestion = TriviaQuestions[Math.floor(Math.random() * TriviaQuestions.length)];
       return triviaQuestion;
     }, []);
 
+    const [actionId] = useState(()=>uuidv4());
     const players = useSelector((state:StoreData) => state.players);
 
     const dispatch = useDispatch();
@@ -36,53 +25,44 @@ const Trivia =
     const answers = useMemo(()=>{
       return [triviaQuestion.answer, ...triviaQuestion.incorrect_answers]
         .sort(()=>{return Math.random() - 0.5})
-        .map((answer)=>({label: answer, value: answer, action: 'triviaVote'}));
-    },[triviaQuestion])
+        .map((answer)=>({label: answer, value: answer, action: actionId}));
+    },[triviaQuestion, actionId])
 
     const [playerAnswers, setPlayerAnswers] = useState<{[key:string]:string}>({});
+
+    const {triggerSoundEffect} = useAudio();
+
+    useEffect(()=>{
+      return triggerSoundEffect('trivia');
+    },[]);
 
     useEffect(()=>{
       players.forEach((player)=>{
         if(playerAnswers[player.id]){
-          dispatch(givePlayerControls({playerId: player.id, controls:[]}) )
+          dispatch(setPlayerControls({playerId: player.id, controls:[]}) )
         } else{
-          dispatch(givePlayerControls({playerId: player.id,
+          dispatch(setPlayerControls({playerId: player.id,
             controls:answers}),
           )}
         }
       );
     },[players, playerAnswers, dispatch, answers])
 
-    useEffect(() => {
-      onDataReceived &&
-      onDataReceived(
-        (data, peerId) => {
-          console.log(data, peerId);
-          if (data.type == "playerAction"){
-            setPlayerAnswers((prev)=>{
-              const next = {...prev};
-              next[peerId] = data.payload.value;
-              return next;
-            })
-          }
-        },'trivia'
-        );
 
-      return ()=>{removeOnDataReceivedListener('trivia')}
-    }, [removeOnDataReceivedListener, onDataReceived, setPlayerAnswers, dispatch]);
+    const dataReceivedCallback = useCallback((data:PeerDataCallbackPayload, peerId:string) => {
+        setPlayerAnswers((prev)=>{
+          const next = {...prev};
+          next[peerId] = data.payload.value;
+          return next;
+        })
+    }, [setPlayerAnswers]);
+
+    usePeerDataReceived(dataReceivedCallback, actionId)
 
     const [completed, setCompleted] = useState(false);
 
     useEffect(()=>{
       if(players.length && Object.keys(playerAnswers).length == players.length){
-        // console.log('winners:', Object.keys(playerAnswers).filter((player)=>playerAnswers[player] == triviaQuestion.answer))
-        // console.log('losers', Object.keys(playerAnswers).filter((player)=>playerAnswers[player] != triviaQuestion.answer))
-        // setWinners(players.filter((player)=>{
-        //   const answer = playerAnswers[player.id];
-        //   return answer == triviaQuestion.answer;
-        // }))
-          // Object.keys(playerAnswers).filter((player)=>playerAnswers[player] == triviaQuestion.answer)});
-        // const losers = Object.keys(playerAnswers).filter((player)=>playerAnswers[player] != triviaQuestion.answer);
         const points = (()=>{
           switch(triviaQuestion.difficulty){
             case 'easy':
@@ -104,7 +84,6 @@ const Trivia =
             dispatch(givePlayerGold({playerId: winner.id, gold: points }));
           });
           setTimeout(()=>{
-
             dispatch(clearAllPlayerControls())
             dispatch(closeModal());
             setTimeout(()=>{
@@ -112,7 +91,6 @@ const Trivia =
             },1000)
           }, 2000)
         }, 2000);
-        // onComplete({obj: playerAnswers});
       }
     },[playerAnswers, players, dispatch, triviaQuestion.answer, triviaQuestion.difficulty, setCompleted])
 
@@ -129,23 +107,11 @@ const Trivia =
         {completed &&
           <div>
             <h1 className="text-4xl text-black text-center">Correct Answer: {triviaQuestion.answer}</h1>
-            {/* <h2 className="text-4xl text-black text-center">Winners</h2> */}
             <div className="flex flex-row gap-2">
               {players.map((player)=>(
-                <div className="w-full flex items-center justify-items-center content-center justify-center">
+                <div key={player.name} className="w-full flex items-center justify-items-center content-center justify-center">
                 <PlayerCard player={player} className={playerAnswers[player.id] == triviaQuestion.answer ? 'border-green-800 bg-green-400' : 'border-red-800 bg-red-400'} />
                 </div>  
-                // <div 
-                // className="text-4xl  text-black w-full text-center flex items-center flex-col font-bold mb-4">
-                //   <div 
-                //   data-winner={triviaQuestion.answer == playerAnswers[player.id]} 
-                //   className="bg-white p-4 rounded-2xl border-black border-4 data-[winner=true]:border-green-800 data-[winner=true]:bg-green-400">
-                //     <h2>
-                //       {player.name.toLocaleUpperCase()}
-                //     </h2>
-                //     <img src={player.image} width="400" height="400" className="w-32 h-32 rounded-full" />
-                //   </div>
-                // </div>
               ))}
               
               </div>
@@ -157,7 +123,6 @@ const Trivia =
             style={{
               textAlign: "center",
               width: "100%",
-              // height: "300px",
               border: "2px solid white",
               borderRadius: "12px",
               fontSize: "clamp(2rem, 100rem, 4rem)",
