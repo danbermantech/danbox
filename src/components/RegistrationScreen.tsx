@@ -67,9 +67,9 @@ const RegistrationScreen = () => {
       <div className="flex flex-row justify-evenly">
       {players.map((player)=>{
         return (
-          <div key={player.id} className="flex items-center flex-col">
-            <h3>{player.name}</h3>
-            <img src={player.image} width="50" height="50"/>
+          <div key={player.id} className="flex p-4 border-black border-4 rounded-xl bg-gradient-radial from-slate-400 to-slate-200 items-center flex-col">
+            <h3 className="text-4xl font-bold">{player.name}</h3>
+            <img src={player.image} width="100" height="100"/>
           </div>
         )
       })}

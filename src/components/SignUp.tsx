@@ -12,7 +12,7 @@ const SignUp = ()=>{
     onPeerConnect: (peer: unknown) => void,
   ) => void;
   const [searchParams] = useSearchParams();
-  const [hostId] = useState(searchParams.get("hostId"));
+  const [hostId, setHostId] = useState(searchParams.get("hostId") ?? '');
   const peerConnected = usePeer((cv) => cv.peerConnected) as boolean;
   const peerErrors = usePeer((cv) => cv.peerErrors) as {message:string}[];
   const [playerName, setPlayerName] = useCookie('playerName');
@@ -64,6 +64,10 @@ const SignUp = ()=>{
       <div className="flex flex-row justify-between items-center">
         <h1 className="text-4xl font-bold">{myShortId}</h1>
         </div>
+      <InputLabel
+        htmlFor="hostIdInput"
+        >Host ID: </InputLabel>
+      <Input type="text" id="hostIdInput" placeholder="Please enter a host ID" value={hostId} onChange={(event)=>{setHostId(event.currentTarget.value)}} />
       <InputLabel
         htmlFor="nameInput"
         >Name: </InputLabel>

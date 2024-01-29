@@ -9,12 +9,15 @@ import GetAssetScreen from "./GetAssetScreen";
 import LoseAssetScreen from './LoseAssetScreen'
 import Duel from "./Duel";
 import Race from "./pixi/Race";
+import PixiHost from "./pixi/PixiHost";
 
 const ModalContents = () =>{
   const content = useSelector((state:StoreData)=>state.game.modalContent);
   const mode = useSelector((state:StoreData)=>state.game.mode);
   
   switch(mode){
+    case 'MOVEMENT':
+      return <PixiHost />
     case 'REGISTRATION':
       return <RegistrationScreen />
     case 'GAME_OVER':
@@ -36,7 +39,7 @@ const ModalContents = () =>{
         case ModalContent.RACE:
           return <Race />
         default:
-          return null;
+          return <PixiHost />;
       }
     default:
       null

@@ -126,25 +126,25 @@ const GetAssetScreen = ()=>{
 
   usePeerDataReceived(peerDataCallback, actionId)
 
-  return (<div className="w-full flex flex-col text-black">
-    <h1 className="text-4xl text-center">
+  return (<div className="w-full flex flex-col gap-8 text-black">
+    <h1 className="text-8xl text-center">
     😊
     </h1>
+    <div className="text-center text-6xl font-bold">
+      Select your prize
+    </div>    
     <div className='flex flex-row items-center justify-center  p-2'>
     <PlayerCard player={player} className=''/>
     </div>
-    <div className="text-center text-2xl">
-      Select your prize
-    </div>    
     {selectedOption ? 
-      <div className="grid grid-cols-1 gap-2 p-4">
+      <div className="grid grid-cols-1 justify-items-center gap-2 p-4">
         <div key={selectedOption.name} className="max-w-48 bg-green-200 rounded-xl border-green-400  p-2 flex flex-col border-2">
           <h2 className="text-xl font-bold uppercase">{selectedOption.name}</h2>
           <img width={100} height={100} className=" mx-auto p-2 items flex-grow" src={selectedOption.image} />
         </div>
       </div>
       :
-      <div className="grid grid-cols-3 gap-2 p-4 pt-12">
+      <div className="grid grid-cols-3 justify-items-center gap-2 p-2 pt-12">
       {filteredOptions.map((option, index)=>{
         console.log(filteredOptions)
         return <div key={option.id} data-index={index} className={"max-w-48 animate-bounce bg-white p-2 flex rounded-xl flex-col  border-2 border-black"}>

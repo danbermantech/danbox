@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { AssetDefinition, StoreData } from '$store/types';
+import { AssetDefinition, Player, StoreData } from '$store/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { setPlayerControls, givePlayerGold, givePlayerPoints } from '$store/slices/playerSlice';
 import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
@@ -9,6 +9,7 @@ import usePeerDataReceived, { PeerDataCallbackPayload } from '$hooks/useDataRece
 import useAudio from '$hooks/useAudio';
 import {v4 as uuidv4} from 'uuid'
 import { closeModal } from '$store/slices/gameProgressSlice';
+import PlayerCard from './PlayerCard';
 
 const options:AssetDefinition[] = [
   {
@@ -131,10 +132,16 @@ const GetAssetScreen = ()=>{
     peerDataCallback,
     actionId
   )
-  return (<div className="w-full flex flex-col text-black">
-    <h1 className="text-4xl text-center">
+  return (<div className="w-full flex flex-col gap-24 text-black">
+    <h1 className="text-8xl text-center">
     🙁
     </h1>
+    <div className="text-center text-4xl">
+      Select your sacrifice
+    </div>    
+    <div className='flex flex-row items-center justify-center  p-2'>
+    <PlayerCard player={player as Player} className=''/>
+    </div>
     {selectedOption ? 
       <div className="grid grid-cols-1 gap-2 p-4">
         <div key={selectedOption.name} className="max-w-48 bg-red-200 rounded-xl border-red-400  p-2 flex flex-col border-2">
@@ -143,7 +150,7 @@ const GetAssetScreen = ()=>{
         </div>
       </div>
       :
-      <div className="grid grid-cols-3 gap-2 p-4">
+      <div className="grid grid-cols-3 justify-items-center gap-2 p-4">
       {filteredOptions.sort(()=>Math.random() - 0.5).map(option=>{
         return <div key={option.name} className="max-w-48 bg-white p-2 flex rounded-xl flex-col  border-2 border-black">
           <h2 className="text-xl font-bold uppercase">{option.name}</h2>

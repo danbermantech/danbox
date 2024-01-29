@@ -27,7 +27,7 @@ const ScoreBoard = () => {
         <QRShare className="w-32 h-32 left-0 overflow-clip"/>
       <div className="flex flex-wrap  bg-transparent pt-4 gap-2 max-h-full w-full justify-center">
         {players.map((player)=>(
-          <PlayerCard player={player} showGold={true} showPoints={true} showItems={true} className="flex-shrink bg-[#88888888] border-black border-2 " />
+          <PlayerCard key={player.id} player={player} showGold={true} showPoints={true} showItems={true} className="flex-shrink bg-[#88888888] border-black border-2 " />
           ))}
       </div>
     </div>

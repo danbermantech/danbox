@@ -12,6 +12,7 @@ import pointImg from '$assets/sprites/points.png';
 import { givePlayerGold, givePlayerPoints } from '$store/slices/playerSlice';
 import { closeModal } from '$store/slices/gameProgressSlice';
 import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
+import PlayerCard from '$components/PlayerCard';
 
 const boardWidth = (()=>window.innerWidth - 512)();
 const boardHeight = (()=>window.innerHeight - 32)();
@@ -117,17 +118,12 @@ export const Race = () =>
   },[gold, points, dispatch, players])
 
   if(results.length){
-    return <div>
+    return <div className="flex gap-36">
       <h1 className="text-black text-center text-8xl font-extrabold">RESULTS</h1>
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-row place-items-center justify-center gap-">
         {
           results.map((result)=>{
-            return <div className="flex flex-col place-content-center items-center justify-items-center gap-4 bg-green-200 border-green-400">
-              <h2 className="text-4xl text-center">{result.name}</h2>
-              <img src={result.image} width="400" height="400" className="w-32 h-32 rounded-full" />
-              <h3 className="text-4xl text-center">{result.points} points</h3>
-              <h3 className="text-4xl text-center">{result.gold} gold</h3>
-            </div>
+            return <PlayerCard player={result} showGold={true} showPoints={true} className='bg-green-200 border-green-400'/>
           })
         }
         </div>
@@ -136,8 +132,7 @@ export const Race = () =>
   const displayPoints = points.filter((point)=>!point.collected);
   const displayGold = gold.filter((point)=>!point.collected);
   return (
-    //@ts-expect-error className is not a valid prop for some reason
-    <WrappedStage className="w-full mx-auto rounded-xl" width={boardWidth * 0.8} height={boardHeight * 0.8} options={{ backgroundColor: 0x222222, antialias: true }}>
+      <WrappedStage className="w-full mx-auto rounded-xl" width={boardWidth-32} height={boardHeight-32} options={{ backgroundColor: 0x222222, antialias: true }}>
       <Sprite x={0} y={0} width={boardWidth} height={boardHeight} image={bg} scale={{x:boardWidth/1920, y: boardHeight/1080}} />
     {
       displayPoints.map((point)=>{
@@ -161,14 +156,14 @@ export const Race = () =>
         boundaries={{
           minX:25, 
           minY:25, 
-          maxX:boardWidth*0.8 - 25, 
-          maxY: boardHeight*0.8 - 25
+          maxX:boardWidth - 50, 
+          maxY: boardHeight- 50
         }} 
         />
       })
     }
     </WrappedStage>
-  );
+    );
 };
 
 export default Race

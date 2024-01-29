@@ -1,19 +1,28 @@
 import PixiHost from "$components/pixi/PixiHost";
 import HostModal from "$components/HostModal";
 import ScoreBoard from "$components/ScoreBoard";
+import ModalContents from "$components/ModalContents";
+import clsx from "clsx";
+
+const boardWidth = (()=>window.innerWidth - 512)();
+const boardHeight = (()=>window.innerHeight - 32)();
+
 
 function Page(): JSX.Element {
 
   return (
     <div className="w-full p-4">
       <div className="flex flex-row w-full" >
-        <HostModal />
       </div>
       <div className="flex flex-row w-full" >
         <div className=" pr-4 w-full flex-grow" >
           <ScoreBoard />
         </div>
-        <PixiHost />
+        <div className={clsx(`w-[${boardWidth}px] rounded-xl overflow-hidden bg-gradient-radial from-pink-400 to-fuchsia-200 flex items-center place-content-center`)}
+        style={{width:boardWidth, minWidth: boardWidth, maxWidth: boardWidth, height: boardHeight }}>
+        <ModalContents />
+        </div>
+        {/* <PixiHost /> */}
       </div>
     </div>
   );

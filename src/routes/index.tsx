@@ -19,7 +19,7 @@ const router = createBrowserRouter([
       </Suspense>
     ),
     children: [
-      { index: true, loader: () => redirect("/host") },
+      { index: true, loader: () => redirect("/play") },
       {
         path: "/host",
         element: <HostLayout />,
