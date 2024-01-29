@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAllPlayerControls, setPlayerControls, givePlayerGold, givePlayerPoints } from "$store/slices/playerSlice";
-import TriviaQuestions from "constants/triviaQuestions";
+import TriviaQuestions, { TriviaQuestion } from "constants/triviaQuestions";
 import { StoreData } from "$store/types";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import { closeModal } from "$store/slices/gameProgressSlice";
@@ -9,6 +9,23 @@ import PlayerCard from "./PlayerCard";
 import usePeerDataReceived, { PeerDataCallbackPayload } from "$hooks/useDataReceived";
 import {v4 as uuidv4} from 'uuid'
 import useAudio from "$hooks/useAudio";
+
+function calculatePoints(difficulty:TriviaQuestion['difficulty']):number{
+  switch(difficulty){
+    case 'easy':
+      return 5;
+    case 'medium':
+      return 10;
+    case 'hard':
+      return 25;
+    case 'expert':
+      return 50;
+    default:
+      return 1;
+  }
+}
+
+
 const Trivia =
   () => {
 
@@ -63,20 +80,7 @@ const Trivia =
 
     useEffect(()=>{
       if(players.length && Object.keys(playerAnswers).length == players.length){
-        const points = (()=>{
-          switch(triviaQuestion.difficulty){
-            case 'easy':
-              return 2;
-            case 'medium':
-              return 5;
-            case 'hard':
-              return 10;
-            case 'expert':
-              return 20;
-            default:
-              return 1;
-          }
-        })()
+        const points = calculatePoints(triviaQuestion.difficulty);
         setCompleted(true);
         setTimeout(()=>{
           players.filter((player)=>playerAnswers[player.id] == triviaQuestion.answer).forEach((winner)=>{
@@ -108,11 +112,18 @@ const Trivia =
           <div>
             <h1 className="text-4xl text-black text-center">Correct Answer: {triviaQuestion.answer}</h1>
             <div className="flex flex-row gap-2">
-              {players.map((player)=>(
-                <div key={player.name} className="w-full flex items-center justify-items-center content-center justify-center">
-                <PlayerCard player={player} className={playerAnswers[player.id] == triviaQuestion.answer ? 'border-green-800 bg-green-400' : 'border-red-800 bg-red-400'} />
-                </div>  
-              ))}
+              {players.map((player)=>{
+                return (
+                  <div key={player.name} className="w-full flex items-center justify-items-center content-center justify-center">
+                    <PlayerCard 
+                    player={{...player}} 
+                    showPoints={true} 
+                    showGold={true} 
+                    className={playerAnswers[player.id] == triviaQuestion.answer ? 'border-green-800 bg-green-400' : 'border-red-800 bg-red-400'} 
+                    />
+                  </div>
+                )
+              })}
               
               </div>
           </div>

@@ -32,13 +32,13 @@ const Line = PixiComponent('Line', {
 
     const angle = Math.atan2(props.to.y - props.from.y, props.to.x - props.from.x);
     const offset = 20
-
+    const angleOffset = 30 * (Math.PI/180)
     console.log(angle, props.from, props.to, {cos: Math.cos(angle *.8), sin: Math.sin(angle*.8)})
 
     graphics.moveTo((props.from.x + Math.cos(angle)*(props.from.width + offset*2)), (props.from.y + Math.sin(angle )*(props.from.width + offset * 2)));
-    graphics.lineTo((props.from.x + (Math.cos(angle *.8) || -0.5)*(props.from.width + offset)), (props.from.y + (Math.sin(angle * .8) || -0.5) *(props.from.width + offset)));
+    graphics.lineTo((props.from.x + (Math.cos(angle - angleOffset) || -0.5)*(props.from.width + offset)), (props.from.y + (Math.sin(angle - angleOffset) || -0.5) *(props.from.width + offset)));
     graphics.lineTo((props.to.x - Math.cos(angle)*(props.to.width + offset)), (props.to.y - Math.sin(angle)*(props.to.width + offset)));
-    graphics.lineTo((props.from.x + (Math.cos(angle *1.2) || 0.5)*(props.from.width + offset)), (props.from.y + (Math.sin(angle * 1.2) || 0.5)*(props.from.width + offset)));
+    graphics.lineTo((props.from.x + (Math.cos(angle + angleOffset) || 0.5)*(props.from.width + offset)), (props.from.y + (Math.sin(angle + angleOffset) || 0.5)*(props.from.width + offset)));
     graphics.lineTo((props.from.x + Math.cos(angle)*(props.from.width + offset * 2)), (props.from.y + Math.sin(angle )*(props.from.width + offset * 2)));
 
     graphics.closePath();

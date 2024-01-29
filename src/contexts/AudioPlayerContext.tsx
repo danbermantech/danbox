@@ -40,20 +40,9 @@ const AudioPlayerContextProvider = ({ children }:{children:React.ReactNode}) => 
   const [audioBuffers, setAudioBuffers] = useState<Record<string,AudioBuffer>>({});
   const prefetchAudio = useCallback(async (name:string) => {
     try {
-      // console.log(name)
       const response = await fetch(name);
-      // console.log(response);
       const arrayBuffer = await response.arrayBuffer();
-      // console.log(arrayBuffer)
-      const buffer = await audioContext.decodeAudioData(arrayBuffer, 
-        (buffer) => {
-        // console.log(buffer)
-        }
-        , 
-        (error) => {
-          console.error(`Error decoding audio file ${name}:`, error);
-          }
-      );
+      const buffer = await audioContext.decodeAudioData(arrayBuffer);
       const commonName = getCommonName(name)
       setAudioBuffers((prevBuffers) => ({ ...prevBuffers, [commonName]: buffer }));
     } catch (error) {
@@ -78,7 +67,6 @@ const AudioPlayerContextProvider = ({ children }:{children:React.ReactNode}) => 
     source.start();
   };
   useEffect(() => {
-    // const audioFiles = [registration, movementSong, victory1, victory2, victory3, victory4, fanfare1, loss1]
     audioFiles.forEach(prefetchAudio);
   }, [audioContext, prefetchAudio]); // Run only on initial render
 

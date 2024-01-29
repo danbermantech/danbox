@@ -5,6 +5,7 @@ import SignUp from "$components/SignUp";
 // import useMe from "$hooks/useMe";
 import PlayerHeader from "$components/PlayerHeader";
 import PlayerItemControls from "$components/PlayerItemControls";
+import ClientStateManager from "$components/ClientStateManager";
 const Layout = (): React.ReactNode => {
   const peerConnected = usePeer((cv) => cv.peerConnected) as boolean;
   // const me = useMe();
@@ -15,6 +16,7 @@ const Layout = (): React.ReactNode => {
 
   return (
     <div className="h-screen flex flex-col">
+      <ClientStateManager />
       <PlayerHeader />
       <div className="flex flex-grow pt-12">
       {peerConnected ? <Outlet /> : <SignUp />}

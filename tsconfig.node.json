@@ -12,7 +12,7 @@
       "$store/*": ["./store/*"],
       "$hooks/*": ["./hooks/*"],
       "$contexts/*": ["./contexts/*"],
-      "$utils/*": ["./utils/*"],
+      "$utils/*": ["./utilities/*"],
     }
   },
   "include": ["vite.config.ts"]

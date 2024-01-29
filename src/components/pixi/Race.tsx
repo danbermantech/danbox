@@ -1,22 +1,34 @@
-import { Stage, Sprite, useTick, } from '@pixi/react';
+import { Stage, Sprite, } from '@pixi/react';
 import { useDispatch, useSelector } from 'react-redux';
-import {  StoreData } from '$store/types';
-import React from 'react';
+import {  Player, StoreData } from '$store/types';
+import React, { useCallback, useEffect, useState } from 'react';
 import bg from '$assets/bg.png';
 import { ReactReduxContext } from 'react-redux';
 import RaceCar from './RaceCar';
 import { PeerContext } from '$contexts/PeerContext';
+import {v4 as uuidv4 } from 'uuid';
+import goldImg from '$assets/sprites/gold.png';
+import pointImg from '$assets/sprites/points.png';
+import { givePlayerGold, givePlayerPoints } from '$store/slices/playerSlice';
+import { closeModal } from '$store/slices/gameProgressSlice';
+import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
 
 const boardWidth = (()=>window.innerWidth - 512)();
 const boardHeight = (()=>window.innerHeight - 32)();
 
+type ContextBridgeProps = {
+  children:React.ReactNode,
+  Context: (typeof ReactReduxContext | typeof PeerContext),
+  render:(children:React.ReactNode)=>React.ReactNode
+}
 
-const ContextBridge = ({ children, Context, render }:{children:React.ReactNode, Context: typeof ReactReduxContext | typeof PeerContext,render:(children:React.ReactNode)=>React.ReactNode}) => {
+const ContextBridge = ({ children, Context, render }:ContextBridgeProps) => {
   return (
     <Context.Consumer>
-      {(value) =>
-        render(<Context.Provider value={value}>{children}</Context.Provider>)
-      }
+      {(value) =>{
+        //@ts-expect-error Value is weirdly typed
+        return render(<Context.Provider value={value}>{children}</Context.Provider>);
+      }}
     </Context.Consumer>
   );
 };
@@ -30,7 +42,6 @@ export const WrappedStage = ({ children, ...props }:{children:React.ReactNode}) 
       <ContextBridge
         Context={PeerContext}
         render={(children) => <>
-        {/* {children} */}
         <Stage {...props}>{children}</Stage>
         </>}
         >
@@ -43,17 +54,117 @@ export const WrappedStage = ({ children, ...props }:{children:React.ReactNode}) 
   );
 };
 
+function seedAssets(count:number):{x:number, y:number, id:string, collected:boolean|string}[]{
+  return Array(count).fill(0).map(()=>({
+    x:Math.random()*boardWidth*0.8, 
+    y:Math.random()*boardHeight*0.8, 
+    id: uuidv4(),
+    collected:false
+  }))
+}
 
 export const Race = () =>
 {
   const players = useSelector((state:StoreData) => state.players);
+  const [points, setPoints] = useState(seedAssets(5));
+  const [gold, setGold] = useState(seedAssets(5));
+  const dispatch = useDispatch();
+  const handlePointCollected = useCallback((playerId:string, assetId:string)=>{
+    setPoints((prev)=>{
+      const next = [...prev]
+      next[next.findIndex((point)=>point.id == assetId)].collected = playerId
+      return next;
+    });
+    dispatch(givePlayerPoints({playerId, points: 1}))
+  },[dispatch, setPoints,]);
+  const handleGoldCollected = useCallback((playerId:string, assetId:string)=>{
+    setGold((prev)=>{
+      const next = [...prev]
+      next[next.findIndex((point)=>point.id == assetId)].collected = playerId
+      return next;
+    });
+    dispatch(givePlayerGold({playerId, gold: 1}))
+  },[dispatch, setGold,]);
 
+  const [results, setResults] = useState<Player[]>([]);
+
+  useEffect(()=>{
+    if(gold.filter(g=>!g.collected).length + points.filter(g=>!g.collected).length == 0){
+      setResults(()=>{
+        return players.map((player)=>{
+          return {
+            ...player,
+            points: points.filter((point)=>point.collected == player.id).length,
+            gold: gold.filter((point)=>point.collected == player.id).length,
+          }
+        }).sort((a,b)=>{
+          if(a.points !== b.points){
+            return b.points - a.points;
+          }
+          if(a.gold !== b.gold){
+            return b.gold - a.gold;
+          }
+          return 0;
+        })
+      });
+      setTimeout(()=>{
+        dispatch(closeModal());
+        setTimeout(()=>{
+          dispatch(triggerNextQueuedAction());
+        },500);
+      }, 5000)
+    }
+  },[gold, points, dispatch, players])
+
+  if(results.length){
+    return <div>
+      <h1 className="text-black text-center text-8xl font-extrabold">RESULTS</h1>
+      <div className="flex flex-row gap-4">
+        {
+          results.map((result)=>{
+            return <div className="flex flex-col place-content-center items-center justify-items-center gap-4 bg-green-200 border-green-400">
+              <h2 className="text-4xl text-center">{result.name}</h2>
+              <img src={result.image} width="400" height="400" className="w-32 h-32 rounded-full" />
+              <h3 className="text-4xl text-center">{result.points} points</h3>
+              <h3 className="text-4xl text-center">{result.gold} gold</h3>
+            </div>
+          })
+        }
+        </div>
+    </div>
+  }
+  const displayPoints = points.filter((point)=>!point.collected);
+  const displayGold = gold.filter((point)=>!point.collected);
   return (
+    //@ts-expect-error className is not a valid prop for some reason
     <WrappedStage className="w-full mx-auto rounded-xl" width={boardWidth * 0.8} height={boardHeight * 0.8} options={{ backgroundColor: 0x222222, antialias: true }}>
       <Sprite x={0} y={0} width={boardWidth} height={boardHeight} image={bg} scale={{x:boardWidth/1920, y: boardHeight/1080}} />
     {
+      displayPoints.map((point)=>{
+        return <Sprite key={point.id} x={point.x} y={point.y} width={40} height={40} image={pointImg} />
+      })
+    }
+    {
+      displayGold.map((point)=>{
+        return <Sprite key={point.id} x={point.x} y={point.y} width={40} height={40} image={goldImg} />
+      })
+    }
+    {
       players.map((player)=>{
-        return <RaceCar key={player.id} player={player} />
+        return <RaceCar 
+        points={displayPoints} 
+        gold={displayGold} 
+        onGoldCollected={handleGoldCollected} 
+        onPointCollected={handlePointCollected} 
+        key={player.id} 
+        player={player} 
+        boundaries={{
+          minX:25, 
+          minY:25, 
+          maxX:boardWidth*0.8 - 25, 
+          maxY: boardHeight*0.8 - 25
+        }} 
+        />
       })
     }
     </WrappedStage>

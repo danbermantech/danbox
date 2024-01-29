@@ -1,9 +1,10 @@
 import { usePeer } from "$hooks/usePeer"
 import { useEffect, useState } from "react";
+import Fader from "./Fader";
 
 const RaceControls = () => {
   const sendPeersMessage = usePeer((cv) => cv.sendPeersMessage) as (
-    value: {type: 'RACE', payload: {playerId: string, action: string, value: {targetVelocity: number, angle: number}}},
+    value: {type: string, payload: {playerId: string, action: string, value: {targetVelocity: number, angle: number}}},
   ) => void;
 
   const myPeerId = usePeer((cv) => cv.myPeerId) as string;
@@ -16,9 +17,9 @@ const RaceControls = () => {
   },[targetVelocity, angle, sendPeersMessage, myPeerId])
 
   return(
-    <div>
-      <input type="range" min="0" max="10" value={targetVelocity} onChange={(e)=>setTargetVelocity(Number(e.target.value))} onPointerUp={()=>{setTargetVelocity(0)}} />
-      <input type="range" min="-0.25" max="0.25" step={0.01} value={angle} onChange={(e)=>setAngle(Number(e.target.value))} onPointerUp={()=>{setAngle(0)}} />
+    <div className="h-full grid grid-cols-2">
+      <Fader min={0} max={10} value={targetVelocity} onChange={setTargetVelocity} faderDirection="up" faderOffBehavior="snapMin" />
+      <Fader min={-0.25} max={0.25} value={angle} onChange={setAngle} faderDirection="horizontalCenter" faderOffBehavior="snapCenter"/>
     </div>
   )
 

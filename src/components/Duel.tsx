@@ -71,20 +71,30 @@ const Duel =
 
     const players = useSelector((state:StoreData) => state.players);
 
+    const dispatch = useDispatch();
+    
+    useEffect(()=>{
+      if(players.length < 3){
+        dispatch(closeModal());
+        dispatch(triggerNextQueuedAction());
+      }
+    },[players, dispatch])
+    
     const activePlayers = useSelector((state:StoreData) => state.game.activePlayers);
 
     const playerA = useMemo(()=>(players.find((player)=>{
       return player.id == activePlayers[0] || player.name == activePlayers[0]
     }) as Player
     ),[players, activePlayers])
-    console.log(activePlayers, players)
+
     const playerB = useMemo(()=>(
       players.filter((player)=>(player.id !== playerA.id))[Math.floor(Math.random() * players.length)] as Player
     ),[players, playerA.id])
 
     const audience = useMemo(()=>(
-      players.filter((player)=>(player.id !== playerA.id && player.id !== playerB.id))
+      players.filter((player)=>(player.id !== playerA.id && player.id !== playerB?.id))
     ),[players, playerA, playerB])
+
 
     const challenge = useMemo(() => {
       return challenges[Math.floor(Math.random() * challenges.length)];
@@ -92,11 +102,11 @@ const Duel =
 
     const [actionId] = useState(()=>uuidv4());
 
-    const dispatch = useDispatch();
-
+    
     const [playerAnswers, setPlayerAnswers] = useState<{[key:string]:string}>({});
 
     useEffect(()=>{
+      if(players.length < 3) return;
       dispatch(setPlayerInstructions({playerId: playerA.id, instructions: challenge.description}))
       dispatch(setPlayerInstructions({playerId: playerB.id, instructions: challenge.description}))
       audience.forEach((player)=>{

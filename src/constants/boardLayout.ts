@@ -5,8 +5,8 @@ const boardHeight = (()=>window.innerHeight - 32)();
 
 const boardLayout: BoardSpaceConfig[] = [
   {
-    x: boardWidth* .2,
-    y: boardHeight * .2,
+    x: boardWidth* .1,
+    y: boardHeight * .1,
     width: 100,
     height: 100,
     color: '#8888ff',
@@ -16,8 +16,8 @@ const boardLayout: BoardSpaceConfig[] = [
     type: ModalContent.TRIVIA,
   },
   {
-    x: boardWidth *.8,
-    y: boardHeight * .2,
+    x: boardWidth *.9,
+    y: boardHeight * .1,
     width: 100,
     height: 100,
     color: '#5588aa',
@@ -27,14 +27,14 @@ const boardLayout: BoardSpaceConfig[] = [
     type: ModalContent.DUEL,
   },
   {
-    x: boardWidth*.5,
-    y: boardHeight * .8,
-    width: 100,
-    height: 100,
+    x: boardWidth*.4,
+    y: boardHeight * .7,
+    width: 80,
+    height: 80,
     color: '#00ff00',
     id: "shop",
     label: 'shop',
-    connections: ['home', 'middleLeft', 'middleRight'],
+    connections: ['home', 'middleLeft'],
     type: ModalContent.SHOP,
   },
   {
@@ -49,32 +49,32 @@ const boardLayout: BoardSpaceConfig[] = [
     type: ModalContent.GET_ASSET
   },
   {
-    x: boardWidth*.2,
-    y: boardHeight * .8,
+    x: boardWidth*.1,
+    y: boardHeight * .9,
     width: 100,
     height: 100,
     color: '#ffff00',
     id: 'bl',
     label: "Rhiannon's Casino",
-    connections: ['middleLeft', 'shop',],
+    connections: ['middleBottom'],
     type: ModalContent.RANDOM_ASSET_CHANGE
   },
   {
-    x: boardWidth*.8,
-    y: boardHeight * .8,
+    x: boardWidth*0.9,
+    y: boardHeight * 0.9,
     width: 100,
     height: 100,
     color: '#ffff00',
     id: 'br',
     label: "Stormy's \rSlots",
-    connections: ['middleRight', 'shop'],
+    connections: ['middleBottom'],
     type: ModalContent.RANDOM_ASSET_CHANGE
   },
   {
-    x: boardWidth*.2,
+    x: boardWidth*.15,
     y: boardHeight * .5,
-    width: 50,
-    height: 50,
+    width: 75,
+    height: 75,
     color: "#228822",
     id: 'middleLeft',
     label: '😊',
@@ -82,10 +82,10 @@ const boardLayout: BoardSpaceConfig[] = [
     type: ModalContent.GET_ASSET
   },
   {
-    x: boardWidth*.8,
+    x: boardWidth*.85,
     y: boardHeight * .5,
-    width: 50,
-    height: 50,
+    width: 75,
+    height: 75,
     color: "#228822",
     id: 'middleRight',
     label: 'RACE',
@@ -95,12 +95,23 @@ const boardLayout: BoardSpaceConfig[] = [
   {
     x: boardWidth*.5,
     y: boardHeight * .2,
-    width: 50,
-    height: 50,
+    width: 75,
+    height: 75,
     color: "#ff2222",
     id: 'middleTop',
     label: '🙁',
     connections: ['trivia', 'duel', 'home'],
+    type: ModalContent.LOSE_ASSET,
+  },
+  {
+    x: boardWidth* 0.6,
+    y: boardHeight * 0.9,
+    width: 75,
+    height: 75,
+    color: "#ff2222",
+    id: 'middleBottom',
+    label: '🙁',
+    connections: ['shop', 'home'],
     type: ModalContent.LOSE_ASSET,
   }
 ]

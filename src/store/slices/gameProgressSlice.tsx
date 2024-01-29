@@ -55,6 +55,7 @@ export const gameSlice = createSlice({
     },
     closeModal: (state) => {
       state.modalOpen = false;
+      state.modalContent = null;
       return state;
     },
     setActivePlayers: (state, action) => {
@@ -117,6 +118,7 @@ export const {
   setCurrentMiniGame,
   clearCurrentMiniGame,
   setCurrentRound,
+  setModalContent,
   setGameMode,
   openModal,
   closeModal,

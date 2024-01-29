@@ -35,7 +35,7 @@ const SignUp = ()=>{
       if(tempName.length > 1) {
       // onPeerConnect(console.log);
       console.log('joining', tempName, selectedSprite)
-      connect(hostId, {deviceName: tempName, image:selectedSprite}, (x) => {
+      connect(hostId.toLocaleUpperCase(), {deviceName: tempName, image:selectedSprite}, (x) => {
         console.log(x);
       });
       setPlayerName(tempName);

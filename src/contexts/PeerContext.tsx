@@ -52,9 +52,9 @@ const defaultState:PeerContextValue = {
   removeOnDataReceivedListener: () => {},
 };
 
-export type PeerConnectRef = Record<string, (...args: DataConnection[]) => void>
 
 const PeerContext = createContext<PeerContextValue>({defaultState} as unknown as PeerContextValue);
+export type PeerConnectRef = Record<string, (...args: DataConnection[]) => void>
 
 const peerOptions = import.meta.env.VITE_DEV_MODE
   ? {
