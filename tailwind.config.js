@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 import plugin from 'tailwindcss/plugin'
+import animated from 'tailwindcss-animated'
 export default {
   content: [
     "./index.html",
@@ -21,6 +22,7 @@ export default {
     'animate-delay-*'
   ],
   plugins: [
+    animated,
     plugin(function ({ matchUtilities, theme }) {
       matchUtilities(
         {

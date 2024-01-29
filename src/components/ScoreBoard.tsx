@@ -5,12 +5,10 @@ import { CopyAllRounded } from "@mui/icons-material";
 import { usePeer } from "$hooks/usePeer";
 import QRShare from "./QRShare";
 import bgImage from '$assets/bg.png'
-import useAudio from "$hooks/useAudio";
-import { VolumeUp } from "@mui/icons-material";
+import MuteToggle from "./MuteToggle";
 
 const ScoreBoard = () => {
   const myShortId = usePeer((cv) => cv.myShortId) as string;
-  const {initializeAudio} = useAudio();
   const players = useSelector((state:StoreData)=>state.players);
     return <div className="text-black flex-grow p-2 h-full overflow-clip max-h-full rounded-xl bg-cover" style={{background:`url(${bgImage})`, backgroundPosition:'center'}}>
       <div className="flex w-full justify-items-stretch items justify-between">
@@ -22,7 +20,7 @@ const ScoreBoard = () => {
         {myShortId}
       <CopyAllRounded />
       </div>
-      <button className="flex-shrink" onClick={initializeAudio}><VolumeUp /></button>
+      <MuteToggle />
       </div>
         <QRShare className="w-32 h-32 left-0 overflow-clip"/>
       <div className="flex flex-wrap  bg-transparent pt-4 gap-2 max-h-full w-full justify-center">

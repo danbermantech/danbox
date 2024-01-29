@@ -132,14 +132,14 @@ const GetAssetScreen = ()=>{
     peerDataCallback,
     actionId
   )
-  return (<div className="w-full flex flex-col gap-24 text-black">
-    <h1 className="text-8xl text-center">
+  return (<div className="w-full flex flex-col items-center gap-24 text-black">
+    <h1 className="animate-jump-in animate-ease-linear text-8xl text-center bg-gradient-radial from-black w-min p-8 rounded-full aspect-square flex items-center">
     🙁
     </h1>
-    <div className="text-center text-4xl">
+    <div className="animate-jump-in animate-ease-linear animate-delay-500 text-center text-4xl">
       Select your sacrifice
     </div>    
-    <div className='flex flex-row items-center justify-center  p-2'>
+    <div className='animate-jump-in animate-ease-linear animate-delay-500 flex flex-row items-center justify-center  p-2'>
     <PlayerCard player={player as Player} className=''/>
     </div>
     {selectedOption ? 
@@ -152,8 +152,8 @@ const GetAssetScreen = ()=>{
       :
       <div className="grid grid-cols-3 justify-items-center gap-2 p-4">
       {filteredOptions.sort(()=>Math.random() - 0.5).map(option=>{
-        return <div key={option.name} className="max-w-48 bg-white p-2 flex rounded-xl flex-col  border-2 border-black">
-          <h2 className="text-xl font-bold uppercase">{option.name}</h2>
+        return <div key={option.id} className="animate-wiggle animate-infinite max-w-48 bg-gradient-radial from-red-400 to-red-600 p-2 flex rounded-xl flex-col  border-2 border-black">
+          <h2 className="animate-wiggle animate-reverse animate-infinite text-xl font-bold uppercase">{option.name}</h2>
           <img width={100} height={100} className="mx-auto p-2 items flex-grow" src={option.image} />
           </div>
       })}

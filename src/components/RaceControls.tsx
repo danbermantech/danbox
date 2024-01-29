@@ -17,9 +17,13 @@ const RaceControls = () => {
   },[targetVelocity, angle, sendPeersMessage, myPeerId])
 
   return(
-    <div className="h-full grid grid-cols-2">
+    <div className="h-full w-full flex justify-center place-items-center justify-items-center">
+      <div className="w-1/3 h-full">
       <Fader min={0} max={10} value={targetVelocity} onChange={setTargetVelocity} faderDirection="up" faderOffBehavior="snapMin" />
+      </div>
+      <div className="w-2/3 h-1/2 p-2 flex items-center">
       <Fader min={-0.25} max={0.25} value={angle} onChange={setAngle} faderDirection="horizontalCenter" faderOffBehavior="snapCenter"/>
+      </div>
     </div>
   )
 

@@ -24,10 +24,12 @@ const audioFiles = [
 
 type AudioContextValue = {
   triggerSoundEffect: (name: string) => void;
-  initializeAudio: () => void;
+  muteAudio: ()=>void;
+  unmuteAudio: ()=>void;
+  isMuted: boolean;
 }
 
-const AudioPlayerContext = createContext<AudioContextValue>({ triggerSoundEffect: () => { }, initializeAudio: () => { } });
+const AudioPlayerContext = createContext<AudioContextValue>({ triggerSoundEffect: () => { }, muteAudio: ()=>{}, unmuteAudio: ()=>{}, isMuted: true });
 
 function getCommonName(name:string){
   const split = name.split('/')
@@ -58,20 +60,24 @@ const AudioPlayerContextProvider = ({ children }:{children:React.ReactNode}) => 
     source.start();
     return ()=>{source.stop()}
   },[audioContext, audioBuffers]);
-  const initializeAudio = () => {
-    // Play a silent audio clip for initialization
-    const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 1, audioContext.sampleRate);
-    const source = audioContext.createBufferSource();
-    source.buffer = buffer;
-    source.connect(audioContext.destination);
-    source.start();
-  };
+
+  const [isMuted, setIsMuted] = useState(true);
+
+  const muteAudio = useCallback(() => {
+    audioContext.suspend();
+    setIsMuted(true)
+  }, [audioContext]);
+
+  const unmuteAudio = useCallback(() => {
+    audioContext.resume();
+    setIsMuted(false);
+  }, [audioContext]);
   useEffect(() => {
     audioFiles.forEach(prefetchAudio);
   }, [audioContext, prefetchAudio]); // Run only on initial render
 
   return (
-    <AudioPlayerContext.Provider value={{ triggerSoundEffect, initializeAudio }}>
+    <AudioPlayerContext.Provider value={{ triggerSoundEffect, muteAudio, unmuteAudio, isMuted }}>
       {children}
     </AudioPlayerContext.Provider>
   );

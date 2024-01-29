@@ -9,6 +9,8 @@ import useAudio from '$hooks/useAudio';
 import usePeerDataReceived, { PeerDataCallbackPayload } from '$hooks/useDataReceived';
 import {v4 as uuidv4} from 'uuid'
 import activateItem from '$store/actions/activateItem';
+import itemPlaceholder from '$assets/sprites/itemPlaceholder.png';
+import gold from "$assets/sprites/gold.png";
 
 
 const items:ItemDefinition[] = [
@@ -71,6 +73,7 @@ const Shop = ()=>{
     const item = options.find((item)=>(item.id == data.payload.value));
     console.log(player, item)
     if(data.payload.value == 'none'){
+      setSelectedOption({name: 'Nothing', id:'nothing', description: 'You bought nothing. Maybe next time', price: 0, image: itemPlaceholder, weight: 1, action: ()=>{return{type:'null', payload:{target:'', user: '', value: ''}};}})
       dispatch(clearAllPlayerControls());
       setTimeout(()=>{
         dispatch(triggerNextQueuedAction());
@@ -92,24 +95,24 @@ const Shop = ()=>{
 
   usePeerDataReceived(dataReceivedCallback,actionId);
 
-  return (<div className="w-full flex flex-col text-black">
-    <h1 className="text-4xl text-center">
+  return (<div className="w-full flex flex-col text-black gap-36">
+    <h1 className="text-8xl font-bold text-center">
       SHOP
     </h1>
     {selectedOption ? 
-      <div key={selectedOption.name} className="max-w-48 bg-green-200 p-2 flex flex-col border-2 border-green-400">
-        <h2 className="text-xl">{selectedOption.name}</h2>
+      <div key={selectedOption.name} className="max-w-48 font-bold bg-green-200 p-2 flex flex-col border-2 border-green-400">
+        <h2 className="text-4xl uppercase text-center">{selectedOption.name}</h2>
         <h3 className="text-md">{selectedOption.description}</h3>
         <h3 className="text-md">{`Price: ${selectedOption.price}`}</h3>
         <img width={100} height={100} className="mx-auto p-2 items flex-grow" src={selectedOption.image} />
       </div> 
     : 
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-3 gap-2 place-items-center">
     {options.map(item=>{
-      return <div key={item.name} className="max-w-48 bg-white p-2 flex flex-col  border-2 border-black">
-        <h2 className="text-xl">{item.name}</h2>
-        <h3 className="text-md">{item.description}</h3>
-        <h3 className="text-md">{`Price: ${item.price}`}</h3>
+      return <div key={item.id} className="aspect-square max-w-64 gap-2 font-bold bg-white p-2 flex flex-col  border-2 border-black rounded-xl bg-gradient-radial from-sky-200 to-sky-400">
+        <h2 className="text-4xl uppercase text-center">{item.name}</h2>
+        <h3 className="text-xl flex place-items-center justify-center"><img width="32" height="32" src={gold} />{item.price}</h3>
+        <h3 className="text-xl">{item.description}</h3>
         <img width={100} height={100} className="mx-auto p-2 items flex-grow" src={item.image} />
         </div>
     })}

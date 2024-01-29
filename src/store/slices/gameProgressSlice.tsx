@@ -53,6 +53,10 @@ export const gameSlice = createSlice({
       state.modalOpen = true;
       return state;
     },
+    setMaxRounds: (state, action) => {
+      state.maxRounds = action.payload;
+      return state;
+    },
     closeModal: (state) => {
       state.modalOpen = false;
       state.modalContent = null;
@@ -122,6 +126,7 @@ export const {
   setGameMode,
   openModal,
   closeModal,
+  setMaxRounds,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

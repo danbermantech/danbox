@@ -107,7 +107,7 @@ const Trivia =
         <h2 className="text-4xl text-black max-w-screen">
           {triviaQuestion.question}
         </h2>
-        <div className="grid grid-flow-dense">
+        <div className="grid grid-flow-dense gap-2">
         {completed &&
           <div>
             <h1 className="text-4xl text-black text-center">Correct Answer: {triviaQuestion.answer}</h1>
@@ -131,21 +131,9 @@ const Trivia =
         {!completed &&answers.map(({ label }) => (
           <div
             key={label as string}
+            className="text-center w-full border-2 border-white rounded-xl px-4 overflow-hidden text-ellipsis flex justify-center items-center select-none min-w-96 bg-black text-white"
             style={{
-              textAlign: "center",
-              width: "100%",
-              border: "2px solid white",
-              borderRadius: "12px",
               fontSize: "clamp(2rem, 100rem, 4rem)",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              userSelect: "none",
-              minWidth: "400px",
-              color: 'white',
-              background:  "black",
               filter:  "drop-shadow(4px 4px 10px #ffffff)",
             }}
           >

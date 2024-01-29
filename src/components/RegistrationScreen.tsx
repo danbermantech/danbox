@@ -10,6 +10,7 @@ import QRShare from "./QRShare";
 import useAudio from "$hooks/useAudio";
 import usePeerDataReceived, { PeerDataCallbackPayload } from "$hooks/useDataReceived";
 import {v4 as uuidv4} from 'uuid'
+import MuteToggle from "./MuteToggle";
 const playerSelector = createSelector(state=>state.players, 
   (players:StoreData['players']) => players.map((player)=>({id:player.id, name:player.name, image:player.image, controls: player.controls})),
   );
@@ -47,8 +48,6 @@ const RegistrationScreen = () => {
 
   usePeerDataReceived(peerDataCallback, actionId)
 
-  const {initializeAudio }= useAudio()
-
   return (
     <div className="text-black flex flex-col gap-2 to-black-400">
       <h1 className="text-4xl text-bold text-black text-center p-4">
@@ -60,14 +59,16 @@ const RegistrationScreen = () => {
             DanBox
           </div>
         </h1>
-      <h2 className="text-2xl text-bold text-black text-center">Scan this QR code to join the game</h2> 
+      <h2 className=" text-2xl text-bold text-black text-center">Scan this QR code to join the game</h2> 
       <h2 className="select-text text-center font-extrabold font-mono text-8xl">{myShortId}</h2>
       <QRShare />
-        <button onClick={initializeAudio}>Initialize</button>
+      <MuteToggle />
+        {/* {isMuted ? <button onClick={unmuteAudio}><VolumeUp /></button> : <button onClick={muteAudio}><VolumeMute /></button>} */}
+        {/* // <button onClick={initializeAudio}><VolumeUp /></button> */}
       <div className="flex flex-row justify-evenly">
       {players.map((player)=>{
         return (
-          <div key={player.id} className="flex p-4 border-black border-4 rounded-xl bg-gradient-radial from-slate-400 to-slate-200 items-center flex-col">
+          <div key={player.id} className="animate-wiggle animate-infinite animate-ease-in-out flex p-4 border-black border-4 rounded-xl bg-gradient-radial from-slate-400 to-slate-200 items-center flex-col">
             <h3 className="text-4xl font-bold">{player.name}</h3>
             <img src={player.image} width="100" height="100"/>
           </div>
