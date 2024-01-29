@@ -19,7 +19,6 @@ const router = createBrowserRouter([
       </Suspense>
     ),
     children: [
-      // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
       { index: true, loader: () => redirect("/host") },
       {
         path: "/host",

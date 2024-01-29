@@ -51,7 +51,7 @@ const Trivia =
 
     useEffect(()=>{
       return triggerSoundEffect('trivia');
-    },[]);
+    },[triggerSoundEffect]);
 
     useEffect(()=>{
       players.forEach((player)=>{
