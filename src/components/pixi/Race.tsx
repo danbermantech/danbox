@@ -132,6 +132,7 @@ export const Race = () =>
   const displayPoints = points.filter((point)=>!point.collected);
   const displayGold = gold.filter((point)=>!point.collected);
   return (
+    //@ts-expect-error I need to figure out the className thing
       <WrappedStage className="w-full mx-auto rounded-xl" width={boardWidth-32} height={boardHeight-32} options={{ backgroundColor: 0x222222, antialias: true }}>
       <Sprite x={0} y={0} width={boardWidth} height={boardHeight} image={bg} scale={{x:boardWidth/1920, y: boardHeight/1080}} />
     {
