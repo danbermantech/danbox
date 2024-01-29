@@ -1,5 +1,3 @@
-import PixiHost from "$components/pixi/PixiHost";
-import HostModal from "$components/HostModal";
 import ScoreBoard from "$components/ScoreBoard";
 import ModalContents from "$components/ModalContents";
 import clsx from "clsx";
