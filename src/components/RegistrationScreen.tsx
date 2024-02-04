@@ -20,6 +20,9 @@ const RegistrationScreen = () => {
   const myShortId = usePeer((cv) => cv.myShortId) as string;
   const dispatch = useDispatch();
   
+
+  
+
   const [actionId] = useState(()=>uuidv4())
   useEffect(()=>{
     if(players.length > 0){
@@ -32,11 +35,12 @@ const RegistrationScreen = () => {
     }
   },[players, dispatch, actionId])
 
-  const {triggerSoundEffect} = useAudio();
+  const {playBackgroundMusic, triggerSoundEffect} = useAudio();
 
+  useEffect(()=>{if(players.length > 0) return triggerSoundEffect('victory4')},[players, triggerSoundEffect])
   useEffect(()=>{
-    return triggerSoundEffect('registration')
-  },[triggerSoundEffect])
+    return playBackgroundMusic();
+  },[playBackgroundMusic])
   
   const peerDataCallback = useCallback((data:PeerDataCallbackPayload) => {
     console.log(data);
