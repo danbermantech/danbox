@@ -183,7 +183,7 @@ const PeerContextProvider = ({
           // console.log("connectered");
           conn.on("open", (...v) => {
             
-            // console.log(v);
+            console.log(v);
             // console.log("i am open");
             Object.values(onPeerConnectRef.current).forEach((cb) => {
               const result = cb(conn.peer);

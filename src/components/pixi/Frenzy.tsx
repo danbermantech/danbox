@@ -15,9 +15,6 @@ import PlayerCard from '$components/PlayerCard';
 import useBoardDimensions from '$hooks/useBoardDimensions';
 import ShiftingLavaBackground from './ShiftingLavaBackground';
 
-// const boardWidth = (()=>window.innerWidth - 512)();
-// const boardHeight = (()=>window.innerHeight - 32)();
-
 type ContextBridgeProps = {
   children:React.ReactNode,
   Context: (typeof ReactReduxContext | typeof PeerContext),

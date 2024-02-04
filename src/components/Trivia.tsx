@@ -98,7 +98,7 @@ const Trivia =
           dispatch(triggerNextQueuedAction());
         },5000)
       }
-    },[playerAnswers, dispatch, triviaQuestion.answer, triviaQuestion.difficulty, setCompleted, completed])
+    },[playerAnswers, players, dispatch, triviaQuestion.answer, triviaQuestion.difficulty, setCompleted, completed])
 
     
     return (
