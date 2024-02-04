@@ -1,0 +1,7 @@
+{
+  "rewrites":[
+    {"source":"/host", "destination":"/"},
+    {"source":"/play", "destination":"/"},
+    {"source":"/admin", "destination":"/"}
+  ]
+}
