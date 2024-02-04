@@ -65,7 +65,23 @@ export const gameSlice = createSlice({
     setActivePlayers: (state, action) => {
       state.activePlayers = action.payload;
       return state;
-    }
+    },
+    createSpace: (state, action) => {
+      state.board.push(action.payload);
+      return state;
+    },
+    removeSpace: (state, action) => {
+      state.board = state.board.filter((space) => space.id !== action.payload);
+      return state;
+    },
+    createPath: (state, action) => {
+      (state.board.find((space) => space.id === action.payload.from) as BoardSpaceConfig).connections.push(action.payload.to);
+      return state;
+    },
+    removePath: (state, action) => {
+      (state.board.find((space) => space.id === action.payload.from) as BoardSpaceConfig).connections = (state.board.find((space) => space.id === action.payload.from) as BoardSpaceConfig).connections.filter((id) => id !== action.payload.to);
+      return state;
+    },
   },
   extraReducers: (builder) => {
     builder
