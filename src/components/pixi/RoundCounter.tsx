@@ -1,12 +1,13 @@
+import useBoardDimensions from "$hooks/useBoardDimensions";
 import { StoreData } from "$store/types";
 import { Text } from "@pixi/react";
 import { TextStyle } from "pixi.js";
 import { useSelector } from "react-redux";
 
-const boardWidth = (()=>window.innerWidth - 512)();
+// const boardWidth = (()=>window.innerWidth - 512)();
 
 const RoundCounter = () => {
-
+  const {boardWidth} = useBoardDimensions();
   const currentRound = useSelector((state:StoreData) => state.game.currentRound);
   const maxRounds = useSelector((state:StoreData) => state.game.maxRounds);
 return (

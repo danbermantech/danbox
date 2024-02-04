@@ -4,15 +4,17 @@ import clsx from "clsx";
 import { StoreData } from "$store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { setMaxRounds } from "$store/slices/gameProgressSlice";
+import useBoardDimensions from "$hooks/useBoardDimensions";
 
-const boardWidth = (()=>window.innerWidth - 512)();
-const boardHeight = (()=>window.innerHeight - 32)();
+// const boardWidth = (()=>window.innerWidth - 512)();
+// const boardHeight = (()=>window.innerHeight - 32)();
 
 
 function Page(): JSX.Element {
   const gameMode = useSelector((state:StoreData)=>state.game.mode);
   const maxRounds = useSelector((state:StoreData)=>state.game.maxRounds);
   const dispatch = useDispatch();
+  const {boardWidth, boardHeight } = useBoardDimensions();
 
   return (
     <div className="w-full p-4 ">

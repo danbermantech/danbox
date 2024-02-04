@@ -100,7 +100,7 @@ const Shop = ()=>{
       SHOP
     </h1>
     {selectedOption ? 
-      <div key={selectedOption.name} className="max-w-48 font-bold bg-green-200 p-2 flex flex-col border-2 border-green-400">
+      <div key={selectedOption.name} className="max-w-48 mx-auto font-bold bg-green-200 p-2 flex flex-col border-2 border-green-400">
         <h2 className="text-4xl uppercase text-center">{selectedOption.name}</h2>
         <h3 className="text-md">{selectedOption.description}</h3>
         <h3 className="text-md">{`Price: ${selectedOption.price}`}</h3>

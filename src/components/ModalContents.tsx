@@ -8,8 +8,9 @@ import Shop from "$components/Shop";
 import GetAssetScreen from "./GetAssetScreen";
 import LoseAssetScreen from './LoseAssetScreen'
 import Duel from "./Duel";
-import Race from "./pixi/Race";
+import Frenzy from "./pixi/Frenzy";
 import PixiHost from "./pixi/PixiHost";
+import Pursuit from "./pixi/Pursuit";
 
 const ModalContents = () =>{
   const content = useSelector((state:StoreData)=>state.game.modalContent);
@@ -36,8 +37,10 @@ const ModalContents = () =>{
           return <LoseAssetScreen />
         case ModalContent.DUEL:
           return <Duel />
-        case ModalContent.RACE:
-          return <Race />
+        case ModalContent.FRENZY:
+          return <Frenzy />
+        case ModalContent.PURSUIT:
+          return <Pursuit />
         default:
           return <PixiHost />;
       }

@@ -4,7 +4,7 @@ import setState from "$store/actions/setState";
 import addQueuedAction from "$store/actions/addQueuedAction";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import boardLayout from "$constants/boardLayout";
-import movePlayer from "$store/actions/movePlayer";
+import movePlayerFinal from "$store/actions/movePlayerFinal";
 import restart from "$store/actions/restart";
 function isRejectedAction(action: Action): action is RejectedAction {
   return action.type.endsWith("rejected");
@@ -78,8 +78,9 @@ export const gameSlice = createSlice({
         state.queuedActions.push(action.payload);
         return state;
       })
-      .addCase(movePlayer, (state, action) => {
+      .addCase(movePlayerFinal, (state, action) => {
         const space = state.board.find((space)=>(space.id == action.payload.spaceId)) as BoardSpaceConfig;
+        console.log(action, space.type, {...space});
         state.queuedActions.push({mode: GameMode.MINIGAME, modalContent:space.type, for: [action.payload.playerId], when:'start'});
         return state;
       })

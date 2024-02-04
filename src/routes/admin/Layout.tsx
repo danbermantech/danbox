@@ -1,9 +1,9 @@
 import { Outlet } from "react-router-dom";
 import { usePeer } from "../../hooks/usePeer";
 import SignUp from "$components/SignUp";
-import PlayerHeader from "$components/PlayerHeader";
 import PlayerItemControls from "$components/PlayerItemControls";
 import ClientStateManager from "$components/ClientStateManager";
+import AdminHeader from "$components/AdminHeader";
 
 const Layout = (): React.ReactNode => {
   const peerConnected = usePeer((cv) => cv.peerConnected) as boolean;
@@ -11,7 +11,7 @@ const Layout = (): React.ReactNode => {
   return (
     <div className="h-screen flex flex-col">
       <ClientStateManager />
-      <PlayerHeader />
+      <AdminHeader />
       <div className="flex flex-grow pt-12">
       {peerConnected ? <Outlet /> : <SignUp />}
       </div>

@@ -2,8 +2,10 @@ import { Suspense } from "react";
 import { createBrowserRouter, Outlet, redirect } from "react-router-dom";
 import HostPage from "./host/Page";
 import PlayPage from "./play/Page";
+import AdminPage from "./admin/Page";
 import PlayLayout from "./play/Layout";
 import HostLayout from "./host/Layout";
+import AdminLayout from "./admin/Layout";
 import { PeerContextProvider } from "../contexts/PeerContext";
 const router = createBrowserRouter([
   {
@@ -30,6 +32,11 @@ const router = createBrowserRouter([
         element: <PlayLayout />,
         children: [{ index: true, element: <PlayPage /> }],
       },
+      {
+        path: "/admin",
+        element: <AdminLayout />,
+        children: [{ index: true, element: <AdminPage /> }]
+      }
     ],
   },
 ]);

@@ -1,39 +1,65 @@
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { usePeer } from "$hooks/usePeer";
 import movePlayer from "$store/actions/movePlayer";
-import { setPlayerControls } from "$store/slices/playerSlice";
+import { removeEffect, setPlayerControls, } from "$store/slices/playerSlice";
 import { StoreData } from "$store/types";
-import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import activateItem from "$store/actions/activateItem";
 import usePeerDataReceived from "$hooks/useDataReceived";
 import useAudio from "$hooks/useAudio";
 import {v4 as uuidv4 } from 'uuid'
+import { ThunkAction, UnknownAction } from "@reduxjs/toolkit";
+import movePlayerFinal from "$store/actions/movePlayerFinal";
+import { useAppDispatch } from "$store/hooks";
+import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 
 const HostStateManager = () => {
   const gameState = useSelector((state:StoreData) => state.game);
   const players = useSelector((state:StoreData) => state.players);
   const currentRound = useSelector((state:StoreData) => state.game.currentRound);
   const board = useSelector((state:StoreData) => state.game.board);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [movementActionId] = useState(()=>uuidv4())
 
   const movementListener = useCallback((data:{type:string, payload:{action:string, playerId: string, value:string}})=>{
     const player = players.find((player)=>(player.id == data.payload.playerId || player.name == data.payload.playerId));
     if(!player) return;
-    dispatch(movePlayer({playerId: player.id, spaceId: data.payload.value}));
-    dispatch(setPlayerControls({playerId: player.id, controls:[]}));
-    if(players.filter((player)=>(player.hasMoved)).length == players.length - 1){
-        dispatch(triggerNextQueuedAction())
-    }
+
+    //@ts-expect-error I didn't type these yet
+    dispatch<ThunkAction<void, StoreData, unknown, UnknownAction>>((disp, getState)=>{
+      const state = getState();
+      console.log(state);
+      
+      if(!player.movesRemaining) return;
+      disp(movePlayer({playerId: player.id, spaceId: data.payload.value}))
+      const nextPlayer = getState().players.find((player)=>(player.id == data.payload.playerId));
+      if(nextPlayer && nextPlayer?.movesRemaining > 0 || !nextPlayer) return;
+      console.log(data.payload.value)
+      disp(movePlayerFinal({playerId: player.id, spaceId: data.payload.value}))
+      console.log(getState().players.reduce((acc, player)=>(acc + player.movesRemaining), 0))
+      if(getState().players.reduce((acc, player)=>(acc + player.movesRemaining), 0) == 0){
+        setTimeout(()=>{
+
+          disp(triggerNextQueuedAction())
+        },2000)
+      }
+      })
   },[players, dispatch]); 
 
   usePeerDataReceived<{playerId:string, value: string, action:string}>(movementListener, movementActionId)
 
-  usePeerDataReceived<{playerId: string, value:string}>(data=>{
-      dispatch(activateItem({user: data.payload.playerId,target: data.payload.playerId, item: data.payload.value}))
+  usePeerDataReceived<{playerId: string, value:string, target:string}>(data=>{
+      dispatch(activateItem({user: data.payload.playerId,target: data.payload.target, item: data.payload.value}))
   }, 'activateItem')
+
+  usePeerDataReceived<{playerId: string, value:string}>((data)=>{
+    dispatch(removeEffect({playerId: data.payload.playerId, value: data.payload.value}))
+  }, 'removeEffect')
+  usePeerDataReceived<UnknownAction>(data=>{
+    console.log(data);
+    dispatch(data.payload)
+  }, 'admin')
 
   const {triggerSoundEffect} = useAudio();
 
@@ -49,7 +75,7 @@ const HostStateManager = () => {
   useEffect(()=>{
     players.forEach((player)=>{
       if(gameState.mode !== 'MOVEMENT' || gameState.currentRound <= 0) return
-      if(player.hasMoved){
+      if(player.movesRemaining <= 0){
         dispatch(setPlayerControls({playerId: player.id, controls:[]}));
       }else{
         const mySpace = board?.find((space)=>(space.id == player.spaceId));

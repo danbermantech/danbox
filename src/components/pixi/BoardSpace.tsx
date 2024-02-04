@@ -4,8 +4,10 @@ import { useSelector } from "react-redux"
 import Circle from '$components/pixi/Circle';
 import { Text } from "@pixi/react";
 import { TextStyle } from "pixi.js";
+import useBoardDimensions from "$hooks/useBoardDimensions";
 
 const BoardSpace = ({id}:{id:string}) =>{
+  const {boardWidth, boardHeight} = useBoardDimensions();
   const location = useSelector((state:StoreData)=>state.game.board.find((l)=>l.id == id));
   if(!location) return null;
   return(
@@ -13,9 +15,9 @@ const BoardSpace = ({id}:{id:string}) =>{
         <Circle
           fill={location.color}
           stroke={location.color}
-          x={location.x}
-          y={location.y}
-          radius={location.width ?? 100}
+          x={location.x * boardWidth}
+          y={location.y * boardHeight}
+          radius={location.width * boardWidth}
           strokeWidth={10}
           />
           
@@ -36,9 +38,9 @@ const BoardSpace = ({id}:{id:string}) =>{
             dropShadowDistance: 6,
             wordWrap: true,
             wordWrapWidth: 440,})} 
-            width={location.width}
-            height={location.width*.5} 
-            x={location.x} y={location.y + location.width * .4} 
+            width={boardWidth * location.width}
+            height={boardHeight * location.width*.8} 
+            x={boardWidth * location.x} y={boardHeight * (location.y + location.width * .5)} 
             anchor={{x:0.5, y: 0}} 
           />
         </Fragment>

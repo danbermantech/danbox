@@ -2,9 +2,8 @@ import { Stage, Sprite, } from '@pixi/react';
 import { useDispatch, useSelector } from 'react-redux';
 import {  Player, StoreData } from '$store/types';
 import React, { useCallback, useEffect, useState } from 'react';
-import bg from '$assets/bg.png';
 import { ReactReduxContext } from 'react-redux';
-import RaceCar from './RaceCar';
+import FrenzyCar from './FrenzyCar';
 import { PeerContext } from '$contexts/PeerContext';
 import {v4 as uuidv4 } from 'uuid';
 import goldImg from '$assets/sprites/gold.png';
@@ -13,9 +12,11 @@ import { givePlayerGold, givePlayerPoints } from '$store/slices/playerSlice';
 import { closeModal } from '$store/slices/gameProgressSlice';
 import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
 import PlayerCard from '$components/PlayerCard';
+import useBoardDimensions from '$hooks/useBoardDimensions';
+import ShiftingLavaBackground from './ShiftingLavaBackground';
 
-const boardWidth = (()=>window.innerWidth - 512)();
-const boardHeight = (()=>window.innerHeight - 32)();
+// const boardWidth = (()=>window.innerWidth - 512)();
+// const boardHeight = (()=>window.innerHeight - 32)();
 
 type ContextBridgeProps = {
   children:React.ReactNode,
@@ -57,18 +58,19 @@ export const WrappedStage = ({ children, ...props }:{children:React.ReactNode}) 
 
 function seedAssets(count:number):{x:number, y:number, id:string, collected:boolean|string}[]{
   return Array(count).fill(0).map(()=>({
-    x:Math.random()*boardWidth*0.8, 
-    y:Math.random()*boardHeight*0.8, 
+    x:Math.min(Math.max(0.05,Math.random()), 0.95),
+    y:Math.min(Math.max(0.05,Math.random()), 0.95),
     id: uuidv4(),
     collected:false
   }))
 }
 
-export const Race = () =>
+export const Frenzy = () =>
 {
+  const {boardWidth, boardHeight } = useBoardDimensions();
   const players = useSelector((state:StoreData) => state.players);
-  const [points, setPoints] = useState(seedAssets(5));
-  const [gold, setGold] = useState(seedAssets(5));
+  const [points, setPoints] = useState(seedAssets(Math.floor(Math.random() *45 + 5)));
+  const [gold, setGold] = useState(seedAssets(Math.floor(Math.random() *45 + 5)));
   const dispatch = useDispatch();
   const handlePointCollected = useCallback((playerId:string, assetId:string)=>{
     setPoints((prev)=>{
@@ -134,20 +136,21 @@ export const Race = () =>
   return (
     //@ts-expect-error I need to figure out the className thing
       <WrappedStage className="w-full mx-auto rounded-xl" width={boardWidth-32} height={boardHeight-32} options={{ backgroundColor: 0x222222, antialias: true }}>
-      <Sprite x={0} y={0} width={boardWidth} height={boardHeight} image={bg} scale={{x:boardWidth/1920, y: boardHeight/1080}} />
+      {/* <Sprite x={0} y={0} width={boardWidth} height={boardHeight} image={bg} scale={{x:boardWidth/1920, y: boardHeight/1080}} /> */}
+      <ShiftingLavaBackground />
     {
       displayPoints.map((point)=>{
-        return <Sprite key={point.id} x={point.x} y={point.y} width={40} height={40} image={pointImg} />
+        return <Sprite key={point.id} x={point.x * boardWidth} y={point.y * boardHeight} width={40} height={40} image={pointImg} />
       })
     }
     {
       displayGold.map((point)=>{
-        return <Sprite key={point.id} x={point.x} y={point.y} width={40} height={40} image={goldImg} />
+        return <Sprite key={point.id} x={point.x * boardWidth} y={point.y * boardHeight} width={40} height={40} image={goldImg} />
       })
     }
     {
       players.map((player)=>{
-        return <RaceCar 
+        return <FrenzyCar 
         points={displayPoints} 
         gold={displayGold} 
         onGoldCollected={handleGoldCollected} 
@@ -155,10 +158,10 @@ export const Race = () =>
         key={player.id} 
         player={player} 
         boundaries={{
-          minX:25, 
-          minY:25, 
-          maxX:boardWidth - 50, 
-          maxY: boardHeight- 50
+          minX: 0.025, 
+          minY: 0.025, 
+          maxX: 0.975, 
+          maxY: 0.975,
         }} 
         />
       })
@@ -167,4 +170,4 @@ export const Race = () =>
     );
 };
 
-export default Race
+export default Frenzy

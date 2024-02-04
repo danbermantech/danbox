@@ -6,10 +6,13 @@ import movePlayer from "$store/actions/movePlayer";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import activateItem from "$store/actions/activateItem";
 import restart from "$store/actions/restart";
+import movePlayerFinal from "$store/actions/movePlayerFinal";
 
 function isRejectedAction(action: Action): action is RejectedAction {
   return action.type.endsWith("rejected");
 }
+
+const defaultMovesPerRound = 2;
 
 export const playerSlice = createSlice({
   name: "players",
@@ -35,6 +38,7 @@ export const playerSlice = createSlice({
         history: [],
         controls: [],
         image: "https://pixijs.io/pixi-react/img/bunny.png",
+        movesPerRound: defaultMovesPerRound,
         hasMoved: false,
         instructions:"",
         ...action.payload,
@@ -42,15 +46,15 @@ export const playerSlice = createSlice({
       return state;
     },
     removePlayer: (state, action) => {
-      return state.filter((team) => team.id !== action.payload);
+      return state.filter((player) => player.id !== action.payload.playerId);
     },
     setPlayers: (_, action) => {
       return action.payload;
     },
     renamePlayer: (state, action) => {
-      const team = state.find((team) => team.id === action.payload.id);
-      if (!team) return;
-      team.name = action.payload.name;
+      const player = state.find((player) => player.id === action.payload.playerId);
+      if (!player) return;
+      player.name = action.payload.name;
     },
     setPlayerControls: (state, action) => {
       const { playerId, controls } = action.payload;
@@ -75,13 +79,13 @@ export const playerSlice = createSlice({
       const { playerId, points } = action.payload;
       const player = state.find((player) => player.id === playerId || player.name === playerId);
       if (!player) return state;
-      player.points += points;
+      player.points += Number(points);
     },
     givePlayerGold: (state, action) => {
       const { playerId, gold } = action.payload;
       const player = state.find((player) => player.id === playerId || player.name === playerId);
       if (!player) return state;
-      player.gold += gold;
+      player.gold += Number(gold);
     },
     givePlayerItem: (state, action) => {
       const { playerId, item } = action.payload;
@@ -95,11 +99,25 @@ export const playerSlice = createSlice({
       });
       return state;
     },
+    setMovesPerRound: (state, action) => {
+      const { playerId, movesPerRound } = action.payload;
+      const player = state.findIndex((player) => player.id === playerId || player.name === playerId);
+      if (!player) return state;
+      state[player].movesPerRound = movesPerRound;
+      return state;
+    },
     setPlayerInstructions: (state, action) => {
       const { playerId, instructions } = action.payload;
       const player = state.find((player) => player.id === playerId || player.name === playerId);
       if (!player) return state;
       player.instructions = instructions;
+    },
+    removeEffect: (state, action) =>{
+      const { playerId, effect } = action.payload;
+      const player = state.find((player) => player.id === playerId);
+      if (!player) return state;
+      console.log("removing ", effect, "from", player.name)
+      player.effects = player.effects.filter(eff=> eff == effect)
     },
     handleTransfer: (state, action) => {
       const { type, asset, target, from } = action.payload;
@@ -196,14 +214,21 @@ export const playerSlice = createSlice({
       })
       .addCase(movePlayer, (state, action) => {
         const player = state.find((player)=>(player.id == action.payload.playerId));
-        if(!player) return state;
+        if(!player || player.movesRemaining <= 0) return state;
         player.previousSpaceId= player.spaceId;
         player.spaceId = action.payload.spaceId;
+        player.movesRemaining -= 1;
+      })
+      .addCase(movePlayerFinal, (state, action) => {
+        const player = state.find((player)=>(player.id == action.payload.playerId));
+        if(!player || player.movesRemaining <= 0) return state;
+        player.controls = [];
         player.hasMoved = true;
       })
       .addCase(triggerNextQueuedAction, (state) => {
         state.forEach((_, i)=>{
           state[i].hasMoved = false;
+          state[i].movesRemaining = state[i].movesPerRound
           state[i].controls = [];
           state[i].instructions = '';
         })
@@ -235,7 +260,7 @@ export const playerSlice = createSlice({
         player.items = player.items.filter((item)=>(item.name !== action.payload.item));
         })
       .addCase(restart, (state)=>{
-        return state.map((player)=>({...player, spaceId: 'home', previousSpaceId: 'home', points: 0, gold: 0, items:[], hasMoved:false, controls:[]}))
+        return state.map((player)=>({...player, spaceId: 'home', previousSpaceId: 'home', points: 0, gold: 0, items:[], movesRemaining: defaultMovesPerRound, hasMoved:false, controls:[]}))
       })
       .addMatcher(
         isRejectedAction,
@@ -248,7 +273,7 @@ export const playerSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { addPlayer, removePlayer, givePlayerGold, givePlayerPoints, givePlayerItem, handleTransfer, setPlayers, renamePlayer, setPlayerInstructions, setPlayerControls, clearAllPlayerControls } =
+export const { addPlayer, removePlayer, removeEffect, givePlayerGold, givePlayerPoints, givePlayerItem, handleTransfer, setPlayers, renamePlayer, setPlayerInstructions, setPlayerControls, clearAllPlayerControls } =
   playerSlice.actions;
 
 export default playerSlice.reducer;

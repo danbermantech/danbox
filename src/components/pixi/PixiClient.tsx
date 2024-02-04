@@ -5,8 +5,8 @@ import RoundCounter from './RoundCounter';
 import Board from './Board';
 import useBoardDimensions from '$hooks/useBoardDimensions';
 
-// const boardWidth = (()=>window.innerWidth - 512)();
-// const boardHeight = (()=>window.innerHeight - 32)();
+// const boardWidth = (()=>window.innerWidth)();
+// const boardHeight = (()=>boardWidth * 0.877)();
 
 
 export const PixiHost = () =>

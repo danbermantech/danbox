@@ -174,25 +174,25 @@ const PeerContextProvider = ({
               id: "conn_error_",
             });
           });
-          console.log(conn);
+          // console.log(conn);
 
           addNotification({
             level: "info",
             message: conn,
           });
-          console.log("connectered");
+          // console.log("connectered");
           conn.on("open", (...v) => {
             
-            console.log(v);
-            console.log("i am open");
+            // console.log(v);
+            // console.log("i am open");
             Object.values(onPeerConnectRef.current).forEach((cb) => {
               const result = cb(conn.peer);
               // console.log('send result')
               if (result as unknown) conn.send(result);
             });
-            console.log(onConnectSendValue);
+            // console.log(onConnectSendValue);
             if (onConnectSendValue) {
-              console.log(onConnectSendValue);
+              // console.log(onConnectSendValue);
               conn.send({ type: "state", payload: { ...onConnectSendValue } });
             }
             conn.on("data", (data): void => {
@@ -201,15 +201,15 @@ const PeerContextProvider = ({
                 type: string;
                 payload: unknown;
               };
-              console.log("callbackRef:",callbackRef.current)
+              // console.log("callbackRef:",callbackRef.current)
               Object.values(callbackRef.current).forEach((cb) => {
-                console.log(cb, data);
+                // console.log(cb, data);
                 const result = cb(data as OnDataReceivedPayload, conn.peer);
                 // console.log(result);
                 if (result) conn.send(result);
               });
               if (type == "connection") {
-                console.log('connection payload', payload)
+                // console.log('connection payload', payload)
                 const { deviceName, image } = payload as { deviceName: string, image: string };
                 
                 dispatch(
@@ -296,18 +296,18 @@ const PeerContextProvider = ({
         console.log("connecting to peer", `${idPrefix}${peerId}`);
         const conn = peer.connect(`${idPrefix}${peerId}`);
         conn.on("open", () => {
-          console.log("open");
+          // console.log("open");
           conn.send({
             type: "connection",
             payload: {...options},
           });
-          console.log("i sent a message");
+          // console.log("i sent a message");
 
           conn.on("data", (data) => {
-            console.log("data received", data);
+            // console.log("data received", data);
             const { type, payload } = data as OnDataReceivedPayload & {payload:{peerId:string}};
             Object.values(callbackRef.current).forEach((cb) => {
-              console.log(cb);
+              // console.log(cb);
               cb({type, payload:{...payload, peerId: conn.peer}});
             });
             if (type === "connection_accepted") {
@@ -351,7 +351,7 @@ const PeerContextProvider = ({
         connections: DataConnection[],
       ) => DataConnection[],
     ) => {
-      console.log("messaging", msg);
+      // console.log("messaging", msg);
       connections
         .filter(
           filter ??

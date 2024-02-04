@@ -39,11 +39,13 @@ export type Player = {
   items: Item[];
   history: Player[];
   spaceId: string;
-  effects?: Effect[];
+  effects: Effect[];
   previousSpaceId: string;
   image: string;
   controls: PlayerAction[];
   hasMoved: boolean;
+  movesPerRound: number;
+  movesRemaining: number;
   instructions: string;
 };
 
@@ -68,9 +70,10 @@ export enum ModalContent {
   BANK = 'BANK',
   START = 'START',
   END = 'END',
-  RACE = 'RACE',
+  FRENZY = 'FRENZY',
   GET_ASSET = 'GET_ASSET',
   LOSE_ASSET = 'LOSE_ASSET',
+  PURSUIT = 'PURSUIT',
 }
 
 export type QueueAction =  {

@@ -58,9 +58,9 @@ const SignUp = ()=>{
   }, [location.pathname, peerConnected, searchParams, connect])
 
   return (
-    <div className="w-full items-center justify-items-center content-center justify-center">
+    <div className="w-full flex items-center justify-items-center content-center justify-center">
       {/* <div className="flex flex-row flex-grow w-full items-center justify-items-center content-center justify-center"> */}
-    <div className=" h-min p-8 rounded-xl border-green-600 border-2 border-solid bg-white flex flex-col gap-2 ">
+    <div className=" h-min my-auto p-8 rounded-xl border-green-600 border-2 border-solid bg-white flex flex-col gap-2 ">
       <div className="flex flex-row justify-between items-center">
         <h1 className="text-4xl font-bold">{myShortId}</h1>
         </div>

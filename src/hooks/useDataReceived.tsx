@@ -27,6 +27,7 @@ function usePeerDataReceived<T=PeerDataPayload> (callback: (data:PeerDataCallbac
   useEffect(()=>{
     onDataReceived &&
     onDataReceived((data, peerId)=>{
+      // console.log(data, peerId)
       if(data.type == id){
        return callback(data, peerId)
       }

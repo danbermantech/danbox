@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clearAllPlayerControls, setPlayerControls, givePlayerGold, givePlayerPoints } from "$store/slices/playerSlice";
+import { clearAllPlayerControls, setPlayerControls, givePlayerGold, givePlayerPoints, setPlayerInstructions } from "$store/slices/playerSlice";
 import TriviaQuestions, { TriviaQuestion } from "constants/triviaQuestions";
 import { StoreData } from "$store/types";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
@@ -56,14 +56,16 @@ const Trivia =
     useEffect(()=>{
       players.forEach((player)=>{
         if(playerAnswers[player.id]){
+          dispatch(setPlayerInstructions({playerId: player.id, instructions: 'Please wait...'}))
           dispatch(setPlayerControls({playerId: player.id, controls:[]}) )
         } else{
+          dispatch(setPlayerInstructions({playerId: player.id, instructions: triviaQuestion.question}))
           dispatch(setPlayerControls({playerId: player.id,
             controls:answers}),
           )}
         }
       );
-    },[players, playerAnswers, dispatch, answers])
+    },[players, playerAnswers, dispatch, answers, triviaQuestion.question])
 
 
     const dataReceivedCallback = useCallback((data:PeerDataCallbackPayload, peerId:string) => {
@@ -79,24 +81,24 @@ const Trivia =
     const [completed, setCompleted] = useState(false);
 
     useEffect(()=>{
-      if(players.length && Object.keys(playerAnswers).length == players.length){
+      if(players && Object.keys(playerAnswers).length == players.length && !completed){
         const points = calculatePoints(triviaQuestion.difficulty);
         setCompleted(true);
         setTimeout(()=>{
           players.filter((player)=>playerAnswers[player.id] == triviaQuestion.answer).forEach((winner)=>{
-            dispatch(givePlayerPoints({playerId: winner.id, points }));
-            dispatch(givePlayerGold({playerId: winner.id, gold: points }));
+            dispatch(givePlayerPoints({playerId: winner, points }));
+            dispatch(givePlayerGold({playerId: winner, gold: points }));
           });
-          setTimeout(()=>{
-            dispatch(clearAllPlayerControls())
-            dispatch(closeModal());
-            setTimeout(()=>{
-              dispatch(triggerNextQueuedAction());
-            },1000)
-          }, 2000)
         }, 2000);
+        setTimeout(()=>{
+          dispatch(clearAllPlayerControls())
+          dispatch(closeModal());
+        }, 4000)
+        setTimeout(()=>{
+          dispatch(triggerNextQueuedAction());
+        },5000)
       }
-    },[playerAnswers, players, dispatch, triviaQuestion.answer, triviaQuestion.difficulty, setCompleted])
+    },[playerAnswers, dispatch, triviaQuestion.answer, triviaQuestion.difficulty, setCompleted, completed])
 
     
     return (
