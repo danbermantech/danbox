@@ -10,7 +10,7 @@ import LoseAssetScreen from './LoseAssetScreen'
 import Duel from "./Duel";
 import Frenzy from "./pixi/Frenzy";
 import PixiHost from "./pixi/PixiHost";
-import Pursuit from "./pixi/Pursuit";
+// import Pursuit from "./pixi/Pursuit";
 
 const ModalContents = () =>{
   const content = useSelector((state:StoreData)=>state.game.modalContent);
@@ -39,8 +39,6 @@ const ModalContents = () =>{
           return <Duel />
         case ModalContent.FRENZY:
           return <Frenzy />
-        case ModalContent.PURSUIT:
-          return <Pursuit />
         default:
           return <PixiHost />;
       }

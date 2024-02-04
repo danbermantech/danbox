@@ -4,7 +4,6 @@ import type { Player, StoreData } from "$store/types";
 import useMe from "$hooks/useMe";
 import { useSelector } from "react-redux";
 import FrenzyControls from "$components/FrenzyControls";
-import PursuitControls from "$components/PursuitControls";
 import Shrimped from "$components/Shrimped";
 
 function PlayerControls(): JSX.Element {
@@ -28,7 +27,6 @@ function PlayerControls(): JSX.Element {
         effects && effects.findIndex((effect)=>effect == 'SHRIMPED') > -1 ? 
         <Shrimped />:
         modalContent == 'FRENZY' ? <FrenzyControls />:
-        modalContent == 'PURSUIT' ? <PursuitControls />:
         controls.map((opt) => {
           console.log(opt)
           return (

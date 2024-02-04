@@ -73,7 +73,6 @@ export enum ModalContent {
   FRENZY = 'FRENZY',
   GET_ASSET = 'GET_ASSET',
   LOSE_ASSET = 'LOSE_ASSET',
-  PURSUIT = 'PURSUIT',
 }
 
 export type QueueAction =  {

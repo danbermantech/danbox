@@ -89,17 +89,6 @@ const boardLayout: BoardSpaceConfig[] = [
     type: ModalContent.FRENZY,
     connections: ['duel', 'home', 'br'],
   },
-  // {
-  //   x: Math.random(),
-  //   y: Math.random(),
-  //   width: 0.045,
-  //   height: 0.045,
-  //   color: "#f8a83f",
-  //   id: 'pursuit',
-  //   label: 'PURSUIT',
-  //   type: ModalContent.PURSUIT,
-  //   connections: ['home', 'frenzy'],
-  // },
   {
     x: 0.5,
     y: 0.2,
