@@ -11,6 +11,7 @@ import {v4 as uuidv4} from 'uuid'
 import activateItem from '$store/actions/activateItem';
 import itemPlaceholder from '$assets/sprites/itemPlaceholder.png';
 import gold from "$assets/sprites/gold.png";
+import { endMinigame } from '$store/slices/gameProgressSlice';
 
 
 const items:ItemDefinition[] = [
@@ -88,8 +89,11 @@ const Shop = ()=>{
       setSelectedOption(item);
       triggerSoundEffect('victory4')
       setTimeout(()=>{
-        dispatch(triggerNextQueuedAction());
+        dispatch(endMinigame());
       }, 2000)
+      setTimeout(()=>{
+        dispatch(triggerNextQueuedAction());
+      }, 3000)
     }
   }, [dispatch, player, triggerSoundEffect, options])
 
@@ -100,7 +104,7 @@ const Shop = ()=>{
       SHOP
     </h1>
     {selectedOption ? 
-      <div key={selectedOption.name} className="max-w-48 mx-auto font-bold bg-green-200 p-2 flex flex-col border-2 border-green-400">
+      <div key={selectedOption.name} className="max-w-48 mx-auto font-bold rounded-xl bg-green-200 p-2 flex flex-col border-2 border-green-400">
         <h2 className="text-4xl uppercase text-center">{selectedOption.name}</h2>
         <h3 className="text-md">{selectedOption.description}</h3>
         <h3 className="text-md">{`Price: ${selectedOption.price}`}</h3>
