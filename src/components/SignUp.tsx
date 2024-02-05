@@ -1,5 +1,4 @@
 import { usePeer } from "$hooks/usePeer";
-import { InputLabel, Input } from "@mui/material"
 import { useCallback, useEffect, useState } from "react";
 import { getCookie, useCookie } from "utilities/cookies";
 import sprites from "$assets/sprites";
@@ -63,34 +62,30 @@ const SignUp = ()=>{
     <div className=" h-min my-auto p-8 rounded-xl border-green-600 border-2 border-solid bg-white flex flex-col gap-2 ">
       <div className="flex flex-row justify-between items-center">
         <h1 className="text-4xl font-bold">{myShortId}</h1>
-        </div>
-      <InputLabel
-        htmlFor="hostIdInput"
-        >Host ID: </InputLabel>
-      <Input type="text" id="hostIdInput" placeholder="Please enter a host ID" value={hostId} onChange={(event)=>{setHostId(event.currentTarget.value)}} />
-      <InputLabel
-        htmlFor="nameInput"
-        >Name: </InputLabel>
-      <Input type="text" id="nameInput" placeholder="Please enter a name" value={tempName} onChange={(event)=>{setTempName(event.currentTarget.value)}} />
-        <div className="grid grid-cols-3 gap-2 h-72 overflow-scroll">
-    
-      {Object.entries(sprites).map(([key, value])=>{
-        return <img 
-          key={key}
-          src={value} 
-          data-selected={value== selectedSprite} 
-          className=" data-[selected=true]:bg-green-400 rounded-full border-2 border-black" 
-          width={256} 
-          height={256} 
-          onClick={()=>{
-            console.log(value)
-            setSelectedSprite(value);
-          }} 
-        />
-      })}
       </div>
-      {alert && <p className="text-red-600">{alert}</p>}
-      <button onClick={join}>Join</button>
+      <label htmlFor="hostIdInput" className="text-black text-2xl font-semibold">Host ID: </label>
+      <input type="text" className="text-black placeholder:text-slate-400 border-b-2 border-black text-2xl" id="hostIdInput" placeholder="Please enter a host ID" value={hostId} onChange={(event)=>{setHostId(event.currentTarget.value)}} />
+      <label htmlFor="nameInput" className="text-black text-2xl font-semibold">Name: </label>
+      <input type="text" id="nameInput" className="text-black placeholder:text-slate-400 border-b-2 border-black text-xl" placeholder="Please enter a name" value={tempName} onChange={(event)=>{setTempName(event.currentTarget.value)}} />
+      <div className="grid grid-cols-3 gap-2 h-72 overflow-scroll">
+    
+        {Object.entries(sprites).map(([key, value])=>{
+          return <img 
+            key={key}
+            src={value} 
+            data-selected={value== selectedSprite} 
+            className=" data-[selected=true]:bg-green-400 rounded-full border-2 border-black" 
+            width={256} 
+            height={256} 
+            onClick={()=>{
+              console.log(value)
+              setSelectedSprite(value);
+            }} 
+          />
+        })}
+        </div>
+        {alert && <p className="text-red-600">{alert}</p>}
+        <button className="py-4 px-8 mx-auto font-bold bg-blue-500 w-min text-white rounded-xl tracking-widest" onClick={join}>JOIN</button>
       </div>
       {/* </div> */}
       </div>
