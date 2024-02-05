@@ -7,5 +7,5 @@ export default addQueuedAction;
 
 export const example = {
   type: 'addQueuedAction',
-  payload: {mode: 'MINIGAME', modalContent: 'RANDOM_ASSET_CHANGE', for: ['gary']}
+  payload: {mode: 'RANDOM_ASSET_CHANGE', for: ['gary']}
 }

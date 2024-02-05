@@ -9,7 +9,7 @@ import {v4 as uuidv4 } from 'uuid';
 import goldImg from '$assets/sprites/gold.png';
 import pointImg from '$assets/sprites/points.png';
 import { givePlayerGold, givePlayerPoints } from '$store/slices/playerSlice';
-import { closeModal } from '$store/slices/gameProgressSlice';
+import { endMinigame } from '$store/slices/gameProgressSlice';
 import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
 import PlayerCard from '$components/PlayerCard';
 import useBoardDimensions from '$hooks/useBoardDimensions';
@@ -108,7 +108,7 @@ export const Frenzy = () =>
         })
       });
       setTimeout(()=>{
-        dispatch(closeModal());
+        dispatch(endMinigame());
         setTimeout(()=>{
           dispatch(triggerNextQueuedAction());
         },500);

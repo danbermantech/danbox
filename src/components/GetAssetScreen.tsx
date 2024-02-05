@@ -9,7 +9,7 @@ import useAudio from '$hooks/useAudio';
 import usePeerDataReceived, { PeerDataCallbackPayload } from '$hooks/useDataReceived';
 import {v4 as uuidv4} from 'uuid'
 import PlayerCard from './PlayerCard';
-import { closeModal } from '$store/slices/gameProgressSlice';
+import { endMinigame } from '$store/slices/gameProgressSlice';
 
 const options:AssetDefinition[] = [
   {
@@ -115,7 +115,7 @@ const GetAssetScreen = ()=>{
       dispatch(option.action(player.id))
       triggerSoundEffect('victory2')
       const timeout = setTimeout(()=>{
-        dispatch(closeModal());
+        dispatch(endMinigame());
         setTimeout(()=>{
           dispatch(triggerNextQueuedAction());
         }, 500)

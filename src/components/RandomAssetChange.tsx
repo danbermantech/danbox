@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {  Player, StoreData } from "$store/types";
 import { handleTransfer } from "$store/slices/playerSlice";
-import { closeModal } from "$store/slices/gameProgressSlice";
+import { endMinigame } from "$store/slices/gameProgressSlice";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 
 const RandomAssetChange = () => {
@@ -59,7 +59,7 @@ return (
         setState(value.obj);
         console.log({from: activePlayerName, ...value.obj})
         setTimeout(()=>{
-          dispatch(closeModal());
+          dispatch(endMinigame());
           dispatch(handleTransfer({from: activePlayerName, ...value.obj}))
           setTimeout(()=>{
             dispatch(triggerNextQueuedAction());

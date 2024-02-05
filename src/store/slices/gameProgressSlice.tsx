@@ -1,5 +1,5 @@
 import { createSlice, Action } from "@reduxjs/toolkit";
-import { BoardSpaceConfig, GameMode, type GameState, type RejectedAction } from "../types";
+import { BoardSpaceConfig, GAME_MODE, type GameState, type RejectedAction } from "../types";
 import setState from "$store/actions/setState";
 import addQueuedAction from "$store/actions/addQueuedAction";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
@@ -13,8 +13,7 @@ function isRejectedAction(action: Action): action is RejectedAction {
 const defaultState: GameState = {
   currentRound: 0,
   currentMiniGame: null,
-  modalContent: null,
-  mode: 'REGISTRATION',
+  mode: GAME_MODE.REGISTRATION,
   modalOpen: true,
   queuedActions: [],
   activePlayers: [],
@@ -41,10 +40,6 @@ export const gameSlice = createSlice({
       state.currentRound = action.payload;
       return state;
     },
-    setModalContent: (state, action) => {
-      state.modalContent = action.payload;
-      return state;
-    },
     setGameMode: (state, action) => {
       state.mode = action.payload;
       return state;
@@ -57,9 +52,9 @@ export const gameSlice = createSlice({
       state.maxRounds = action.payload;
       return state;
     },
-    closeModal: (state) => {
-      state.modalOpen = false;
-      state.modalContent = null;
+    endMinigame: (state) => {
+      // state.modalOpen = false;
+      state.mode = null;
       return state;
     },
     setActivePlayers: (state, action) => {
@@ -97,7 +92,7 @@ export const gameSlice = createSlice({
       .addCase(movePlayerFinal, (state, action) => {
         const space = state.board.find((space)=>(space.id == action.payload.spaceId)) as BoardSpaceConfig;
         console.log(action, space.type, {...space});
-        state.queuedActions.push({mode: GameMode.MINIGAME, modalContent:space.type, for: [action.payload.playerId], when:'start'});
+        state.queuedActions.push({mode: space.type, for: [action.payload.playerId], when:'start'});
         return state;
       })
       .addCase(restart, ()=>{
@@ -109,17 +104,17 @@ export const gameSlice = createSlice({
         if(!nextAction) {
           state.currentRound += 1;
           if(state.currentRound > state.maxRounds){
-            state.mode = 'GAME_OVER'
+            state.mode = GAME_MODE.GAME_OVER
             state.modalOpen = true;
             return;
           }
-          state.mode = 'MOVEMENT'
+          state.mode = GAME_MODE.MOVEMENT
           state.modalOpen = false;
           return;
         }
         if(nextAction.mode) state.mode = nextAction.mode;
-        state.modalContent = nextAction.modalContent ?? null;
-        state.modalOpen = !!nextAction.modalContent;
+        state.mode = nextAction.mode ?? null;
+        state.modalOpen = !!nextAction.mode;
         if(nextAction.for) state.activePlayers = nextAction.for
       })
       .addMatcher(
@@ -139,10 +134,9 @@ export const {
   setCurrentMiniGame,
   clearCurrentMiniGame,
   setCurrentRound,
-  setModalContent,
   setGameMode,
   openModal,
-  closeModal,
+  endMinigame,
   setMaxRounds,
 } = gameSlice.actions;
 

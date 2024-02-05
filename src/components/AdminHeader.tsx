@@ -20,7 +20,7 @@ import boardLayout from "$constants/boardLayout";
 import { UnknownAction } from "@reduxjs/toolkit";
 import PlayerMap from "./PlayerMap";
 import { Fullscreen } from "@mui/icons-material";
-import { closeModal } from "$store/slices/gameProgressSlice";
+import { endMinigame } from "$store/slices/gameProgressSlice";
 
 enum InputType {
   TEXT = 'text',
@@ -226,7 +226,7 @@ const AdminHeader = () =>{
           <div className="border-2 h-full w-full border-black flex items-center place-items-center place-content-center justify-center">
             <div className="flex max-h-full w-full overflow-scroll max-w-[95dvw] flex-col gap-4 bg-slate-600 rounded-xl">
             <button className="border-black w-max mx-auto bg-slate-200 p-2 rounded-xl text-black" onClick={()=>{sendPeersMessage({type:'admin', payload:triggerNextQueuedAction()})}}>Trigger next action</button>
-            <button className="border-black w-max mx-auto bg-slate-200 p-2 rounded-xl text-black" onClick={()=>{sendPeersMessage({type:'admin', payload:closeModal()})}}>close modal</button>
+            <button className="border-black w-max mx-auto bg-slate-200 p-2 rounded-xl text-black" onClick={()=>{sendPeersMessage({type:'admin', payload:endMinigame()})}}>close modal</button>
             {
               players.map((player)=>{
                 return <div className="flex justify-stretch items-center flex-col gap-2 text-lg p-2">

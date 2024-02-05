@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearAllPlayerControls, setPlayerControls, givePlayerGold, givePlayerPoints, setPlayerInstructions } from "$store/slices/playerSlice";
 import { Player, StoreData } from "$store/types";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
-import { closeModal } from "$store/slices/gameProgressSlice";
+import { endMinigame } from "$store/slices/gameProgressSlice";
 import PlayerCard from "./PlayerCard";
 import usePeerDataReceived, { PeerDataCallbackPayload } from "$hooks/useDataReceived";
 import {v4 as uuidv4} from 'uuid'
@@ -75,7 +75,7 @@ const Duel =
     
     useEffect(()=>{
       if(players.length < 3){
-        dispatch(closeModal());
+        dispatch(endMinigame());
         dispatch(triggerNextQueuedAction());
       }
     },[players, dispatch])
@@ -187,7 +187,7 @@ const Duel =
           }
           timeout2 = setTimeout(()=>{
             dispatch(clearAllPlayerControls())
-            dispatch(closeModal());
+            dispatch(endMinigame());
             timeout3 = setTimeout(()=>{
               dispatch(triggerNextQueuedAction());
             },1000)

@@ -13,7 +13,7 @@ function PlayerControls(): JSX.Element {
   const myPeerId = usePeer((cv) => cv.myPeerId) as string;
   const {controls, instructions, effects} = useMe() as Player;
   console.log(effects)
-  const modalContent = useSelector((state:StoreData) => state.game.modalContent);
+  const mode = useSelector((state:StoreData) => state.game.mode);
   return (
     <div className=" p-4 w-full h-[calc(100dvh - 64px)] flex-grow flex ">
       
@@ -26,7 +26,7 @@ function PlayerControls(): JSX.Element {
         {
         effects && effects.findIndex((effect)=>effect == 'SHRIMPED') > -1 ? 
         <Shrimped />:
-        modalContent == 'FRENZY' ? <FrenzyControls />:
+        mode == 'FRENZY' ? <FrenzyControls />:
         controls.map((opt) => {
           console.log(opt)
           return (

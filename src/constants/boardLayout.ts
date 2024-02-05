@@ -1,4 +1,4 @@
-import { BoardSpaceConfig, ModalContent } from "$store/types";
+import { BoardSpaceConfig, GAME_MODE } from "$store/types";
 
 const boardLayout: BoardSpaceConfig[] = [
   {
@@ -10,7 +10,7 @@ const boardLayout: BoardSpaceConfig[] = [
     id: "trivia",
     label: 'trivia',
     connections: ['middleLeft', 'middleTop'],
-    type: ModalContent.TRIVIA,
+    type: GAME_MODE.TRIVIA,
   },
   {
     x: 0.9,
@@ -21,7 +21,7 @@ const boardLayout: BoardSpaceConfig[] = [
     id: "duel",
     label: 'Showdown',
     connections: ['frenzy', 'middleTop',],
-    type: ModalContent.DUEL,
+    type: GAME_MODE.DUEL,
   },
   {
     x: 0.4,
@@ -32,7 +32,7 @@ const boardLayout: BoardSpaceConfig[] = [
     id: "shop",
     label: 'shop',
     connections: ['home', 'middleLeft'],
-    type: ModalContent.SHOP,
+    type: GAME_MODE.SHOP,
   },
   {
     x: 0.5,
@@ -43,7 +43,7 @@ const boardLayout: BoardSpaceConfig[] = [
     id: 'home',
     label: 'home',
     connections: ['middleLeft', 'middleTop', 'frenzy', 'pursuit'],
-    type: ModalContent.GET_ASSET
+    type: GAME_MODE.GET_ASSET
   },
   {
     x: 0.1,
@@ -54,7 +54,7 @@ const boardLayout: BoardSpaceConfig[] = [
     id: 'bl',
     label: "Rhiannon's Casino",
     connections: ['middleBottom'],
-    type: ModalContent.RANDOM_ASSET_CHANGE
+    type: GAME_MODE.RANDOM_ASSET_CHANGE
   },
   {
     x: 0.9,
@@ -65,7 +65,7 @@ const boardLayout: BoardSpaceConfig[] = [
     id: 'br',
     label: "Stormy's \rSlots",
     connections: ['middleBottom'],
-    type: ModalContent.RANDOM_ASSET_CHANGE
+    type: GAME_MODE.RANDOM_ASSET_CHANGE
   },
   {
     x: 0.15,
@@ -76,7 +76,7 @@ const boardLayout: BoardSpaceConfig[] = [
     id: 'middleLeft',
     label: '😊',
     connections: ['home', 'trivia', 'bl', 'jump'],
-    type: ModalContent.GET_ASSET
+    type: GAME_MODE.GET_ASSET
   },
   {
     x: 0.85,
@@ -86,7 +86,7 @@ const boardLayout: BoardSpaceConfig[] = [
     color: "#000000",
     id: 'frenzy',
     label: 'FRENZY',
-    type: ModalContent.FRENZY,
+    type: GAME_MODE.FRENZY,
     connections: ['duel', 'home', 'br'],
   },
   {
@@ -98,7 +98,7 @@ const boardLayout: BoardSpaceConfig[] = [
     id: 'middleTop',
     label: '🙁',
     connections: ['trivia', 'duel', 'home'],
-    type: ModalContent.LOSE_ASSET,
+    type: GAME_MODE.LOSE_ASSET,
   },
   {
     x: 0.6,
@@ -109,7 +109,7 @@ const boardLayout: BoardSpaceConfig[] = [
     id: 'middleBottom',
     label: '🙁',
     connections: ['shop', 'home'],
-    type: ModalContent.LOSE_ASSET,
+    type: GAME_MODE.LOSE_ASSET,
   }
 ]
 export default boardLayout;

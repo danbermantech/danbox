@@ -8,7 +8,7 @@ import points from '$assets/sprites/points.png';
 import usePeerDataReceived, { PeerDataCallbackPayload } from '$hooks/useDataReceived';
 import useAudio from '$hooks/useAudio';
 import {v4 as uuidv4} from 'uuid'
-import { closeModal } from '$store/slices/gameProgressSlice';
+import { endMinigame } from '$store/slices/gameProgressSlice';
 import PlayerCard from './PlayerCard';
 
 const options:AssetDefinition[] = [
@@ -114,7 +114,7 @@ const GetAssetScreen = ()=>{
       dispatch(option.action(player.id));
       triggerSoundEffect('loss1')
       setTimeout(()=>{
-        dispatch(closeModal());
+        dispatch(endMinigame());
         setTimeout(()=>{
           dispatch(triggerNextQueuedAction());
         },1000)

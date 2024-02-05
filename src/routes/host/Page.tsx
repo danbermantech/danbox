@@ -1,5 +1,5 @@
 import ScoreBoard from "$components/ScoreBoard";
-import ModalContents from "$components/ModalContents";
+import MainGame from "$components/MainGame";
 import clsx from "clsx";
 import { StoreData } from "$store/types";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,7 +37,7 @@ function Page(): JSX.Element {
         </div>
         <div className={clsx(`w-[${boardWidth}px] rounded-xl overflow-hidden bg-gradient-radial from-pink-400 to-fuchsia-200 flex items-center place-content-center`)}
         style={{width:boardWidth, minWidth: boardWidth, maxWidth: boardWidth, height: boardHeight }}>
-        <ModalContents />
+        <MainGame />
         </div>
         {/* <PixiHost /> */}
       </div>

@@ -4,7 +4,7 @@ import { clearAllPlayerControls, setPlayerControls, givePlayerGold, givePlayerPo
 import TriviaQuestions, { TriviaQuestion } from "constants/triviaQuestions";
 import { StoreData } from "$store/types";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
-import { closeModal } from "$store/slices/gameProgressSlice";
+import { endMinigame } from "$store/slices/gameProgressSlice";
 import PlayerCard from "./PlayerCard";
 import usePeerDataReceived, { PeerDataCallbackPayload } from "$hooks/useDataReceived";
 import {v4 as uuidv4} from 'uuid'
@@ -92,7 +92,7 @@ const Trivia =
         }, 2000);
         setTimeout(()=>{
           dispatch(clearAllPlayerControls())
-          dispatch(closeModal());
+          dispatch(endMinigame());
         }, 4000)
         setTimeout(()=>{
           dispatch(triggerNextQueuedAction());
