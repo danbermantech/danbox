@@ -21,6 +21,7 @@ import { UnknownAction } from "@reduxjs/toolkit";
 import PlayerMap from "./PlayerMap";
 import { Fullscreen } from "@mui/icons-material";
 import { endMinigame } from "$store/slices/gameProgressSlice";
+import items from "$constants/items";
 
 enum InputType {
   TEXT = 'text',
@@ -94,7 +95,7 @@ const giveItem:ControlDefinition<{playerId:string, item:string}, {playerId:strin
   label: 'Give Player Item',
   action: givePlayerItem,
   inputs:[
-    {label: 'item', type: InputType.TEXT, value: 'Hello World', key:'item'}
+    {label: 'item', type: InputType.SELECT, value:"", options: items.map((item)=>({id:item.name, label:item.name,})), key:'item'}
   ]
 }
 
@@ -165,22 +166,22 @@ const Control = (props:{playerId:string, control:ControlDefinition})=>{
         inputs?.map((input)=>{
           switch(input.type){
             case InputType.NUMBER:
-              return <div className="flex flex-row gap-2 justify-items-stretch w-max">
+              return <div key={input.key} className="flex flex-row gap-2 justify-items-stretch w-max">
                 <label>{input.label}</label>
                 <input type="number" value={form[input.key] as number} onChange={(e)=>{onChange(input.key, e.target.value)}} />
               </div>
             case InputType.TEXT:
-              return <div className="flex flex-row gap-2 justify-items-stretch w-max">
+              return <div key={input.key} className="flex flex-row gap-2 justify-items-stretch w-max">
                 <label>{input.label}</label>
                 <input type="text" value={form[input.key] as string} onChange={(e)=>{onChange(input.key, e.target.value)}} />
               </div>
             case InputType.SELECT:
-              return <div className="flex flex-row gap-2 justify-items-stretch w-max">
+              return <div key={input.key} className="flex flex-row gap-2 justify-items-stretch w-max">
                 <label>{input.label}</label>
                 <select value={form[input.key] as string} onChange={(e)=>{onChange(input.key, e.target.value)}}>
                   {
                     input.options.map((option)=>{
-                      return <option value={option.id}>{option.label}</option>
+                      return <option key={option.id} value={option.id}>{option.label}</option>
                     })
                   }
                 </select>
@@ -229,7 +230,7 @@ const AdminHeader = () =>{
             <button className="border-black w-max mx-auto bg-slate-200 p-2 rounded-xl text-black" onClick={()=>{sendPeersMessage({type:'admin', payload:endMinigame()})}}>close modal</button>
             {
               players.map((player)=>{
-                return <div className="flex justify-stretch items-center flex-col gap-2 text-lg p-2">
+                return <div key={player.id} className="flex justify-stretch items-center flex-col gap-2 text-lg p-2">
                   <details className="flex justify-items-center gap-2 p-2 bg-slate-400 rounded-xl flex-col justify-stretch ">
                 <summary>
 
@@ -239,7 +240,7 @@ const AdminHeader = () =>{
 
                   {controls.map((control)=>{
                     //@ts-expect-error I need to fix the control props or not maybe i don't care
-                    return <Control playerId={player.id} control={control} />
+                    return <Control key={control} playerId={player.id} control={control} />
                   })}
                   </div>
                   </details>

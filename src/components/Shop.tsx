@@ -1,5 +1,5 @@
-import shrimp from '$assets/shrimp.png';
-import magicHat from '$assets/magicHat.png';
+// import shrimp from '$assets/shrimp.png';
+// import magicHat from '$assets/magicHat.png';
 import { useDispatch, useSelector } from 'react-redux';
 import type { StoreData, Item, ItemDefinition } from '$store/types';
 import { useCallback, useEffect, useState } from 'react';
@@ -8,35 +8,13 @@ import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
 import useAudio from '$hooks/useAudio';
 import usePeerDataReceived, { PeerDataCallbackPayload } from '$hooks/useDataReceived';
 import {v4 as uuidv4} from 'uuid'
-import activateItem from '$store/actions/activateItem';
+// import activateItem from '$store/actions/activateItem';
 import itemPlaceholder from '$assets/sprites/itemPlaceholder.png';
 import gold from "$assets/sprites/gold.png";
 import { endMinigame } from '$store/slices/gameProgressSlice';
+import items from '$constants/items';
 
 
-const items:ItemDefinition[] = [
-  {
-    name: 'shrimp',
-    description: 'throw a shrimp at somebody (they will be very confused)',
-    price: 10,
-    image: shrimp,
-    action: ({user, target}:{user:string, target:string, value?:unknown}) => {
-      return activateItem({ user, target, item: 'shrimp' });
-    },
-    cost: 10,
-    weight: 5,
-  },
-  {
-    name: 'magic hat', 
-    description: 'Swap places with somebody',
-    price: 20,
-    image: magicHat,
-    action: ({user, target}:{user:string, target:string, value?:unknown}) => {
-      return activateItem({ user, target, item: 'magic hat'});
-    },
-    weight: 1,
-  }
-]
 
 function createOptions(options: ItemDefinition[], count: number = 3) {
   const weightedOptions = options
@@ -74,7 +52,7 @@ const Shop = ()=>{
     const item = options.find((item)=>(item.id == data.payload.value));
     console.log(player, item)
     if(data.payload.value == 'none'){
-      setSelectedOption({name: 'Nothing', id:'nothing', description: 'You bought nothing. Maybe next time', price: 0, image: itemPlaceholder, weight: 1, action: ()=>{return{type:'null', payload:{target:'', user: '', value: ''}};}})
+      setSelectedOption({name: 'Nothing', id:'nothing', description: 'You bought nothing. Maybe next time', price: 0, image: itemPlaceholder, weight: 1, })
       dispatch(clearAllPlayerControls());
       setTimeout(()=>{
         dispatch(triggerNextQueuedAction());
@@ -84,7 +62,7 @@ const Shop = ()=>{
     if(!player || !item) return;
     if(player.gold >= item.price){
       console.log('purchasing')
-      dispatch(givePlayerItem({playerId: player.id, item: {name: item.name, image: item.image, description: item.description}}))
+      dispatch(givePlayerItem({playerId: player.id, item: {name: item.name, image: item.image, description: item.description, params: item.params,}}))
       dispatch(givePlayerGold({playerId: player.id, gold: -item.price}))
       setSelectedOption(item);
       triggerSoundEffect('victory4')

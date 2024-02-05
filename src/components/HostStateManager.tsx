@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import {  useSelector } from "react-redux";
 import { usePeer } from "$hooks/usePeer";
 import movePlayer from "$store/actions/movePlayer";
-import { removeEffect, setPlayerControls, } from "$store/slices/playerSlice";
+import { removeEffect, setPlayerControls, setPlayerInstructions, } from "$store/slices/playerSlice";
 import { StoreData } from "$store/types";
 import activateItem from "$store/actions/activateItem";
 import usePeerDataReceived from "$hooks/useDataReceived";
@@ -12,6 +12,7 @@ import { ThunkAction, UnknownAction } from "@reduxjs/toolkit";
 import movePlayerFinal from "$store/actions/movePlayerFinal";
 import { useAppDispatch } from "$store/hooks";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
+import { isEqual } from "lodash";
 
 const HostStateManager = () => {
   const gameState = useSelector((state:StoreData) => state.game);
@@ -49,8 +50,8 @@ const HostStateManager = () => {
 
   usePeerDataReceived<{playerId:string, value: string, action:string}>(movementListener, movementActionId)
 
-  usePeerDataReceived<{playerId: string, value:string, target:string}>(data=>{
-      dispatch(activateItem({user: data.payload.playerId,target: data.payload.target, item: data.payload.value}))
+  usePeerDataReceived<{playerId: string, value:{item:string, [x:string]:string}, target:string}>(data=>{
+      dispatch(activateItem({user: data.payload.playerId,target: data.payload.target, item: data.payload.value.item, value: data.payload.value}))
   }, 'activateItem')
 
   usePeerDataReceived<{playerId: string, value:string}>((data)=>{
@@ -76,6 +77,7 @@ const HostStateManager = () => {
     players.forEach((player)=>{
       if(gameState.mode !== 'MOVEMENT' || gameState.currentRound <= 0) return
       if(player.movesRemaining <= 0){
+        dispatch(setPlayerInstructions({playerId: player.id, instructions: `Please wait...`}))
         dispatch(setPlayerControls({playerId: player.id, controls:[]}));
       }else{
         const mySpace = board?.find((space)=>(space.id == player.spaceId));
@@ -83,6 +85,8 @@ const HostStateManager = () => {
         if(!connections) return;
         const availableSpaces = board.filter((space)=>connections.includes(space.id));
         const options = availableSpaces.map((connection)=>({label:connection.label, value:connection.id, action:movementActionId}));
+        dispatch(setPlayerInstructions({playerId: player.id, instructions: `${player.movesRemaining} moves remaining`}))
+        if(isEqual(player.controls, options)) return;
         dispatch(setPlayerControls({playerId: player.id, controls:options}))
       }
     })

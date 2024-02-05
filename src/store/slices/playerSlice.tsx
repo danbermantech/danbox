@@ -7,6 +7,8 @@ import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import activateItem from "$store/actions/activateItem";
 import restart from "$store/actions/restart";
 import movePlayerFinal from "$store/actions/movePlayerFinal";
+import items from "$constants/items";
+import {v4 as uuidv4} from 'uuid'
 
 function isRejectedAction(action: Action): action is RejectedAction {
   return action.type.endsWith("rejected");
@@ -89,9 +91,16 @@ export const playerSlice = createSlice({
     },
     givePlayerItem: (state, action) => {
       const { playerId, item } = action.payload;
+      let value = item
+      if(typeof(item) == 'string') {
+        const temp = items.find((i)=>i.name == item); 
+        if(!temp) return;
+        value = {...temp, id: uuidv4()}
+      }
+      console.log(item, value, items)
       const player = state.find((player) => player.id === playerId || player.name === playerId);
       if (!player) return state;
-      player.items.push(item);
+      player.items.push(value);
     },
     clearAllPlayerControls: (state) => {
       state.forEach((_,i) => {
@@ -254,6 +263,36 @@ export const playerSlice = createSlice({
             if(!playerLocation || !targetLocation) return;
             state[userIndex].spaceId = targetLocation;
             state[targetIndex].spaceId = playerLocation;
+            break;
+          }
+          case('teleport'):{
+            if(!action.payload.target) return;
+            const userIndex = state.findIndex((player)=>(player.id == action.payload.user));
+            state[userIndex].spaceId = action.payload.target;
+            break;
+          }
+          case('soup'):{
+            if(!action.payload.target) return;
+            (state.find((player)=>player.id == action.payload.target) as Player).movesRemaining += 1
+            break;
+          }
+          case('souper soup'):{
+            if(!action.payload.target) return;
+            (state.find((player)=>player.id == action.payload.target) as Player).movesPerRound += 1
+            break;
+          }
+          case('magicHand'):{
+            // if(!action.payload.target) return;
+            const player = state.find((player)=>player.id == action.payload.user);
+            if(!player) return;
+            const target = state.find((player)=>player.id == action.payload.target);
+            if(!target) return;
+            player.items.push(...target.items);
+            target.items = [];
+            player.gold += target.gold;
+            target.gold = 0;
+            player.points += target.points;
+            target.points = 0;
             break;
           }
         }

@@ -9,12 +9,44 @@ export type PlayerAction = {
 
 export type PlayerActions = PlayerAction[] | string;
 
+export type StringInputParams = {
+  name: string,
+  type: 'string',
+}
+
+export type NumberInputParams = {
+  name: string,
+  type: 'number',
+}
+
+export type BooleanInputParams = {
+  name: string,
+  type: 'boolean',
+}
+
+export type StandardSelectInputParams = {
+  name: string,
+  type: 'select',
+  options: (string|{label:string, value:string})[]
+}
+
+export type SpecialSelectInputParams = {
+  name: string,
+  type: 'select',
+  special: 'players'|'opponents'|'teammates'|'spaces'|'teams'
+}
+
+export type SelectInputParams = StandardSelectInputParams | SpecialSelectInputParams
+
+export type UserControlledParam = StringInputParams | NumberInputParams | BooleanInputParams | SelectInputParams
+
 export type ItemDefinition = {
   name: string,
   description: string,
   price: number,
   image: string,
-  action: (args:{user:string, target:string, value?:unknown})=>{payload:{user:string, target:string, value?:unknown}, type:string},
+  // action: (args:{user:string, target:string, value?:unknown})=>{payload:{user:string, target:string, value?:unknown}, type:string},
+  params?: UserControlledParam[],
   cost?: number,
   weight: number,
 }
