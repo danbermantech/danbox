@@ -86,10 +86,10 @@ const Trivia =
         setCompleted(true);
         setTimeout(()=>{
           players.filter((player)=>playerAnswers[player.id] == triviaQuestion.answer).forEach((winner)=>{
-            dispatch(givePlayerPoints({playerId: winner, points }));
-            dispatch(givePlayerGold({playerId: winner, gold: points }));
+            dispatch(givePlayerPoints({playerId: winner.id, points }));
+            dispatch(givePlayerGold({playerId: winner.id, gold: points }));
           });
-        }, 2000);
+        }, 1000);
         setTimeout(()=>{
           dispatch(clearAllPlayerControls())
           dispatch(endMinigame());
