@@ -5,7 +5,9 @@ export type PlayerAction = {
   action: string;
   value: string;
   styles?: React.CSSProperties;
-};
+}
+
+export type PlayerActions = PlayerAction[] | string;
 
 export type ItemDefinition = {
   name: string,
@@ -42,7 +44,7 @@ export type Player = {
   effects: Effect[];
   previousSpaceId: string;
   image: string;
-  controls: PlayerAction[];
+  controls: PlayerActions;
   hasMoved: boolean;
   movesPerRound: number;
   movesRemaining: number;
