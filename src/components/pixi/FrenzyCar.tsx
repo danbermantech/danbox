@@ -1,6 +1,6 @@
 import useBoardDimensions from "$hooks/useBoardDimensions";
 import usePeerDataReceived from "$hooks/useDataReceived";
-import { Player, StoreData } from "$store/types"
+import type { Player, StoreData } from "$store/types"
 import { Sprite, useTick } from "@pixi/react";
 import { useState } from "react";
 import { useSelector } from "react-redux";

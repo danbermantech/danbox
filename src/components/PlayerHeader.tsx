@@ -1,7 +1,9 @@
+import { lazy } from "react";
 import { AppBar, Toolbar, Typography } from "@mui/material"
 import useMe from '$hooks/useMe'
 import { Fullscreen } from "@mui/icons-material";
-import PlayerMap from "./PlayerMap";
+
+const PlayerMap = lazy(async()=>await import("./PlayerMap"));
 const PlayerHeader = () =>{
   const me = useMe();
   return (<AppBar>

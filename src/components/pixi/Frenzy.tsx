@@ -1,57 +1,26 @@
-import { Stage, Sprite, } from '@pixi/react';
-import { useDispatch, useSelector } from 'react-redux';
-import {  Player, StoreData } from '$store/types';
-import React, { useCallback, useEffect, useState } from 'react';
-import { ReactReduxContext } from 'react-redux';
-import FrenzyCar from './FrenzyCar';
-import { PeerContext } from '$contexts/PeerContext';
+import { useCallback, useEffect, useState, lazy } from 'react';
+import {  Sprite, } from '@pixi/react';
+import { useAppDispatch, useAppSelector } from '$store/hooks';
+import type {  Player, } from '$store/types';
+// import { ReactReduxContext } from 'react-redux';
+// import { PeerContext } from '$contexts/PeerContext';
 import {v4 as uuidv4 } from 'uuid';
 import goldImg from '$assets/sprites/gold.png';
 import pointImg from '$assets/sprites/points.png';
 import { givePlayerGold, givePlayerPoints } from '$store/slices/playerSlice';
 import { endMinigame } from '$store/slices/gameProgressSlice';
 import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
-import PlayerCard from '$components/PlayerCard';
 import useBoardDimensions from '$hooks/useBoardDimensions';
+// import WrappedStage  from './WrappedStage';
 import ShiftingLavaBackground from './ShiftingLavaBackground';
+import FrenzyCar from './FrenzyCar';
+// import PlayerCard from '$components/PlayerCard';
 
-type ContextBridgeProps = {
-  children:React.ReactNode,
-  Context: (typeof ReactReduxContext | typeof PeerContext),
-  render:(children:React.ReactNode)=>React.ReactNode
-}
+const PlayerCard = lazy(async()=>await import('$components/PlayerCard'));
+// const ShiftingLavaBackground = lazy(async()=>await import('./ShiftingLavaBackground'));
+// const FrenzyCar = lazy(async()=>await import( './FrenzyCar'));
+const WrappedStage = lazy(async()=>await import('./WrappedStage'));
 
-const ContextBridge = ({ children, Context, render }:ContextBridgeProps) => {
-  return (
-    <Context.Consumer>
-      {(value) =>{
-        //@ts-expect-error Value is weirdly typed
-        return render(<Context.Provider value={value}>{children}</Context.Provider>);
-      }}
-    </Context.Consumer>
-  );
-};
-
-
-export const WrappedStage = ({ children, ...props }:{children:React.ReactNode}) => {
-  return (
-    <ContextBridge
-      Context={ReactReduxContext}
-      render={(children) => 
-      <ContextBridge
-        Context={PeerContext}
-        render={(children) => <>
-        <Stage {...props}>{children}</Stage>
-        </>}
-        >
-          {children}
-      </ContextBridge>
-    }
-    >
-      {children}
-    </ContextBridge>
-  );
-};
 
 function seedAssets(count:number):{x:number, y:number, id:string, collected:boolean|string}[]{
   return Array(count).fill(0).map(()=>({
@@ -65,10 +34,10 @@ function seedAssets(count:number):{x:number, y:number, id:string, collected:bool
 export const Frenzy = () =>
 {
   const {boardWidth, boardHeight } = useBoardDimensions();
-  const players = useSelector((state:StoreData) => state.players);
+  const players = useAppSelector((state) => state.players);
   const [points, setPoints] = useState(seedAssets(Math.floor(Math.random() *45 + 5)));
   const [gold, setGold] = useState(seedAssets(Math.floor(Math.random() *45 + 5)));
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const handlePointCollected = useCallback((playerId:string, assetId:string)=>{
     setPoints((prev)=>{
       const next = [...prev]

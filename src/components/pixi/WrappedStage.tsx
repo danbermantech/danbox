@@ -3,7 +3,6 @@ import React from 'react';
 import { ReactReduxContext } from 'react-redux';
 import { PeerContext } from '$contexts/PeerContext';
 
-
 type ContextBridgeProps = {
   children:React.ReactNode,
   Context: (typeof ReactReduxContext | typeof PeerContext),
@@ -22,7 +21,7 @@ const ContextBridge = ({ children, Context, render }:ContextBridgeProps) => {
 };
 
 
-const WrappedStage = ({ children, ...props }:{children:React.ReactNode}) => {
+export const WrappedStage = ({ children, ...props }:{children:React.ReactNode}) => {
   return (
     <ContextBridge
       Context={ReactReduxContext}

@@ -1,15 +1,16 @@
 import { useSelector } from "react-redux";
-import RandomAssetChange from "$components/RandomAssetChange";
-import RegistrationScreen from "$components/RegistrationScreen";
-import GameOverScreen from "$components/GameOverScreen";
-import Trivia from "$components/Trivia";
 import { GAME_MODE, StoreData } from "$store/types";
-import Shop from "$components/Shop";
-import GetAssetScreen from "./GetAssetScreen";
-import LoseAssetScreen from './LoseAssetScreen'
-import Duel from "./Duel";
-import Frenzy from "./pixi/Frenzy";
-import PixiHost from "./pixi/PixiHost";
+import { lazy } from "react";
+const RandomAssetChange = lazy(async()=>await import("$components/RandomAssetChange"));
+const RegistrationScreen = lazy(async()=>await import("$components/RegistrationScreen"));
+const GameOverScreen = lazy(async()=>await import("$components/GameOverScreen"));
+const Trivia = lazy(async()=>await import("$components/Trivia"));
+const Shop = lazy(async()=>await import("$components/Shop"));
+const GetAssetScreen = lazy(async()=>await import("./GetAssetScreen"));
+const LoseAssetScreen = lazy(async()=>await import('./LoseAssetScreen'));
+const Duel = lazy(async()=>await import("./Duel"));
+const Frenzy = lazy(async()=>await import("./pixi/Frenzy"));
+const PixiHost = lazy(async()=>await import("./pixi/PixiHost"));
 // import Pursuit from "./pixi/Pursuit";
 
 const MainGame = () =>{

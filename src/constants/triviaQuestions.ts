@@ -347,6 +347,18 @@ const TriviaQuestions:TriviaQuestion[] =[
       'Exposure therapy for his fructophobia',
     ]
   },
+  {
+    question: 'Which of the following is an ingredient in the creation of quicksilver?',
+    answer: 'Cinnabar',
+    category: 'Alchemy',
+    difficulty: 'hard',
+    type: 'multiple',
+    incorrect_answers: [
+      'Veridian',
+      'Obsidian',
+      'Pyrite'
+    ]
+  }
 ]
 
 export default TriviaQuestions;

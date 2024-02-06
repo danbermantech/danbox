@@ -1,10 +1,11 @@
-import ScoreBoard from "$components/ScoreBoard";
-import MainGame from "$components/MainGame";
+import { Suspense, lazy } from "react";
 import clsx from "clsx";
-import { StoreData } from "$store/types";
+import type { StoreData } from "$store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { setMaxRounds } from "$store/slices/gameProgressSlice";
 import useBoardDimensions from "$hooks/useBoardDimensions";
+const MainGame = lazy(async()=>await import( "$components/MainGame"));
+const ScoreBoard = lazy(async()=>await import( "$components/ScoreBoard"));
 
 // const boardWidth = (()=>window.innerWidth - 512)();
 // const boardHeight = (()=>window.innerHeight - 32)();
@@ -37,7 +38,9 @@ function Page(): JSX.Element {
         </div>
         <div className={clsx(`w-[${boardWidth}px] rounded-xl overflow-hidden bg-gradient-radial from-pink-400 to-fuchsia-200 flex items-center place-content-center`)}
         style={{width:boardWidth, minWidth: boardWidth, maxWidth: boardWidth, height: boardHeight }}>
-        <MainGame />
+        <Suspense fallback={<div className="animate-pulse min-w-full min-h-full w-full h-full bg-gradient-radial from-pink-400 to-fuchsia-400 flex place-items-center justify-center items-center justify-items-center content-center"><div className="mx-auto my-auto text-center text-8xl font-bold">Loading...</div></div>}>
+          <MainGame />
+        </Suspense>
         </div>
         {/* <PixiHost /> */}
       </div>
