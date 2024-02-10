@@ -20,7 +20,7 @@ import note8 from '$assets/audio/notes/note8.wav';
 import note9 from '$assets/audio/notes/note9.wav';
 
 
-const audioFiles = [
+const audioFiles = {
   registration, 
   movementSong, 
   victory1, 
@@ -40,7 +40,7 @@ const audioFiles = [
   note7,
   note8,
   note9,
-]
+}
 
 
 type AudioContextValue = {
@@ -53,22 +53,22 @@ type AudioContextValue = {
 
 const AudioPlayerContext = createContext<AudioContextValue>({playBackgroundMusic:()=>{}, triggerSoundEffect: () => { }, muteAudio: ()=>{}, unmuteAudio: ()=>{}, isMuted: true });
 
-function getCommonName(name:string){
-  const split = name.split('/')
-  return split[split.length-1].split('.')[0]
-}
+// function getCommonName(name:string){
+//   const split = name.split('/')
+//   return split[split.length-1].split('.')[0]
+// }
 
 const AudioPlayerContextProvider = ({ children }:{children:React.ReactNode}) => {
 
   const [audioContext] = useState(new (window.AudioContext || (window as unknown as {webkitAudioContext:AudioContext}).webkitAudioContext)());
   const [audioBuffers, setAudioBuffers] = useState<Record<string,AudioBuffer>>({});
-  const prefetchAudio = useCallback(async (name:string) => {
+  const prefetchAudio = useCallback(async (name:string, url:string) => {
     try {
-      const response = await fetch(name);
+      const response = await fetch(url);
       const arrayBuffer = await response.arrayBuffer();
       const buffer = await audioContext.decodeAudioData(arrayBuffer);
-      const commonName = getCommonName(name)
-      setAudioBuffers((prevBuffers) => ({ ...prevBuffers, [commonName]: buffer }));
+      // const commonName = getCommonName(name)
+      setAudioBuffers((prevBuffers) => ({ ...prevBuffers, [name]: buffer }));
     } catch (error) {
       console.error(`Error prefetching audio file ${name}:`, error);
     }
@@ -146,7 +146,7 @@ const AudioPlayerContextProvider = ({ children }:{children:React.ReactNode}) => 
     setIsMuted(false);
   }, [audioContext]);
   useEffect(() => {
-    audioFiles.forEach(prefetchAudio);
+    Object.entries(audioFiles).forEach(([k,v])=>prefetchAudio(k,v));
   }, [audioContext, prefetchAudio]); // Run only on initial render
 
   return (
