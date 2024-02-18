@@ -23,6 +23,18 @@ const challenges:Challenge[] = [
     description: 'Tell a lie. The player with the best lie wins.',  
   },
   {
+    category: 'Task',
+    name:'Touch a doorknob',
+    difficulty: 'easy',
+    description: 'Touch a doorknob. The first player to touch a doorknob wins. I kinda ran out of ideas, sorry.',
+  },
+  {
+    category:'Friendship',
+    name: 'Compliment someone',
+    difficulty: 'medium',
+    description: 'Compliment someone. The player who gives the most sincere compliment wins.',
+  },
+  {
     category: 'Party',
     name: 'Take a shot',
     difficulty: 'easy',
