@@ -358,7 +358,43 @@ const TriviaQuestions:TriviaQuestion[] =[
       'Obsidian',
       'Pyrite'
     ]
-  }
+  },
+  {
+    question: 'Which of the following can be transmuted into gold?',
+    answer: 'Platinum',
+    category: 'Alchemy',
+    difficulty: 'hard',
+    type: 'multiple',
+    incorrect_answers: [
+      'Lead',
+      'Carbon',
+      'Iron'
+    ]
+  },
+  {
+    question: 'Who framed Roger Rabbit?',
+    answer: 'Judge Doom',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Judge Dredd',
+      'Wilbur',
+      'The Monstars'
+    ],
+  },
+  {
+    question: 'Who shot Mr. Burns?',
+    answer: 'Maggie Simpson',
+    category: 'Entertainment',
+    difficulty: 'easy',
+    type: 'multiple',
+    incorrect_answers: [
+      'Chief Wiggum',
+      'Sideshow Bob',
+      'Smithers'
+    ],
+  },
 ]
 
 export default TriviaQuestions;
