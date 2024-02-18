@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import {  useSelector } from "react-redux";
 import { usePeer } from "$hooks/usePeer";
 import movePlayer from "$store/actions/movePlayer";
 import { removeEffect, setPlayerControls, setPlayerInstructions, } from "$store/slices/playerSlice";
@@ -10,15 +9,16 @@ import useAudio from "$hooks/useAudio";
 import {v4 as uuidv4 } from 'uuid'
 import { ThunkAction, UnknownAction } from "@reduxjs/toolkit";
 import movePlayerFinal from "$store/actions/movePlayerFinal";
-import { useAppDispatch } from "$store/hooks";
+import { useAppDispatch, useAppSelector } from "$store/hooks";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import { isEqual } from "lodash";
+import addQueuedAction from "$store/actions/addQueuedAction";
 
 const HostStateManager = () => {
-  const gameState = useSelector((state:StoreData) => state.game);
-  const players = useSelector((state:StoreData) => state.players);
-  const currentRound = useSelector((state:StoreData) => state.game.currentRound);
-  const board = useSelector((state:StoreData) => state.game.board);
+  const gameState = useAppSelector((state) => state.game);
+  const players = useAppSelector((state) => state.players);
+  const currentRound = useAppSelector((state) => state.game.currentRound);
+  const board = useAppSelector((state) => state.board);
   const dispatch = useAppDispatch();
 
   const [movementActionId] = useState(()=>uuidv4())
@@ -37,6 +37,7 @@ const HostStateManager = () => {
       const nextPlayer = getState().players.find((player)=>(player.id == data.payload.playerId));
       if(nextPlayer && nextPlayer?.movesRemaining > 0 || !nextPlayer) return;
       console.log(data.payload.value)
+      disp(addQueuedAction({mode: board[data.payload.value].type, for: [player.id], when:'start'}))
       disp(movePlayerFinal({playerId: player.id, spaceId: data.payload.value}))
       console.log(getState().players.reduce((acc, player)=>(acc + player.movesRemaining), 0))
       if(getState().players.reduce((acc, player)=>(acc + player.movesRemaining), 0) == 0){
@@ -46,7 +47,7 @@ const HostStateManager = () => {
         },2000)
       }
       })
-  },[players, dispatch]); 
+  },[players, dispatch, board]); 
 
   usePeerDataReceived<{playerId:string, value: string, action:string}>(movementListener, movementActionId)
 
@@ -80,10 +81,10 @@ const HostStateManager = () => {
         dispatch(setPlayerInstructions({playerId: player.id, instructions: `Please wait...`}))
         dispatch(setPlayerControls({playerId: player.id, controls:[]}));
       }else{
-        const mySpace = board?.find((space)=>(space.id == player.spaceId));
+        const mySpace = board[player.spaceId];
         const connections = mySpace?.connections
         if(!connections) return;
-        const availableSpaces = board.filter((space)=>connections.includes(space.id));
+        const availableSpaces = Object.values(board).filter((space)=>connections.includes(space.id));
         const options = availableSpaces.map((connection)=>({label:connection.label, value:connection.id, action:movementActionId}));
         dispatch(setPlayerInstructions({playerId: player.id, instructions: `${player.movesRemaining} moves remaining`}))
         if(isEqual(player.controls, options)) return;
@@ -103,8 +104,8 @@ const HostStateManager = () => {
     if (!peerReady) return;
     setOnConnectSendValue && setOnConnectSendValue({state:players});
     sendPeersMessage &&
-      sendPeersMessage({ type: "state", payload: { value: {players, game: gameState} } });
-  }, [sendPeersMessage, setOnConnectSendValue, peerReady, players, gameState]);
+      sendPeersMessage({ type: "state", payload: { value: {players, game: gameState, board} } });
+  }, [sendPeersMessage, setOnConnectSendValue, peerReady, players, gameState, board]);
   return null;
 
 };

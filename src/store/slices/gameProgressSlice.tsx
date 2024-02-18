@@ -1,10 +1,9 @@
 import { createSlice, Action } from "@reduxjs/toolkit";
-import { BoardSpaceConfig, GAME_MODE, type GameState, type RejectedAction } from "../types";
+import { GAME_MODE, type GameState, type RejectedAction } from "../types";
 import setState from "$store/actions/setState";
 import addQueuedAction from "$store/actions/addQueuedAction";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
-import boardLayout from "$constants/boardLayout";
-import movePlayerFinal from "$store/actions/movePlayerFinal";
+// import boardLayout from "$constants/boardLayout";
 import restart from "$store/actions/restart";
 function isRejectedAction(action: Action): action is RejectedAction {
   return action.type.endsWith("rejected");
@@ -17,7 +16,7 @@ const defaultState: GameState = {
   modalOpen: true,
   queuedActions: [],
   activePlayers: [],
-  board: boardLayout,
+  // board: [],
   maxRounds: 10,
 };
 export const gameSlice = createSlice({
@@ -57,26 +56,6 @@ export const gameSlice = createSlice({
       state.mode = null;
       return state;
     },
-    setActivePlayers: (state, action) => {
-      state.activePlayers = action.payload;
-      return state;
-    },
-    createSpace: (state, action) => {
-      state.board.push(action.payload);
-      return state;
-    },
-    removeSpace: (state, action) => {
-      state.board = state.board.filter((space) => space.id !== action.payload);
-      return state;
-    },
-    createPath: (state, action) => {
-      (state.board.find((space) => space.id === action.payload.from) as BoardSpaceConfig).connections.push(action.payload.to);
-      return state;
-    },
-    removePath: (state, action) => {
-      (state.board.find((space) => space.id === action.payload.from) as BoardSpaceConfig).connections = (state.board.find((space) => space.id === action.payload.from) as BoardSpaceConfig).connections.filter((id) => id !== action.payload.to);
-      return state;
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -87,12 +66,6 @@ export const gameSlice = createSlice({
       })
       .addCase(addQueuedAction, (state, action) => {
         state.queuedActions.push(action.payload);
-        return state;
-      })
-      .addCase(movePlayerFinal, (state, action) => {
-        const space = state.board.find((space)=>(space.id == action.payload.spaceId)) as BoardSpaceConfig;
-        console.log(action, space.type, {...space});
-        state.queuedActions.push({mode: space.type, for: [action.payload.playerId], when:'start'});
         return state;
       })
       .addCase(restart, ()=>{
@@ -115,7 +88,7 @@ export const gameSlice = createSlice({
         if(nextAction.mode) state.mode = nextAction.mode;
         state.mode = nextAction.mode ?? null;
         state.modalOpen = !!nextAction.mode;
-        if(nextAction.for) state.activePlayers = nextAction.for
+        if(nextAction.for) {state.activePlayers = nextAction.for}else{state.activePlayers = []}
       })
       .addMatcher(
         isRejectedAction,

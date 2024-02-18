@@ -1,14 +1,13 @@
-import { useSelector } from "react-redux"
 import Line from "./Line";
-import { StoreData } from "$store/types";
+import { useAppSelector } from "$store/hooks";
 
 
 const Paths = () =>{
-  const board = useSelector((state:StoreData) => state.game.board);
+  const board = useAppSelector((state) => state.board);
   return <>
-  {board.map((location) => {
+  {Object.values(board).map((location) => {
     return location.connections.map((connection) => {
-      const connectedLocation = board.find((location) => location.id == connection);
+      const connectedLocation = board[connection];
       if (!connectedLocation) return null;
       return <Line
         key={location.id + '_' + connection}

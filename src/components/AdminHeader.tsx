@@ -2,7 +2,7 @@ import { AppBar, Modal, Toolbar, Typography } from "@mui/material"
 import useMe from '$hooks/useMe'
 import { useCallback, useState } from "react";
 import { useSelector } from "react-redux";
-import { StoreData } from "$store/types";
+import { SpecialSelectInputParams, SpecialSelectOptions, StoreData } from "$store/types";
 import { 
   removePlayer, 
   givePlayerGold, 
@@ -16,12 +16,12 @@ import movePlayer from '$store/actions/movePlayer'
 import movePlayerFinal from '$store/actions/movePlayerFinal'
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import PlayerCard from "./PlayerCard";
-import boardLayout from "$constants/boardLayout";
 import { UnknownAction } from "@reduxjs/toolkit";
 import PlayerMap from "./PlayerMap";
 import { Fullscreen } from "@mui/icons-material";
 import { endMinigame } from "$store/slices/gameProgressSlice";
 import items from "$constants/items";
+import { useAppSelector } from "$store/hooks";
 
 enum InputType {
   TEXT = 'text',
@@ -48,7 +48,7 @@ type SelectInput = {
   type: InputType.SELECT,
   value: string,
   key: string,
-  options: {id:string, label:string}[]
+  options: {id:string, label:string}[]|SpecialSelectOptions,
 }
 
 type Input = NumberInput | TextInput | SelectInput;
@@ -111,7 +111,7 @@ const move:ControlDefinition<{playerId:string, spaceId:string}, {playerId:string
   label: 'Move Player',
   action: movePlayer,
   inputs:[
-    {label: 'spaceId', type: InputType.SELECT, value: 'home', options: boardLayout, key:'spaceId'}
+    {label: 'spaceId', type: InputType.SELECT, value: 'home', options: 'spaces', key:'spaceId'}
   ]
 }
 
@@ -119,9 +119,41 @@ const moveFinal:ControlDefinition<{playerId:string, spaceId:string}, {playerId:s
   label: 'Move Player Final',
   action: movePlayerFinal,
   inputs:[
-    {label: 'spaceId', type: InputType.SELECT, value: 'home', options: boardLayout, key:'spaceId'}
+    {label: 'spaceId', type: InputType.SELECT, value: 'home', options: 'spaces', key:'spaceId'}
   ]
 }
+
+const SpecialSelectControl = ({param, value, onChange}:{param:SpecialSelectInputParams, value:string, onChange:(name:string, value:string)=>void})=>{
+
+  const {id, teamId} = useMe()
+  const options = useAppSelector((state) => {
+    switch(param.special){
+      case 'players':
+        return state.players.map(player=>({label: player.name, value: player.id}))
+      case 'opponents':
+        return state.players.filter(player=>player.id != id).map(player=>({label: player.name, value: player.id}))
+      case 'teammates':
+        return state.players.filter(player=>player.teamId == teamId).map(player=>({label: player.name, value: player.id}))
+      case 'teams':
+        return state.teams.map(team=>({label: team.name, value: team.id}))
+      case 'spaces':
+        return Object.values(state.board).map(space=>({label: space.label, value: space.id}))
+      default:
+        return []
+    }
+    // state[param.options]
+  });
+  return (
+    <select value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
+      <option value="" selected disabled>Select</option>
+      {options.map(option=>{
+        return <option key={option.value} value={option.value}>{option.label}</option>
+    })}
+    </select>
+  )
+
+}
+
 
 const controls = [
   remove,
@@ -176,6 +208,12 @@ const Control = (props:{playerId:string, control:ControlDefinition})=>{
                 <input type="text" value={form[input.key] as string} onChange={(e)=>{onChange(input.key, e.target.value)}} />
               </div>
             case InputType.SELECT:
+              if(typeof(input.options) == 'string'){
+                return (<div key={input.key} className="flex flex-row gap-2 justify-items-stretch w-max">
+                <label>{input.label}</label>
+                <SpecialSelectControl param={{...input, special:input.options, name:input.key}} value={form[input.key] as string} onChange={onChange} />
+                </div>)
+              }
               return <div key={input.key} className="flex flex-row gap-2 justify-items-stretch w-max">
                 <label>{input.label}</label>
                 <select value={form[input.key] as string} onChange={(e)=>{onChange(input.key, e.target.value)}}>

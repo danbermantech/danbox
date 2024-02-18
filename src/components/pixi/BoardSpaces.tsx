@@ -3,11 +3,11 @@ import { useSelector } from "react-redux";
 import BoardSpace from "./BoardSpace";
 
 const BoardSpaces = () =>{
-  const board = useSelector((state:StoreData) => state.game.board);
+  const board = useSelector((state:StoreData) => state.board);
   return (
     <>
-      {board.map((space) => {
-        return <BoardSpace id={space.id} key={space.id} />;
+      {Object.keys(board).map((space) => {
+        return <BoardSpace id={space} key={space} />;
       })}
     </>
   );

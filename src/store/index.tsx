@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import teamsSlice from "./slices/teamSlice";
 import playerSlice from "./slices/playerSlice";
 import gameProgressSlice from "./slices/gameProgressSlice";
+import boardSlice from "./slices/boardSlice";
 
 const store = configureStore({
   reducer: {
     teams: teamsSlice,
     players: playerSlice,
     game: gameProgressSlice,
+    board: boardSlice,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

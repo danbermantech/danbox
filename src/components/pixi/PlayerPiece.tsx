@@ -1,9 +1,9 @@
 import { Container, Sprite, Text, useTick,  } from "@pixi/react";
 import { TextStyle } from "pixi.js";
-import type { Player, BoardSpaceConfig, StoreData } from "$store/types";
+import type { Player } from "$store/types";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import useBoardDimensions from "$hooks/useBoardDimensions";
+import { useAppSelector } from "$store/hooks";
 
 
 const PlayerPiece = ({id}:{id:string}) => {
@@ -13,9 +13,9 @@ const PlayerPiece = ({id}:{id:string}) => {
 
   // const previousLocation = usePrevious(targetLocation);
   const {boardWidth, boardHeight} = useBoardDimensions();
-  const player = useSelector((state:StoreData)=>state.players.find((p)=>p.id == id)) as Player;
+  const player = useAppSelector((state)=>state.players.find((p)=>p.id == id)) as Player;
   // const [currentLocation, setCurrentLocation] = useState({x:0, y:0});
-  const location = useSelector((state:StoreData)=>state.game.board.find((l)=>l.id == player.spaceId)) as BoardSpaceConfig;
+  const location = useAppSelector((state)=>state.board[player.spaceId]);
 
   const [destination, setDestination] = useState({x:location.x, y:location.y});
   useEffect(()=>{
@@ -52,18 +52,6 @@ const PlayerPiece = ({id}:{id:string}) => {
       height={boardWidth * 0.07}
       key={player.id}
     >
-      {/* <Graphics draw={
-        (g) => {
-          g.clear();
-          g.lineStyle(2, 0xffffff, 1);
-          g.beginFill(0xff88ff);
-          g.drawCircle(0, 0, boardWidth * 0.02);
-          g.lineStyle(0, 0xffffff, 0);
-          g.drawRect(-boardWidth * 0.02, 0, boardWidth * 0.1, boardHeight * 0.07);
-          g.endFill();
-        }
-      
-      } /> */}
       <Sprite
       anchor={0.5}
       x={0}
@@ -76,13 +64,9 @@ const PlayerPiece = ({id}:{id:string}) => {
         fontFamily: 'sans-serif',
         fontSize: 100,
         fontWeight: '600',
-        // fill: ['#ffffff', '#00ff99'], // gradient
         stroke: '#ffffff',
         strokeThickness: 5,
         letterSpacing: 20,
-        // dropShadow: true,
-        // dropShadowColor: '#ccced2',
-        // dropShadowBlur: 4,
         dropShadowAngle: Math.PI / 6,
         dropShadowDistance: 6,
         wordWrap: true,

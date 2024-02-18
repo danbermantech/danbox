@@ -8,7 +8,7 @@ import useBoardDimensions from "$hooks/useBoardDimensions";
 
 const BoardSpace = ({id}:{id:string}) =>{
   const {boardWidth, boardHeight} = useBoardDimensions();
-  const location = useSelector((state:StoreData)=>state.game.board.find((l)=>l.id == id));
+  const location = useSelector((state:StoreData)=>state.board[id]);
   if(!location) return null;
   return(
   <Fragment key={location.id}>

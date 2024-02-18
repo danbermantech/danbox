@@ -11,6 +11,8 @@ import useAudio from "$hooks/useAudio";
 import usePeerDataReceived, { PeerDataCallbackPayload } from "$hooks/useDataReceived";
 import {v4 as uuidv4} from 'uuid'
 import MuteToggle from "./MuteToggle";
+import { setBoardLayout } from "$store/slices/boardSlice";
+import boardLayout from "$constants/boardLayout";
 const playerSelector = createSelector(state=>state.players, 
   (players:StoreData['players']) => players.map((player)=>({id:player.id, name:player.name, image:player.image, controls: player.controls})),
   );
@@ -45,6 +47,7 @@ const RegistrationScreen = () => {
   const peerDataCallback = useCallback((data:PeerDataCallbackPayload) => {
     console.log(data);
       if(data.payload.value == "start"){
+        dispatch(setBoardLayout(boardLayout))
         dispatch(clearAllPlayerControls());
         dispatch(triggerNextQueuedAction());
       }

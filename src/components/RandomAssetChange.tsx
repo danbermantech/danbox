@@ -5,6 +5,8 @@ import {  Player, StoreData } from "$store/types";
 import { handleTransfer } from "$store/slices/playerSlice";
 import { endMinigame } from "$store/slices/gameProgressSlice";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
+import rhiannon from '../assets/sprites/rhiannon.png';
+import stormy from '../assets/sprites/stormy.png';
 
 const RandomAssetChange = () => {
   const [state, setState] = useState<Record<string, string>>({});
@@ -17,7 +19,7 @@ const dispatch = useDispatch();
 const activePlayerName = useSelector((state:StoreData) => state.game.activePlayers[0]);
 const activePlayer = useSelector((state:StoreData) => state.players.find((player)=>(player.name == activePlayerName || player.id == activePlayerName))) as Player;
 return (
-  <div>
+  <div style={{backgroundImage: `url(${activePlayer.spaceId == 'rhiannon' ? rhiannon : stormy})`}}>
     <h1 className="text-black text-center text-8xl font-extrabold">GAMBLE</h1>
     <div className="text-4xl text-black w-full text-center flex items-center flex-col font-bold mb-4">
       <div className="bg-white p-4 rounded-2xl border-black border-4">
@@ -26,9 +28,8 @@ return (
       </h2>
       <img src={activePlayer.image} width="400" height="400" className="w-32 h-32 rounded-full" />
       </div>
-      
     </div>
-    <div className="flex flex-row gap-4">
+    <div className="flex flex-row gap-4" >
     <OptionMachine
       options={[
         { label: "type", options: ['give', 'take', 'swap'] },

@@ -36,7 +36,7 @@ const ItemParamSpecialSelectControl = ({param, value, onChange}:{param:SpecialSe
       case 'teams':
         return state.teams.map(team=>({label: team.name, value: team.id}))
       case 'spaces':
-        return state.game.board.map(space=>({label: space.label, value: space.id}))
+        return Object.values(state.board).map(space=>({label: space.label, value: space.id}))
       default:
         return []
     }

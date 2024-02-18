@@ -5,6 +5,7 @@ export type PlayerAction = {
   action: string;
   value: string;
   styles?: React.CSSProperties;
+  classNames?: string;
 }
 
 export type PlayerActions = PlayerAction[] | string;
@@ -30,10 +31,12 @@ export type StandardSelectInputParams = {
   options: (string|{label:string, value:string})[]
 }
 
+export type SpecialSelectOptions = 'players'|'opponents'|'teammates'|'spaces'|'teams'
+
 export type SpecialSelectInputParams = {
   name: string,
   type: 'select',
-  special: 'players'|'opponents'|'teammates'|'spaces'|'teams'
+  special: SpecialSelectOptions
 }
 
 export type SelectInputParams = StandardSelectInputParams | SpecialSelectInputParams
@@ -111,6 +114,7 @@ export enum GAME_MODE {
   FRENZY = 'FRENZY',
   GET_ASSET = 'GET_ASSET',
   LOSE_ASSET = 'LOSE_ASSET',
+  IMPLORE = 'IMPLORE',
 }
 
 export type QueueAction =  {
@@ -119,7 +123,7 @@ export type QueueAction =  {
   when: 'start' | 'end'
 }
 
-export type BoardSpaceConfig = {
+export interface BoardSpaceConfig {
   x: number,
   y: number,
   width: number,
@@ -139,14 +143,18 @@ export type GameState = {
   modalOpen: boolean;
   queuedActions: QueueAction[];
   activePlayers: string[];
-  board: BoardSpaceConfig[];
+  // board: BoardSpaceConfig[];
   mode: GAME_MODE | null,
   maxRounds: number;
 };
 
+export type Board = Record<string, BoardSpaceConfig>;
 
+export interface BoardSpaceConfig {
+  connections: string[];
+}
 export interface RejectedAction extends Action {
   error: Error;
 }
 
-export type StoreData = { players: Players; game: GameState; board: BoardSpaceConfig[] };
+export type StoreData = { players: Players; game: GameState; board: Board };
