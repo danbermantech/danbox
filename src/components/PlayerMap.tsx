@@ -10,7 +10,9 @@ const PlayerMap = () => {
   return (
     <div>
       <Modal className="w-screen h-screen flex justify-items-center items-center justify-center" onClose={()=>{setIsOpen(false)}} open={isOpen}>
+            <div>
             <PixiClient />
+            </div>
       </Modal>
       <Map className="flex-grow" sx={{width:48, height:48}} onClick={()=>{
         setIsOpen(true);
