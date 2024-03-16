@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { usePeer } from "$hooks/usePeer";
 import movePlayer from "$store/actions/movePlayer";
 import { removeEffect, setPlayerControls, setPlayerInstructions, } from "$store/slices/playerSlice";
-import { StoreData } from "$store/types";
+import { GAME_MODE, StoreData } from "$store/types";
 import activateItem from "$store/actions/activateItem";
 import usePeerDataReceived from "$hooks/useDataReceived";
 import useAudio from "$hooks/useAudio";
@@ -25,7 +25,7 @@ const HostStateManager = () => {
 
   const movementListener = useCallback((data:{type:string, payload:{action:string, playerId: string, value:string}})=>{
     const player = players.find((player)=>(player.id == data.payload.playerId || player.name == data.payload.playerId));
-    if(!player) return;
+    if(!player || gameState.mode !== GAME_MODE.MOVEMENT) return;
 
     //@ts-expect-error I didn't type these yet
     dispatch<ThunkAction<void, StoreData, unknown, UnknownAction>>((disp, getState)=>{
@@ -47,7 +47,7 @@ const HostStateManager = () => {
         },2000)
       }
       })
-  },[players, dispatch, board]); 
+  },[players, dispatch, board, gameState.mode]); 
 
   usePeerDataReceived<{playerId:string, value: string, action:string}>(movementListener, movementActionId)
 

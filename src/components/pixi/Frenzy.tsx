@@ -7,7 +7,7 @@ import type {  Player, } from '$store/types';
 import {v4 as uuidv4 } from 'uuid';
 import goldImg from '$assets/sprites/gold.png';
 import pointImg from '$assets/sprites/points.png';
-import { givePlayerGold, givePlayerPoints } from '$store/slices/playerSlice';
+import { givePlayerGold, givePlayerPoints, setPlayerControls } from '$store/slices/playerSlice';
 import { endMinigame } from '$store/slices/gameProgressSlice';
 import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
 import useBoardDimensions from '$hooks/useBoardDimensions';
@@ -38,44 +38,98 @@ export const Frenzy = () =>
   const [points, setPoints] = useState(seedAssets(Math.floor(Math.random() *45 + 5)));
   const [gold, setGold] = useState(seedAssets(Math.floor(Math.random() *45 + 5)));
   const dispatch = useAppDispatch();
+
+  const [playerPoints, setPlayerPoints] = useState<{[key:string]:number}>({});
+  const [playerGold, setPlayerGold] = useState<{[key:string]:number}>({});
+  const _givePlayerGold = useCallback((playerId:string, gold:number)=>{
+    setPlayerGold((prev)=>{
+      return {
+        ...prev,
+        [playerId]: (prev[playerId] || 0) + gold
+      }
+    })
+  }
+  ,[setPlayerGold]);
+
+  const _givePlayerPoints = useCallback((playerId:string, points:number)=>{
+    setPlayerPoints((prev)=>{
+      return {
+        ...prev,
+        [playerId]: (prev[playerId] || 0) + points
+      }
+    })
+  }
+  ,[setPlayerPoints]);
   const handlePointCollected = useCallback((playerId:string, assetId:string)=>{
     setPoints((prev)=>{
       const next = [...prev]
       next[next.findIndex((point)=>point.id == assetId)].collected = playerId
       return next;
     });
-    dispatch(givePlayerPoints({playerId, points: 1}))
-  },[dispatch, setPoints,]);
+    _givePlayerPoints(playerId, 1);
+    // dispatch(givePlayerPoints({playerId, points: 1}))
+  },[_givePlayerPoints]);
   const handleGoldCollected = useCallback((playerId:string, assetId:string)=>{
     setGold((prev)=>{
       const next = [...prev]
       next[next.findIndex((point)=>point.id == assetId)].collected = playerId
       return next;
     });
-    dispatch(givePlayerGold({playerId, gold: 1}))
-  },[dispatch, setGold,]);
+    _givePlayerGold(playerId, 1);
+    // dispatch(givePlayerGold({playerId, gold: 1}))
+  },[_givePlayerGold]);
+  
+
+
+  useEffect(()=>{
+    players.forEach((player)=>{
+    dispatch(setPlayerControls({playerId: player.id, controls: 'FRENZY'}))
+    })
+  })
 
   const [results, setResults] = useState<Player[]>([]);
 
   useEffect(()=>{
-    if(gold.filter(g=>!g.collected).length + points.filter(g=>!g.collected).length == 0){
+    if(gold.filter(g=>!g.collected).length + points.filter(g=>!g.collected).length == 0 && results.length == 0){
+      dispatch(setPlayerControls({playerId: players[0].id, controls: []}))
+      
       setResults(()=>{
-        return players.map((player)=>{
-          return {
-            ...player,
-            points: points.filter((point)=>point.collected == player.id).length,
-            gold: gold.filter((point)=>point.collected == player.id).length,
+        return players.sort((a,b)=>{
+          if(playerPoints[a.id] !== playerPoints[b.id]){
+            return playerPoints[a.id] - playerPoints[b.id] 
           }
-        }).sort((a,b)=>{
-          if(a.points !== b.points){
-            return b.points - a.points;
-          }
-          if(a.gold !== b.gold){
-            return b.gold - a.gold;
+          if(playerGold[a.id] !== playerGold[b.id]){
+            return playerGold[a.id] - playerGold[b.id] 
           }
           return 0;
         })
       });
+      //   .map((player)=>{
+      //     return {
+      //       ...player,
+      //       points: points.filter((point)=>point.collected == player.id).length,
+      //       gold: gold.filter((point)=>point.collected == player.id).length,
+      //     }
+      //   }).sort((a,b)=>{
+      //     if(a.points !== b.points){
+      //       return b.points - a.points;
+      //     }
+      //     if(a.gold !== b.gold){
+      //       return b.gold - a.gold;
+      //     }
+      //     return 0;
+      //   })
+      // });
+      setTimeout(()=>{
+       dispatch((dispatch)=>{
+        Object.entries(playerPoints).forEach(([playerId, points])=>{
+          dispatch(givePlayerPoints({playerId, points}))
+        });
+        Object.entries(playerGold).forEach(([playerId, gold])=>{
+          dispatch(givePlayerGold({playerId, gold}))
+        });
+       })
+      },1000)
       setTimeout(()=>{
         dispatch(endMinigame());
         setTimeout(()=>{
@@ -83,10 +137,10 @@ export const Frenzy = () =>
         },500);
       }, 5000)
     }
-  },[gold, points, dispatch, players])
+  },[gold, points, dispatch, players, playerGold, playerPoints])
 
   if(results.length){
-    return <div className="flex gap-36">
+    return <div className="flex gap-36 flex-col">
       <h1 className="text-black text-center text-8xl font-extrabold">RESULTS</h1>
       <div className="flex flex-row place-items-center justify-center gap-">
         {

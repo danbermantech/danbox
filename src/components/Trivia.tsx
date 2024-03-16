@@ -1,14 +1,15 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+// import {  useSelector } from "react-redux";
 import { clearAllPlayerControls, setPlayerControls, givePlayerGold, givePlayerPoints, setPlayerInstructions } from "$store/slices/playerSlice";
 import TriviaQuestions, { TriviaQuestion } from "constants/triviaQuestions";
-import { StoreData } from "$store/types";
+// import { StoreData } from "$store/types";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import { endMinigame } from "$store/slices/gameProgressSlice";
 import PlayerCard from "./PlayerCard";
 import usePeerDataReceived, { PeerDataCallbackPayload } from "$hooks/useDataReceived";
 import {v4 as uuidv4} from 'uuid'
 import useAudio from "$hooks/useAudio";
+import { useAppDispatch, useAppSelector } from "$store/hooks";
 
 function calculatePoints(difficulty:TriviaQuestion['difficulty']):number{
   switch(difficulty){
@@ -35,9 +36,9 @@ const Trivia =
     }, []);
 
     const [actionId] = useState(()=>uuidv4());
-    const players = useSelector((state:StoreData) => state.players);
+    const players = useAppSelector((state) => state.players);
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     const answers = useMemo(()=>{
       return [triviaQuestion.answer, ...triviaQuestion.incorrect_answers]
@@ -54,17 +55,20 @@ const Trivia =
     },[triggerSoundEffect]);
 
     useEffect(()=>{
-      players.forEach((player)=>{
-        if(playerAnswers[player.id]){
-          dispatch(setPlayerInstructions({playerId: player.id, instructions: 'Please wait...'}))
-          dispatch(setPlayerControls({playerId: player.id, controls:[]}) )
+      dispatch((disp)=>{
+
+        players.forEach((player)=>{
+          if(playerAnswers[player.id]){
+          disp(setPlayerInstructions({playerId: player.id, instructions: 'Please wait...'}))
+          disp(setPlayerControls({playerId: player.id, controls:[]}) )
         } else{
-          dispatch(setPlayerInstructions({playerId: player.id, instructions: triviaQuestion.question}))
-          dispatch(setPlayerControls({playerId: player.id,
+          disp(setPlayerInstructions({playerId: player.id, instructions: triviaQuestion.question}))
+          disp(setPlayerControls({playerId: player.id,
             controls:answers}),
-          )}
-        }
-      );
+            )}
+          }
+          );
+      })
     },[players, playerAnswers, dispatch, answers, triviaQuestion.question])
 
 
@@ -80,26 +84,44 @@ const Trivia =
 
     const [completed, setCompleted] = useState(false);
 
+    const [results, setResults] = useState<{[id:string]:boolean}>({});
+
     useEffect(()=>{
-      if(players && Object.keys(playerAnswers).length == players.length && !completed){
-        const points = calculatePoints(triviaQuestion.difficulty);
-        setCompleted(true);
-        setTimeout(()=>{
-          players.filter((player)=>playerAnswers[player.id] == triviaQuestion.answer).forEach((winner)=>{
+      if(players && Object.keys(playerAnswers).length == players.length && Object.keys(results).length == 0){
+        // setCompleted(true);
+        setResults(()=>{
+          const retVal:{[id:string]:boolean} = {};
+          players.forEach((player)=>{retVal[player.id] = (playerAnswers[player.id] == triviaQuestion.answer)});
+          return retVal;
+        })
+      } 
+    },[playerAnswers, players, dispatch, setCompleted, triviaQuestion.answer, completed, results])
+
+    const endTrivia = useCallback(()=>{
+      let t1: NodeJS.Timeout
+        if(!Object.keys(results).length) return;
+        const t = setTimeout(()=>{
+          const points = calculatePoints(triviaQuestion.difficulty);
+          if(completed) return;
+          players.filter((player)=>results[player.id]).forEach((winner)=>{
             dispatch(givePlayerPoints({playerId: winner.id, points }));
             dispatch(givePlayerGold({playerId: winner.id, gold: points }));
           });
+          t1 = setTimeout(()=>{
+            dispatch(clearAllPlayerControls())
+            dispatch(endMinigame());
+            setTimeout(()=>dispatch(triggerNextQueuedAction(), 1000))
+          }, 3000)
         }, 1000);
-        setTimeout(()=>{
-          dispatch(clearAllPlayerControls())
-          dispatch(endMinigame());
-        }, 4000)
-        setTimeout(()=>{
-          dispatch(triggerNextQueuedAction());
-        },5000)
-      }
-    },[playerAnswers, players, dispatch, triviaQuestion.answer, triviaQuestion.difficulty, setCompleted, completed])
+        setCompleted(true);
+        if(completed) return ()=>{
+          console.log('returning')
+          clearTimeout(t);
+          clearTimeout(t1);
+        }
+    },[completed, results, dispatch, triviaQuestion.difficulty, players])
 
+    useEffect(endTrivia,[endTrivia])
     
     return (
       <div

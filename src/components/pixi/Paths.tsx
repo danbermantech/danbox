@@ -14,7 +14,7 @@ const Paths = () =>{
         from={location}
         to={connectedLocation}
         color={location.color}
-        width={1}
+        width={4}
       />
     })
   })}

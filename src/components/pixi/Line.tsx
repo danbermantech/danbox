@@ -9,8 +9,8 @@ const Line2 = (props:LineProps) => {
   return <Graphics 
   draw={(g) => {
     g.clear();
-    g.beginFill(props.color)
-    g.lineStyle(props.width, '#ffffff', 1);
+    g.beginFill(props.from.color, 0.8)
+    g.lineStyle(props.width, props.to.color, 0.5);
 
     const angle = Math.atan2(props.to.y - props.from.y, props.to.x - props.from.x);
     const offset = 0.02

@@ -1,7 +1,7 @@
 // import shrimp from '$assets/shrimp.png';
 // import magicHat from '$assets/magicHat.png';
-import { useDispatch, useSelector } from 'react-redux';
-import type { StoreData, Item, ItemDefinition } from '$store/types';
+// import {  useSelector } from 'react-redux';
+import type {  Item, ItemDefinition } from '$store/types';
 import { useCallback, useEffect, useState } from 'react';
 import { clearAllPlayerControls, setPlayerControls, givePlayerGold, givePlayerItem } from '$store/slices/playerSlice';
 import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
@@ -13,6 +13,8 @@ import itemPlaceholder from '$assets/sprites/itemPlaceholder.png';
 import gold from "$assets/sprites/gold.png";
 import { endMinigame } from '$store/slices/gameProgressSlice';
 import items from '$constants/items';
+import { useAppDispatch, useAppSelector } from '$store/hooks';
+import PlayerCard from './PlayerCard';
 
 
 
@@ -28,8 +30,8 @@ function createOptions(options: ItemDefinition[], count: number = 3) {
 
 const Shop = ()=>{
   
-  const activePlayers = useSelector((state:StoreData) => state.game.activePlayers);
-  const dispatch = useDispatch();
+  const activePlayers = useAppSelector((state) => state.game.activePlayers);
+  const dispatch = useAppDispatch();
   const {triggerSoundEffect} = useAudio();
   const [actionId] = useState(()=>uuidv4());
 
@@ -42,7 +44,7 @@ const Shop = ()=>{
   }
   ,[activePlayers, dispatch, actionId, options])
 
-  const player = useSelector((state:StoreData) => state.players.find((player)=>(player.id == activePlayers[0] || player.name == activePlayers[0])));
+  const player = useAppSelector((state) => state.players.find((player)=>(player.id == activePlayers[0] || player.name == activePlayers[0])));
 
   const [selectedOption, setSelectedOption] = useState<Item>();
 
@@ -62,8 +64,12 @@ const Shop = ()=>{
     if(!player || !item) return;
     if(player.gold >= item.price){
       console.log('purchasing')
-      dispatch(givePlayerItem({playerId: player.id, item: {name: item.name, image: item.image, description: item.description, params: item.params,}}))
-      dispatch(givePlayerGold({playerId: player.id, gold: -item.price}))
+      dispatch((disp)=>{
+
+        disp(givePlayerItem({playerId: player.id, item: {name: item.name, image: item.image, description: item.description, params: item.params,}}))
+        disp(givePlayerGold({playerId: player.id, gold: -item.price}))
+        disp(clearAllPlayerControls())
+      })
       setSelectedOption(item);
       triggerSoundEffect('victory4')
       setTimeout(()=>{
@@ -77,10 +83,13 @@ const Shop = ()=>{
 
   usePeerDataReceived(dataReceivedCallback,actionId);
 
+  const activePlayer = useAppSelector((state) => state.players.find((player)=>player.id == activePlayers[0])) as Player;
+
   return (<div className="w-full flex flex-col text-black gap-36">
     <h1 className="text-8xl font-bold text-center">
       SHOP
     </h1>
+    <PlayerCard player={activePlayer} className="" />
     {selectedOption ? 
       <div key={selectedOption.name} className="max-w-48 mx-auto font-bold rounded-xl bg-green-200 p-2 flex flex-col border-2 border-green-400">
         <h2 className="text-4xl uppercase text-center">{selectedOption.name}</h2>

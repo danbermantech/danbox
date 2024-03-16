@@ -2,7 +2,7 @@ import { AppBar, Modal, Toolbar, Typography } from "@mui/material"
 import useMe from '$hooks/useMe'
 import { useCallback, useState } from "react";
 import { useSelector } from "react-redux";
-import { SpecialSelectInputParams, SpecialSelectOptions, StoreData } from "$store/types";
+import { GAME_MODE, SpecialSelectInputParams, SpecialSelectOptions, StoreData } from "$store/types";
 import { 
   removePlayer, 
   givePlayerGold, 
@@ -22,6 +22,7 @@ import { Fullscreen } from "@mui/icons-material";
 import { endMinigame } from "$store/slices/gameProgressSlice";
 import items from "$constants/items";
 import { useAppSelector } from "$store/hooks";
+import { createPath, createSpace, moveSpace, removePath, shiftSpace } from "$store/slices/boardSlice";
 
 enum InputType {
   TEXT = 'text',
@@ -61,7 +62,7 @@ type ControlDefinition<T = unknown,U = T> = {
 
 // const RemovePlayer:ControlDefinition 
 
-const remove:ControlDefinition<{playerId:string}, {playerId:string}> = {
+const remove:ControlDefinition<{playerId:string}> = {
   label: 'Remove Player',
   action: removePlayer, 
   inputs:[]
@@ -123,6 +124,61 @@ const moveFinal:ControlDefinition<{playerId:string, spaceId:string}, {playerId:s
   ]
 }
 
+const moveBoardSpace:ControlDefinition = {
+  label: 'Move Space',
+  action: moveSpace,
+  inputs:[
+    {label: 'id', type: InputType.SELECT, value: 'home', options: 'spaces', key:'id'},
+    {label:'x', type: InputType.NUMBER, value: 0.5, key:'x'},
+    {label:'y', type: InputType.NUMBER, value: 0.5, key:'y'},
+  ]
+}
+
+const shiftBoardSpace:ControlDefinition = {
+  label: 'Shift Space',
+  action: shiftSpace,
+  inputs:[
+    {label: 'id', type: InputType.SELECT, value: 'home', options: 'spaces', key:'id'},
+    {label:'x', type: InputType.NUMBER, value: 0.05, key:'x'},
+    {label:'y', type: InputType.NUMBER, value: 0.05, key:'y'},
+  ]
+}
+
+const createBoardPath:ControlDefinition = {
+  label: 'Create Path',
+  action: createPath,
+  inputs:[
+    {label: 'from', type: InputType.SELECT, value: 'home', options: 'spaces', key:'from'},
+    {label: 'to', type: InputType.SELECT, value: 'home', options: 'spaces', key:'to'},
+  ]
+}
+
+const removeBoardPath:ControlDefinition = {
+  label: 'Remove Path',
+  action: removePath,
+  inputs:[
+    {label: 'from', type: InputType.SELECT, value: 'home', options: 'spaces', key:'from'},
+    {label: 'to', type: InputType.SELECT, value: 'home', options: 'spaces', key:'to'},
+  ]
+}
+
+const createBoardSpace:ControlDefinition = {
+  label: 'Create Space',
+  action: createSpace,
+  inputs:[
+    {label: 'id', type: InputType.TEXT, value: 'id', key:'id'},
+    {label: 'label', type: InputType.TEXT, value: 'label', key:'label'},
+    {label: 'x', type: InputType.NUMBER, value: 0, key:'x'},
+    {label: 'y', type: InputType.NUMBER, value: 0, key:'y'},
+    {label: 'color', type: InputType.TEXT, value: '#000000', key:'color'},
+    {label: 'width', type: InputType.NUMBER, value: 0.06, key:'width'},
+    {label: 'height', type: InputType.NUMBER, value: 0.06, key:'height'},
+    {label: 'type', type: InputType.SELECT, options: Object.entries(GAME_MODE).map(([key, value])=>({id:key, label:value})), value: GAME_MODE.TRIVIA, key:'type'},
+    // {label: 'connections', type: InputType.SELECT, options: 'spaces', value: [], key:'connections'},
+  
+  ]
+}
+
 const SpecialSelectControl = ({param, value, onChange}:{param:SpecialSelectInputParams, value:string, onChange:(name:string, value:string)=>void})=>{
 
   const {id, teamId} = useMe()
@@ -145,7 +201,7 @@ const SpecialSelectControl = ({param, value, onChange}:{param:SpecialSelectInput
   });
   return (
     <select value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
-      <option value="" selected disabled>Select</option>
+      <option disabled>Select</option>
       {options.map(option=>{
         return <option key={option.value} value={option.value}>{option.label}</option>
     })}
@@ -155,7 +211,17 @@ const SpecialSelectControl = ({param, value, onChange}:{param:SpecialSelectInput
 }
 
 
-const controls = [
+
+const boardControls = [
+  moveBoardSpace,
+  shiftBoardSpace,
+  createBoardPath,
+  removeBoardPath,
+  createBoardSpace,
+  // randomizeSpaces,
+]
+
+const playerControls = [
   remove,
   setInstructions,
   givePoints,
@@ -166,8 +232,8 @@ const controls = [
   moveFinal
 ]
 
-const Control = (props:{playerId:string, control:ControlDefinition})=>{
-  const {label, action, inputs} = props.control;
+const Control = ({staticProps={}, control}:{staticProps:Record<string,unknown>, control:ControlDefinition})=>{
+  const {label, action, inputs} = control;
   // const dispatch = useDispatch();
   const sendPeersMessage = usePeer((peer)=>(peer.sendPeersMessage)) as (
     data: {type: string, payload: UnknownAction},
@@ -183,9 +249,9 @@ const Control = (props:{playerId:string, control:ControlDefinition})=>{
   });
 
   const onSubmit = useCallback(()=>{
-    const payload = action({playerId: props.playerId, ... form})
+    const payload = action({...staticProps, ... form})
     sendPeersMessage({type: 'admin', payload})
-  },[sendPeersMessage, action, form, props.playerId])
+  },[sendPeersMessage, action, form, staticProps])
 
   const onChange = useCallback((key:string, value:string)=>{
     setForm((prevForm)=>({...prevForm, [key]:value}))
@@ -266,6 +332,10 @@ const AdminHeader = () =>{
             <div className="flex max-h-full w-full overflow-scroll max-w-[95dvw] flex-col gap-4 bg-slate-600 rounded-xl">
             <button className="border-black w-max mx-auto bg-slate-200 p-2 rounded-xl text-black" onClick={()=>{sendPeersMessage({type:'admin', payload:triggerNextQueuedAction()})}}>Trigger next action</button>
             <button className="border-black w-max mx-auto bg-slate-200 p-2 rounded-xl text-black" onClick={()=>{sendPeersMessage({type:'admin', payload:endMinigame()})}}>close modal</button>
+            {boardControls.map(control=>{
+              return <Control key={control.label} staticProps={{connections:[]}} control={control} />
+              })
+            }
             {
               players.map((player)=>{
                 return <div key={player.id} className="flex justify-stretch items-center flex-col gap-2 text-lg p-2">
@@ -276,9 +346,9 @@ const AdminHeader = () =>{
                   </summary>
                   <div className="flex flex-col" >
 
-                  {controls.map((control)=>{
+                  {playerControls.map((control)=>{
                     //@ts-expect-error I need to fix the control props or not maybe i don't care
-                    return <Control key={control} playerId={player.id} control={control} />
+                    return <Control key={control.label} staticProps={{playerId:player.id}} control={control} />
                   })}
                   </div>
                   </details>

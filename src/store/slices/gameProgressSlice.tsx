@@ -54,7 +54,6 @@ export const gameSlice = createSlice({
     endMinigame: (state) => {
       // state.modalOpen = false;
       state.mode = null;
-      return state;
     },
   },
   extraReducers: (builder) => {
@@ -65,7 +64,10 @@ export const gameSlice = createSlice({
         // action is inferred correctly here if using TS
       })
       .addCase(addQueuedAction, (state, action) => {
-        state.queuedActions.push(action.payload);
+        console.log('adding', action.payload)
+        if(action.payload.when == 'start') state.queuedActions.unshift(action.payload);
+        else state.queuedActions.push(action.payload);
+
         return state;
       })
       .addCase(restart, ()=>{
