@@ -89,7 +89,7 @@ const Shop = ()=>{
     <h1 className="text-8xl font-bold text-center">
       SHOP
     </h1>
-    <PlayerCard player={activePlayer} className="" />
+    <PlayerCard player={activePlayer} className="mx-auto bg-yellow-500 " />
     {selectedOption ? 
       <div key={selectedOption.name} className="max-w-48 mx-auto font-bold rounded-xl bg-green-200 p-2 flex flex-col border-2 border-green-400">
         <h2 className="text-4xl uppercase text-center">{selectedOption.name}</h2>
@@ -100,10 +100,10 @@ const Shop = ()=>{
     : 
     <div className="grid grid-cols-3 gap-2 place-items-center">
     {options.map(item=>{
-      return <div key={item.id} className="aspect-square max-w-64 gap-2 font-bold bg-white p-2 flex flex-col  border-2 border-black rounded-xl bg-gradient-radial from-sky-200 to-sky-400">
+      return <div key={item.id} className="aspect-square w-64 gap-2 font-bold bg-white p-2 flex flex-col  border-2 border-black rounded-xl bg-gradient-radial from-sky-200 to-sky-400">
         <h2 className="text-4xl uppercase text-center">{item.name}</h2>
         <h3 className="text-xl flex place-items-center justify-center"><img width="32" height="32" src={gold} />{item.price}</h3>
-        <h3 className="text-xl">{item.description}</h3>
+        <h3 className="text-l text-center">{item.description}</h3>
         <img width={100} height={100} className="mx-auto p-2 items flex-grow" src={item.image} />
         </div>
     })}
