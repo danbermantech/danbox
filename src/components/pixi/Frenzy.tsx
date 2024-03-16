@@ -14,6 +14,7 @@ import useBoardDimensions from '$hooks/useBoardDimensions';
 // import WrappedStage  from './WrappedStage';
 import ShiftingLavaBackground from './ShiftingLavaBackground';
 import FrenzyCar from './FrenzyCar';
+import useAudio from '$hooks/useAudio';
 // import PlayerCard from '$components/PlayerCard';
 
 const PlayerCard = lazy(async()=>await import('$components/PlayerCard'));
@@ -35,8 +36,8 @@ export const Frenzy = () =>
 {
   const {boardWidth, boardHeight } = useBoardDimensions();
   const players = useAppSelector((state) => state.players);
-  const [points, setPoints] = useState(seedAssets(Math.floor(Math.random() *45 + 5)));
-  const [gold, setGold] = useState(seedAssets(Math.floor(Math.random() *45 + 5)));
+  const [points, setPoints] = useState(seedAssets(Math.floor(Math.random() *1 + 1)));
+  const [gold, setGold] = useState(seedAssets(Math.floor(Math.random() *1 + 1)));
   const dispatch = useAppDispatch();
 
   const [playerPoints, setPlayerPoints] = useState<{[key:string]:number}>({});
@@ -79,20 +80,28 @@ export const Frenzy = () =>
     // dispatch(givePlayerGold({playerId, gold: 1}))
   },[_givePlayerGold]);
   
+  const {triggerSoundEffect} = useAudio();
 
+  const [completed, setCompleted] = useState(false);
+
+  useEffect(()=>{
+    if(completed) return triggerSoundEffect('victory1');
+    return triggerSoundEffect('frenzy');
+    // return ()=>{if(stop)stop()};
+  },[triggerSoundEffect, completed]);
 
   useEffect(()=>{
     players.forEach((player)=>{
     dispatch(setPlayerControls({playerId: player.id, controls: 'FRENZY'}))
     })
-  })
+    // console.log('abcd')
+  },[])
 
   const [results, setResults] = useState<Player[]>([]);
 
   useEffect(()=>{
     if(gold.filter(g=>!g.collected).length + points.filter(g=>!g.collected).length == 0 && results.length == 0){
-      dispatch(setPlayerControls({playerId: players[0].id, controls: []}))
-      
+      console.log(results)
       setResults(()=>{
         return players.sort((a,b)=>{
           if(playerPoints[a.id] !== playerPoints[b.id]){
@@ -104,40 +113,59 @@ export const Frenzy = () =>
           return 0;
         })
       });
-      //   .map((player)=>{
-      //     return {
-      //       ...player,
-      //       points: points.filter((point)=>point.collected == player.id).length,
-      //       gold: gold.filter((point)=>point.collected == player.id).length,
-      //     }
-      //   }).sort((a,b)=>{
-      //     if(a.points !== b.points){
-      //       return b.points - a.points;
-      //     }
-      //     if(a.gold !== b.gold){
-      //       return b.gold - a.gold;
-      //     }
-      //     return 0;
-      //   })
-      // });
-      setTimeout(()=>{
-       dispatch((dispatch)=>{
-        Object.entries(playerPoints).forEach(([playerId, points])=>{
-          dispatch(givePlayerPoints({playerId, points}))
-        });
-        Object.entries(playerGold).forEach(([playerId, gold])=>{
-          dispatch(givePlayerGold({playerId, gold}))
-        });
-       })
-      },1000)
-      setTimeout(()=>{
-        dispatch(endMinigame());
-        setTimeout(()=>{
-          dispatch(triggerNextQueuedAction());
-        },500);
-      }, 5000)
     }
-  },[gold, points, dispatch, players, playerGold, playerPoints])
+  },[
+    gold, 
+    points, 
+    players, 
+    playerGold, 
+    playerPoints, 
+    results
+  ])
+
+
+  const [rewardGranted, setRewardGranted] = useState(false)
+  const endFrenzy = useCallback(()=>{
+    if(!results.length) return;
+    // let t1: NodeJS.Timeout;
+      dispatch(setPlayerControls({playerId: players[0].id, controls: []}))
+      const t = setTimeout(()=>{
+        // if(completed) return;
+        if(completed && rewardGranted) return;
+        dispatch((dispatch)=>{
+          Object.entries(playerPoints).forEach(([playerId, points])=>{
+            dispatch(givePlayerPoints({playerId, points}))
+          });
+          Object.entries(playerGold).forEach(([playerId, gold])=>{
+            dispatch(givePlayerGold({playerId, gold}))
+          });
+          setRewardGranted(true);
+        })
+      },1000)
+      const t1 = setTimeout(()=>{
+        dispatch(endMinigame());
+        dispatch(triggerNextQueuedAction());
+        // t2 = setTimeout(()=>{
+        // },500);
+      }, 5000)
+      setCompleted(true)
+      return ()=>{
+        clearTimeout(t);
+        clearTimeout(t1);
+        // clearTimeout(t2);
+      }
+  },[
+    completed, 
+    dispatch, 
+    playerGold, 
+    playerPoints, 
+    players, 
+    results,
+    rewardGranted
+  ])
+
+
+  useEffect(endFrenzy,[endFrenzy])
 
   if(results.length){
     return <div className="flex gap-36 flex-col">
@@ -145,7 +173,7 @@ export const Frenzy = () =>
       <div className="flex flex-row place-items-center justify-center gap-">
         {
           results.map((result)=>{
-            return <PlayerCard player={result} showGold={true} showPoints={true} className='bg-green-200 border-green-400'/>
+            return <PlayerCard key={result.id} overrideGold={`+${playerGold[result.id]}`} overridePoints={`+${playerPoints[result.id]}`} player={result} showGold={true} showPoints={true} className='bg-green-200 border-green-400'/>
           })
         }
         </div>

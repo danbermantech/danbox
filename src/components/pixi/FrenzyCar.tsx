@@ -1,9 +1,9 @@
 import useBoardDimensions from "$hooks/useBoardDimensions";
 import usePeerDataReceived from "$hooks/useDataReceived";
-import type { Player, StoreData } from "$store/types"
+import type { Player } from "$store/types"
 import { Sprite, useTick } from "@pixi/react";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 
 const FrenzyCar = (
   {
@@ -28,8 +28,8 @@ const FrenzyCar = (
 
   const [movementValues, setMovementValues] = useState({targetVelocity:0, angle:0})
 
-  const playerState = useSelector((state:StoreData)=>state.players.find((p)=>p.id == player.id));
-  console.log(playerState)
+  // const playerState = useSelector((state:StoreData)=>state.players.find((p)=>p.id == player.id));
+  // console.log(playerState)
   usePeerDataReceived<{playerId:string, value:{targetVelocity:number, angle:number}, action:string}>((data)=>{
     if(data.payload.playerId !== player.id) return;
     setMovementValues({targetVelocity: data.payload.value.targetVelocity, angle: data.payload.value.angle})

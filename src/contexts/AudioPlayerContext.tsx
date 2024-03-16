@@ -18,6 +18,7 @@ import note6 from '$assets/audio/notes/note6.wav';
 import note7 from '$assets/audio/notes/note7.wav';
 import note8 from '$assets/audio/notes/note8.wav';
 import note9 from '$assets/audio/notes/note9.wav';
+import frenzy from '$assets/audio/frenzy.mp3'
 
 
 const audioFiles = {
@@ -40,18 +41,25 @@ const audioFiles = {
   note7,
   note8,
   note9,
+  frenzy
 }
 
 
 type AudioContextValue = {
-  triggerSoundEffect: (name: string) => void;
+  triggerSoundEffect: (name: string) => (()=>void)|void;
   muteAudio: ()=>void;
   unmuteAudio: ()=>void;
   isMuted: boolean;
   playBackgroundMusic: ()=>void;
 }
 
-const AudioPlayerContext = createContext<AudioContextValue>({playBackgroundMusic:()=>{}, triggerSoundEffect: () => { }, muteAudio: ()=>{}, unmuteAudio: ()=>{}, isMuted: true });
+const AudioPlayerContext = createContext<AudioContextValue>({
+  playBackgroundMusic:()=>{}, 
+  triggerSoundEffect: () => { }, 
+  muteAudio: ()=>{}, 
+  unmuteAudio: ()=>{}, 
+  isMuted: true 
+});
 
 // function getCommonName(name:string){
 //   const split = name.split('/')

@@ -7,6 +7,7 @@ import victory1 from './victory1.mp3';
 import victory2 from './victory2.mp3';
 import victory3 from './victory3.mp3';
 import victory4 from './victory4.mp3';
+import frenzy from './frenzy.mp3'
 
 export default {
   fanfare1,
@@ -18,4 +19,5 @@ victory1,
 victory2,
 victory3,
 victory4,
+frenzy,
 };
