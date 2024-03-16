@@ -1,7 +1,7 @@
 // import shrimp from '$assets/shrimp.png';
 // import magicHat from '$assets/magicHat.png';
 // import {  useSelector } from 'react-redux';
-import type {  Item, ItemDefinition } from '$store/types';
+import type {  Item, ItemDefinition, Player } from '$store/types';
 import { useCallback, useEffect, useState } from 'react';
 import { clearAllPlayerControls, setPlayerControls, givePlayerGold, givePlayerItem } from '$store/slices/playerSlice';
 import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
