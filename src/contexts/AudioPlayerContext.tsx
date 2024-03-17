@@ -35,6 +35,8 @@ import dink6 from '$assets/audio/dink6.mp3'
 import dink7 from '$assets/audio/dink7.mp3'
 import gamble from '$assets/audio/gamble.mp3'
 import hooray from '$assets/audio/hooray.mp3'
+import shop0 from '$assets/audio/shop0.mp3'
+
 
 
 const audioFiles = {
@@ -73,7 +75,8 @@ const audioFiles = {
   dink6,
   dink7,
   gamble,
-  hooray
+  hooray,
+  shop0,
 }
 
 
