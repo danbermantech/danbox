@@ -55,6 +55,9 @@ export const gameSlice = createSlice({
       // state.modalOpen = false;
       state.mode = null;
     },
+    setGameState: (_, action) => {
+      return action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -75,7 +78,7 @@ export const gameSlice = createSlice({
       })
       .addCase(triggerNextQueuedAction, (state) => {
         const nextAction = state.queuedActions.shift();
-        console.log(nextAction)
+        // console.log(nextAction)
         if(!nextAction) {
           state.currentRound += 1;
           if(state.currentRound > state.maxRounds){
@@ -113,6 +116,7 @@ export const {
   openModal,
   endMinigame,
   setMaxRounds,
+  setGameState
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

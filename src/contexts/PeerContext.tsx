@@ -28,6 +28,7 @@ export type PeerContextValue = {
   connections: DataConnection[];
   sendOnGuestConnected: (value: unknown) => void;
   setOnConnectSendValue: (value: unknown) => void;
+  onConnectSendValue: unknown;
   myPeerId: string;
   myShortId: string;
   initialize: (func?: () => void) => void;
@@ -45,6 +46,7 @@ const defaultState:PeerContextValue = {
   connections: [],
   sendOnGuestConnected: () => {},
   setOnConnectSendValue: () => {},
+  onConnectSendValue: null,
   myPeerId: "",
   myShortId: '',
   initialize: () => {},
@@ -401,6 +403,7 @@ const PeerContextProvider = ({
       connections,
       sendOnGuestConnected,
       setOnConnectSendValue,
+      onConnectSendValue,
       onPeerConnect,
       myPeerId,
       myShortId,
@@ -415,6 +418,7 @@ const PeerContextProvider = ({
       onDataReceived,
       peerReady,
       setOnConnectSendValue,
+      onConnectSendValue,
       connections,
       sendOnGuestConnected,
       onPeerConnect,

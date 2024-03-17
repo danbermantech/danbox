@@ -89,18 +89,49 @@ const HostStateManager = () => {
   },[currentRound, gameState.mode, gameState.currentRound, players, board, dispatch, movementActionId])
 
   const sendPeersMessage = usePeer((cv) => cv.sendPeersMessage) as (
-    data:{type: string, payload: {value:Partial<StoreData>}},
+    data:{type: string, payload: {value:unknown}},
   ) => void;
-  const setOnConnectSendValue = usePeer((cv) => cv.setOnConnectSendValue) as (
-    value: unknown,
-  ) => void;
+  // const setOnConnectSendValue = usePeer((cv) => cv.setOnConnectSendValue) as (
+  //   value: unknown,
+  // ) => void;
+  // const onConnctSendValue = usePeer((cv) => cv.onConnectSendValue) as unknown;
   const peerReady = usePeer((cv) => cv.peerReady) as boolean;
-  useEffect(() => {
-    if (!peerReady) return;
-    setOnConnectSendValue && setOnConnectSendValue({state:players});
-    sendPeersMessage &&
-      sendPeersMessage({ type: "state", payload: { value: {players, game: gameState, board} } });
-  }, [sendPeersMessage, setOnConnectSendValue, peerReady, players, gameState, board]);
+
+  useEffect(()=>{
+    if(!peerReady || !sendPeersMessage ) return;
+    // if(!isEqual(onConnctSendValue, {state:players})){
+    //   console.log('beep beep', onConnctSendValue, {state:players})
+      // setOnConnectSendValue({state:players});
+      sendPeersMessage({type: 'players', payload: {value: players}})
+    // }
+  },[peerReady, sendPeersMessage, players])
+
+  useEffect(()=>{
+    if(!peerReady || !sendPeersMessage) return;
+    // setOnConnectSendValue({state:players});
+    sendPeersMessage({type: 'game', payload: {value: gameState}})
+  },[peerReady, sendPeersMessage, gameState])
+
+  useEffect(()=>{
+    if(!peerReady || !sendPeersMessage) return;
+    // setOnConnectSendValue({state:players});
+    sendPeersMessage({type: 'board', payload: {value: board}})
+  },[peerReady, sendPeersMessage, board])
+
+  // useEffect(() => {
+  //   if (!peerReady) return;
+  //   if(!isEqual(onConnctSendValue, {state:players})){
+
+  //     console.log('beep beep', onConnctSendValue, {state:players})
+  //     setOnConnectSendValue && setOnConnectSendValue({state:players});
+  //   }
+  //   if(sendPeersMessage){
+  //     sendPeersMessage({ type: "state", payload: { value: {players, game: gameState, board} } });
+  //     sendPeersMessage({type: 'players', payload: {value: players}})
+  //     sendPeersMessage({type: 'game', payload: {value: gameState}})
+  //     sendPeersMessage({type: 'board', payload: {value: board}})
+  //   } 
+  // }, [sendPeersMessage, setOnConnectSendValue, peerReady, players, gameState, board, onConnctSendValue]);
   return null;
 
 };
