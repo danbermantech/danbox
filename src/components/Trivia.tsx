@@ -98,7 +98,7 @@ const Trivia =
 
     useEffect(()=>{
       if(completed) return triggerSoundEffect('hooray');
-      return triggerSoundEffect('trivia');
+      return triggerSoundEffect(`trivia${Math.round(Math.random())}`);
     },[triggerSoundEffect, completed]);
 
     const endTrivia = useCallback(()=>{

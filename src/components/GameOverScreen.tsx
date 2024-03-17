@@ -25,7 +25,7 @@ const GameOverScreen = ()=>{
       <h1 className="text-8xl font-bold uppercase text-black text-center">Game Over</h1>
       <div className="flex flex-row flex-wrap justify-center gap-2">
         {sortedPlayers.map((player, index)=>(
-          <div className="flex flex-col items-center gap-4 justify-center">
+          <div key={player.id} className="flex flex-col items-center gap-4 justify-center">
             <div className="text-8xl font-extrabold text-black text-center">{index+1}</div>
             <PlayerCard player={player} showGold={true} showPoints={true} className={clsx("flex-shrink", index == 0 ? "bg-green-200 border-green-400" : "bg-slate-200 border-slate-400",)} />
           </div>

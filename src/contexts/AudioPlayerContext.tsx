@@ -8,7 +8,8 @@ import victory4 from '$assets/audio/victory4.mp3';
 import movement0 from '$assets/audio/movement0.mp3';
 import movement1 from '$assets/audio/movement1.mp3';
 import registration from '$assets/audio/registration.mp3';
-import trivia from '$assets/audio/trivia.mp3';
+import trivia0 from '$assets/audio/trivia0.mp3';
+import trivia1 from '$assets/audio/trivia1.mp3';
 import note0 from '$assets/audio/notes/note0.wav';
 import note1 from '$assets/audio/notes/note1.wav';
 import note2 from '$assets/audio/notes/note2.wav';
@@ -46,7 +47,8 @@ const audioFiles = {
   victory4, 
   fanfare1, 
   loss1,
-  trivia,
+  trivia0,
+  trivia1,
   note0,
   note1,
   note2,
@@ -90,11 +92,6 @@ const AudioPlayerContext = createContext<AudioContextValue>({
   unmuteAudio: ()=>{}, 
   isMuted: true 
 });
-
-// function getCommonName(name:string){
-//   const split = name.split('/')
-//   return split[split.length-1].split('.')[0]
-// }
 
 const AudioPlayerContextProvider = ({ children }:{children:React.ReactNode}) => {
 
