@@ -167,7 +167,6 @@ const Trivia =
               filter:  "drop-shadow(4px 4px 8px #2200ff)",
             }}
           >
-            <span className="hidden animate-delay-100 animate-delay-200 aniamte-delay-300 animate-delay-400 animate-delay-500 animate-delay-600 animate-delay-700 animate-delay-800 animate-delay-900"></span>
             <div style={{ textTransform: "capitalize" }}>
               {label}
             </div>
