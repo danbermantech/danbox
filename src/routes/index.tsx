@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { createBrowserRouter, Outlet, redirect } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import { PeerContextProvider } from "../contexts/PeerContext";
 import { RouterProvider } from "react-router-dom";
 import Logo from "$components/Logo";
