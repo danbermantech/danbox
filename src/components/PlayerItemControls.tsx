@@ -2,7 +2,7 @@ import { PeerDataCallbackPayload } from "$hooks/useDataReceived";
 import useMe from "$hooks/useMe"
 import { usePeer } from "$hooks/usePeer";
 import { useCallback, useMemo, useState } from "react";
-import itemPlaceholder from '$assets/sprites/itemPlaceholder.png'
+import { itemPlaceholder } from "$assets/images";
 import { Item } from "$store/types";
 import { Modal } from "@mui/material";
 import { useAppSelector } from "$store/hooks";

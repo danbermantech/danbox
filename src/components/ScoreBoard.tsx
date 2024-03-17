@@ -4,7 +4,7 @@ import PlayerCard from "./PlayerCard";
 import { CopyAllRounded } from "@mui/icons-material";
 import { usePeer } from "$hooks/usePeer";
 import QRShare from "./QRShare";
-import bgImage from '$assets/bg.png'
+import {bg as bgImage} from '$assets/images.ts'
 import MuteToggle from "./MuteToggle";
 
 const ScoreBoard = () => {

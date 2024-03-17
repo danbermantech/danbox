@@ -5,8 +5,7 @@ import type {  Player, } from '$store/types';
 // import { ReactReduxContext } from 'react-redux';
 // import { PeerContext } from '$contexts/PeerContext';
 import {v4 as uuidv4 } from 'uuid';
-import goldImg from '$assets/sprites/gold.png';
-import pointImg from '$assets/sprites/points.png';
+import {gold as goldImg, points as pointImg} from '$assets/images.ts';
 import { givePlayerGold, givePlayerPoints, setPlayerControls } from '$store/slices/playerSlice';
 import { endMinigame } from '$store/slices/gameProgressSlice';
 import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
@@ -85,8 +84,8 @@ export const Frenzy = () =>
   const [completed, setCompleted] = useState(false);
 
   useEffect(()=>{
-    if(completed) return triggerSoundEffect('victory1');
-    return triggerSoundEffect(`frenzy${Math.round(Math.random())}`);
+    if(completed) return triggerSoundEffect('victory');
+    return triggerSoundEffect(`frenzy`);
     // return ()=>{if(stop)stop()};
   },[triggerSoundEffect, completed]);
 

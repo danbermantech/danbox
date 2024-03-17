@@ -1,7 +1,6 @@
 import { Player } from "$store/types"
 import clsx from "clsx"
-import gold from '$assets/sprites/gold.png'
-import points from '$assets/sprites/points.png'
+import {gold, points} from '$assets/images.ts'
 const PlayerCard = (
   { 
     player, 

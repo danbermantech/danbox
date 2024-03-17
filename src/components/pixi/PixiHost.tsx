@@ -1,5 +1,6 @@
 import { Sprite, } from '@pixi/react';
-import bg from '$assets/bg.png';
+
+import {bg} from '$assets/images';
 // import { WrappedStage } from './Frenzy';
 import WrappedStage from './WrappedStage';
 import RoundCounter from './RoundCounter';

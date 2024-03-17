@@ -5,8 +5,7 @@ import {  Player, StoreData } from "$store/types";
 import { handleTransfer } from "$store/slices/playerSlice";
 import { endMinigame } from "$store/slices/gameProgressSlice";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
-import rhiannon from '../assets/sprites/rhiannon.png';
-import stormy from '../assets/sprites/stormy.png';
+import {stormy, rhiannon} from '$assets/images.ts'
 import useAudio from "$hooks/useAudio";
 
 const RandomAssetChange = () => {
@@ -24,12 +23,13 @@ const {triggerSoundEffect} = useAudio();
 const [complete, setComplete] = useState(false);
 
 useEffect(()=>{
-  if(complete) return triggerSoundEffect(`chaching${Math.floor(Math.random()*3)}`);
+  if(complete) return triggerSoundEffect(`chaching`);
   return triggerSoundEffect('gamble');
 },[triggerSoundEffect, complete])
 
 return (
-  <div style={{backgroundImage: `url(${activePlayer.spaceId == 'rhiannon' ? rhiannon : stormy})`}}>
+  <div className="w-full h-full flex flex-col items-center justify-items-center justify-center" style={{backgroundImage: `url(${activePlayer.spaceId == 'rhiannon' ? rhiannon : stormy})`, backgroundSize:'cover', backgroundPosition:'center'}}>
+    
     <h1 className="text-black text-center text-8xl font-extrabold">GAMBLE</h1>
     <div className="text-4xl text-black w-full text-center flex items-center flex-col font-bold mb-4">
       <div className="bg-white p-4 rounded-2xl border-black border-4">
@@ -80,7 +80,7 @@ return (
         }, 2000)
       }}
       onChange={(key, value) => {
-        triggerSoundEffect(`dink${Math.floor(Math.random()*8)}`);
+        triggerSoundEffect(`dink`);
         setState((prev) => ({ ...prev, [key]: value }));
       }}
       forPlayer={activePlayerName}

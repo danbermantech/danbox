@@ -3,8 +3,7 @@ import { AssetDefinition, Player, StoreData } from '$store/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { setPlayerControls, givePlayerGold, givePlayerPoints, setPlayerInstructions } from '$store/slices/playerSlice';
 import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
-import gold from '$assets/sprites/gold.png';
-import points from '$assets/sprites/points.png';
+import {gold, points} from '$assets/images.ts';
 import useAudio from '$hooks/useAudio';
 import usePeerDataReceived, { PeerDataCallbackPayload } from '$hooks/useDataReceived';
 import {v4 as uuidv4} from 'uuid'
@@ -113,7 +112,7 @@ const GetAssetScreen = ()=>{
       const option = filteredOptions.find((option)=>(option.id == data.payload.value));
       if(!player || !option) return;
       dispatch(option.action(player.id))
-      triggerSoundEffect('victory2')
+      triggerSoundEffect('victory')
       const timeout = setTimeout(()=>{
         dispatch(endMinigame());
         setTimeout(()=>{

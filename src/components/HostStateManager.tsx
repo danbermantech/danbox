@@ -66,7 +66,7 @@ const HostStateManager = () => {
   const {triggerSoundEffect} = useAudio();
 
   useEffect(()=>{
-    if(gameState.mode == 'MOVEMENT') return triggerSoundEffect(`movement${Math.floor(Math.random()*2)}`)
+    if(gameState.mode == 'MOVEMENT') return triggerSoundEffect(`movement`)
   },[gameState.mode, triggerSoundEffect])
 
   useEffect(()=>{

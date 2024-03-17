@@ -39,7 +39,7 @@ const RegistrationScreen = () => {
 
   const {playBackgroundMusic, triggerSoundEffect} = useAudio();
 
-  useEffect(()=>{if(players.length > 0) return triggerSoundEffect('victory4')},[players, triggerSoundEffect])
+  useEffect(()=>{if(players.length > 0) return triggerSoundEffect('victory')},[players, triggerSoundEffect])
   useEffect(()=>{
     return playBackgroundMusic();
   },[playBackgroundMusic])

@@ -1,6 +1,3 @@
-// import shrimp from '$assets/shrimp.png';
-// import magicHat from '$assets/magicHat.png';
-// import {  useSelector } from 'react-redux';
 import type {  Item, ItemDefinition, Player } from '$store/types';
 import { useCallback, useEffect, useState } from 'react';
 import { clearAllPlayerControls, setPlayerControls, givePlayerGold, givePlayerItem } from '$store/slices/playerSlice';
@@ -8,9 +5,7 @@ import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
 import useAudio from '$hooks/useAudio';
 import usePeerDataReceived, { PeerDataCallbackPayload } from '$hooks/useDataReceived';
 import {v4 as uuidv4} from 'uuid'
-// import activateItem from '$store/actions/activateItem';
-import itemPlaceholder from '$assets/sprites/itemPlaceholder.png';
-import gold from "$assets/sprites/gold.png";
+import {gold, itemPlaceholder} from '$assets/images.ts';
 import { endMinigame } from '$store/slices/gameProgressSlice';
 import items from '$constants/items';
 import { useAppDispatch, useAppSelector } from '$store/hooks';
@@ -49,8 +44,8 @@ const Shop = ()=>{
   const [selectedOption, setSelectedOption] = useState<Item>();
 
   useEffect(()=>{
-    if(selectedOption) return triggerSoundEffect(`chaching${Math.floor(Math.random()*3)}`)
-    return triggerSoundEffect('shop0')
+    if(selectedOption) return triggerSoundEffect(`chaching`)
+    return triggerSoundEffect('shop')
   },[triggerSoundEffect, selectedOption])
 
   const dataReceivedCallback = useCallback((data: PeerDataCallbackPayload, peerId:string) => {

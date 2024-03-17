@@ -1,8 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-// import {  useSelector } from "react-redux";
 import { clearAllPlayerControls, setPlayerControls, givePlayerGold, givePlayerPoints, setPlayerInstructions } from "$store/slices/playerSlice";
 import TriviaQuestions, { TriviaQuestion } from "constants/triviaQuestions";
-// import { StoreData } from "$store/types";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import { endMinigame } from "$store/slices/gameProgressSlice";
 import PlayerCard from "./PlayerCard";
@@ -71,7 +69,7 @@ const Trivia =
 
 
     const dataReceivedCallback = useCallback((data:PeerDataCallbackPayload, peerId:string) => {
-      triggerSoundEffect(`dink${Math.floor(Math.random()*8)}`)  
+      triggerSoundEffect(`dink`)  
       setPlayerAnswers((prev)=>{
         const next = {...prev};
         next[peerId] = data.payload.value;
@@ -98,7 +96,7 @@ const Trivia =
 
     useEffect(()=>{
       if(completed) return triggerSoundEffect('hooray');
-      return triggerSoundEffect(`trivia${Math.round(Math.random())}`);
+      return triggerSoundEffect(`trivia`);
     },[triggerSoundEffect, completed]);
 
     const endTrivia = useCallback(()=>{

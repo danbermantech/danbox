@@ -1,10 +1,5 @@
 import { useState } from 'react';
-import lava0 from '$assets/sprites/lava/lava0.png';
-// import lava1 from '$assets/sprites/lava/lava1.png';
-// import lava2 from '$assets/sprites/lava/lava2.png';
-// import lava3 from '$assets/sprites/lava/lava3.png';
-// import lava4 from '$assets/sprites/lava/lava4.png';
-// import lava5 from '$assets/sprites/lava/lava5.png';
+import { lava0 } from '$assets/images'
 import { Sprite, useTick } from '@pixi/react';
 import { BLEND_MODES } from 'pixi.js';
 import useBoardDimensions from '$hooks/useBoardDimensions';

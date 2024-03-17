@@ -1,7 +1,7 @@
 import { usePeer } from "$hooks/usePeer";
 import { useCallback, useEffect, useState } from "react";
 import { getCookie, useCookie } from "utilities/cookies";
-import sprites from "$assets/sprites";
+import { characters } from "$assets/images.ts";
 import { useLocation, useSearchParams } from "react-router-dom";
 
 const SignUp = ()=>{
@@ -69,7 +69,7 @@ const SignUp = ()=>{
       <input type="text" id="nameInput" className="text-black placeholder:text-slate-400 border-b-2 border-black text-xl" placeholder="Please enter a name" value={tempName} onChange={(event)=>{setTempName(event.currentTarget.value)}} />
       <div className="grid grid-cols-3 gap-2 h-72 overflow-scroll">
     
-        {Object.entries(sprites).map(([key, value])=>{
+        {Object.entries(characters).map(([key, value])=>{
           return <img 
             key={key}
             src={value} 

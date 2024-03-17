@@ -9,6 +9,7 @@ import restart from "$store/actions/restart";
 import movePlayerFinal from "$store/actions/movePlayerFinal";
 import items from "$constants/items";
 import {v4 as uuidv4} from 'uuid'
+import { playerPlaceholder } from "$assets/images";
 
 function isRejectedAction(action: Action): action is RejectedAction {
   return action.type.endsWith("rejected");
@@ -39,7 +40,7 @@ export const playerSlice = createSlice({
         items: [],
         history: [],
         controls: [],
-        image: "https://pixijs.io/pixi-react/img/bunny.png",
+        image: playerPlaceholder,
         movesPerRound: defaultMovesPerRound,
         hasMoved: false,
         instructions:"",

@@ -1,10 +1,4 @@
-import shrimp from '$assets/sprites/items/shrimp.png';
-import magicHat from '$assets/sprites/items/magicHat.png';
-import teleport from '$assets/sprites/items/teleport.png';
-import cheat from '$assets/sprites/items/cheat.png';
-import souperSoup from '$assets/sprites/items/souperSoup.png';
-import soup from '$assets/sprites/items/soup.png';
-import magicHand from '$assets/sprites/items/magicHand.png';
+import {shrimp, magicHat, teleport, cheat, souperSoup, soup, magicHand} from '$assets/images.ts';
 // import activateItem from '$store/actions/activateItem'
 import { ItemDefinition } from '$store/types';
 

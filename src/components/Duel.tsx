@@ -6,7 +6,8 @@ import { endMinigame } from "$store/slices/gameProgressSlice";
 import PlayerCard from "./PlayerCard";
 import usePeerDataReceived, { PeerDataCallbackPayload } from "$hooks/useDataReceived";
 import {v4 as uuidv4} from 'uuid'
-import swords from '$assets/sprites/swords.png';
+import {swords} from '$assets/images.ts';
+
 import { useAppDispatch, useAppSelector } from "$store/hooks";
 
 type Challenge = {
@@ -116,7 +117,6 @@ const Duel =
     const activePlayers = useAppSelector((state) => state.game.activePlayers);
 
     const playerA = useMemo(()=>(players.find((player)=>{
-      if(players.length < 3) return;
       return player.id == activePlayers[0] || player.name == activePlayers[0]
     }) as Player
     ),[players, activePlayers])
@@ -127,9 +127,14 @@ const Duel =
         return notA[randomIndex];
     });
 
-    const [audience] = useState(()=>(
-      players.filter((player)=>(player.id !== playerA.id && player.id !== playerB?.id))
-    ))
+    const [audience] = useState(()=>{
+      if(!playerA || !playerB) return [];
+      return players.filter((player)=>(player.id !== playerA.id && player.id !== playerB?.id))
+    })
+
+    // useEffect(()=>{
+    //   if(!playerA || !playerB) dispatch((disp)=>{disp(endMinigame()); disp(triggerNextQueuedAction());})
+    // },[playerA, playerB, dispatch])
 
     const [challenge] = useState(challenges[Math.floor(Math.random() * challenges.length)])
 

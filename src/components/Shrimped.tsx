@@ -1,7 +1,7 @@
 import { usePeer } from "$hooks/usePeer";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import shrimp from '$assets/sprites/shrimp.png'
+import { shrimp } from "$assets/images";
 
 const Shrimped = () => {
   const [clicks, setClicks] = useState(0);

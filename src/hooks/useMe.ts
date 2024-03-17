@@ -1,7 +1,7 @@
 import { StoreData } from "$store/types";
 import { useSelector } from "react-redux";
 import { usePeer } from "./usePeer";
-import playerPlaceholder from '$assets/sprites/playerPlaceholder.png';
+import {playerPlaceholder} from '$assets/images'
 function useMe(){
   const myPeerId = usePeer((cv) => cv.myPeerId) as string;
   console.log(myPeerId)
