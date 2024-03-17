@@ -2,7 +2,8 @@ import { Suspense, lazy } from "react";
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import { PeerContextProvider } from "../contexts/PeerContext";
 import { RouterProvider } from "react-router-dom";
-import Logo from "$components/Logo";
+// import Logo from "$components/Logo";
+import DefaultSuspense from "$components/DefaultSuspense";
 const HostPage = lazy(async()=>await import("./host/Page"));
 const PlayPage = lazy(async()=>await import("./play/Page"));
 const AdminPage = lazy(async()=>await import("./admin/Page"));
@@ -14,7 +15,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <Suspense fallback={<Logo />}>
+      <Suspense fallback={<DefaultSuspense />}>
         <PeerContextProvider>
           <div>
             {/* <h1>DanBox</h1> */}
