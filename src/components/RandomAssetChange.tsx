@@ -1,5 +1,5 @@
 import OptionMachine from "./OptionMachine";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {  Player, StoreData } from "$store/types";
 import { handleTransfer } from "$store/slices/playerSlice";
@@ -7,6 +7,7 @@ import { endMinigame } from "$store/slices/gameProgressSlice";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import rhiannon from '../assets/sprites/rhiannon.png';
 import stormy from '../assets/sprites/stormy.png';
+import useAudio from "$hooks/useAudio";
 
 const RandomAssetChange = () => {
   const [state, setState] = useState<Record<string, string>>({});
@@ -18,6 +19,15 @@ const RandomAssetChange = () => {
 const dispatch = useDispatch();
 const activePlayerName = useSelector((state:StoreData) => state.game.activePlayers[0]);
 const activePlayer = useSelector((state:StoreData) => state.players.find((player)=>(player.name == activePlayerName || player.id == activePlayerName))) as Player;
+const {triggerSoundEffect} = useAudio();
+
+const [complete, setComplete] = useState(false);
+
+useEffect(()=>{
+  if(complete) return triggerSoundEffect(`chaching${Math.floor(Math.random()*3)}`);
+  return triggerSoundEffect('gamble');
+},[triggerSoundEffect, complete])
+
 return (
   <div style={{backgroundImage: `url(${activePlayer.spaceId == 'rhiannon' ? rhiannon : stormy})`}}>
     <h1 className="text-black text-center text-8xl font-extrabold">GAMBLE</h1>
@@ -56,6 +66,7 @@ return (
         { label: "target", options: players.filter((player)=>player.id !== activePlayerName && player.name !== activePlayerName).map((player) => player.name) },
       ]}
       onComplete={(value) => {
+        setComplete(true);
         console.log(value);
         setState(value.obj);
         console.log({from: activePlayerName, ...value.obj})
@@ -69,6 +80,7 @@ return (
         }, 2000)
       }}
       onChange={(key, value) => {
+        triggerSoundEffect(`dink${Math.floor(Math.random()*8)}`);
         setState((prev) => ({ ...prev, [key]: value }));
       }}
       forPlayer={activePlayerName}

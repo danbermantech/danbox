@@ -86,7 +86,7 @@ export const Frenzy = () =>
 
   useEffect(()=>{
     if(completed) return triggerSoundEffect('victory1');
-    return triggerSoundEffect('frenzy');
+    return triggerSoundEffect(`frenzy${Math.round(Math.random())}`);
     // return ()=>{if(stop)stop()};
   },[triggerSoundEffect, completed]);
 

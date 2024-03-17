@@ -50,9 +50,7 @@ const Trivia =
 
     const {triggerSoundEffect} = useAudio();
 
-    useEffect(()=>{
-      return triggerSoundEffect('trivia');
-    },[triggerSoundEffect]);
+
 
     useEffect(()=>{
       dispatch((disp)=>{
@@ -73,12 +71,13 @@ const Trivia =
 
 
     const dataReceivedCallback = useCallback((data:PeerDataCallbackPayload, peerId:string) => {
-        setPlayerAnswers((prev)=>{
-          const next = {...prev};
-          next[peerId] = data.payload.value;
-          return next;
-        })
-    }, [setPlayerAnswers]);
+      triggerSoundEffect(`dink${Math.floor(Math.random()*8)}`)  
+      setPlayerAnswers((prev)=>{
+        const next = {...prev};
+        next[peerId] = data.payload.value;
+        return next;
+      })
+    }, [setPlayerAnswers, triggerSoundEffect]);
 
     usePeerDataReceived(dataReceivedCallback, actionId)
 
@@ -96,6 +95,11 @@ const Trivia =
         })
       } 
     },[playerAnswers, players, dispatch, setCompleted, triviaQuestion.answer, completed, results])
+
+    useEffect(()=>{
+      if(completed) return triggerSoundEffect('hooray');
+      return triggerSoundEffect('trivia');
+    },[triggerSoundEffect, completed]);
 
     const endTrivia = useCallback(()=>{
       let t1: NodeJS.Timeout
