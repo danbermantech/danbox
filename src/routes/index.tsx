@@ -2,17 +2,19 @@ import { Suspense, lazy } from "react";
 import { createBrowserRouter, Outlet, redirect } from "react-router-dom";
 import { PeerContextProvider } from "../contexts/PeerContext";
 import { RouterProvider } from "react-router-dom";
+import Logo from "$components/Logo";
 const HostPage = lazy(async()=>await import("./host/Page"));
 const PlayPage = lazy(async()=>await import("./play/Page"));
 const AdminPage = lazy(async()=>await import("./admin/Page"));
 const PlayLayout = lazy(async()=>await import("./play/Layout"));
 const HostLayout = lazy(async()=>await import("./host/Layout"));
 const AdminLayout = lazy(async()=>await import("./admin/Layout"));
+const Home = lazy(async()=>await import("./Home"));
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <Suspense fallback={<div className="w-screen mx-auto my-auto h-screen min-w-full min-h-full bg-red-400 animate-pulse flex justify-center place-items-center items-center content-center"><div className="mx-auto h-min content-center my-auto text-center text-8xl font-extrabold">Loading...</div></div>}>
+      <Suspense fallback={<Logo />}>
         <PeerContextProvider>
           <div>
             {/* <h1>DanBox</h1> */}
@@ -22,7 +24,10 @@ const router = createBrowserRouter([
       </Suspense>
     ),
     children: [
-      { index: true, loader: () => redirect("/play") },
+      { index: true, 
+        // loader: () => redirect("/play") 
+        element: <Home />
+      },
       {
         path: "/host",
         element: <HostLayout />,
