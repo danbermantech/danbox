@@ -71,7 +71,7 @@ const Shop = ()=>{
         disp(clearAllPlayerControls())
       })
       setSelectedOption(item);
-      triggerSoundEffect('victory4')
+      triggerSoundEffect(`chaching${Math.floor(Math.random()*3)}`)
       setTimeout(()=>{
         dispatch(endMinigame());
       }, 2000)

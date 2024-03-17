@@ -140,7 +140,7 @@ const GetAssetScreen = ()=>{
       Select your sacrifice
     </div>    
     <div className='animate-jump-in animate-ease-linear animate-delay-500 flex flex-row items-center justify-center  p-2'>
-    <PlayerCard player={player as Player} className=''/>
+    <PlayerCard player={player as Player} className='bg-orange-400'/>
     </div>
     {selectedOption ? 
       <div className="grid grid-cols-1 gap-2 p-4">
@@ -152,8 +152,8 @@ const GetAssetScreen = ()=>{
       :
       <div className="grid grid-cols-3 justify-items-center gap-2 p-4">
       {filteredOptions.sort(()=>Math.random() - 0.5).map(option=>{
-        return <div key={option.id} className="animate-wiggle animate-infinite max-w-48 bg-gradient-radial from-red-400 to-red-600 p-2 flex rounded-xl flex-col  border-2 border-black">
-          <h2 className="animate-wiggle animate-reverse animate-infinite text-xl font-bold uppercase">{option.name}</h2>
+        return <div key={option.id} className="animate-wiggle first:animate-delay-100 animate-delay-200 last:animate-delay-300 animate-fill-backwards animate-infinite max-w-48 bg-gradient-radial from-red-400 to-red-600 p-2 flex rounded-xl flex-col  border-2 border-black">
+          <h2 className="animate-wiggle  animate-reverse animate-infinite text-xl font-bold uppercase">{option.name}</h2>
           <img width={100} height={100} className="mx-auto p-2 items flex-grow" src={option.image} />
           </div>
       })}

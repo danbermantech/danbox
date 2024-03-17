@@ -147,7 +147,7 @@ const GetAssetScreen = ()=>{
       <div className="animate-jump-in animate-ease-linear animate-delay-1500 grid grid-cols-3 justify-items-center gap-2 p-2 pt-12">
       {filteredOptions.map((option, index)=>{
         console.log(filteredOptions)
-        return <div key={option.id} data-index={index} className={"max-w-48 animate-bounce bg-gradient-radial from-green-200 to-green-400 p-2 flex rounded-xl flex-col  border-2 border-black"}>
+        return <div key={option.id} data-index={index} className={"max-w-48 first:animate-delay-100 animate-delay-200 last:animate-delay-300 animate-fill-backwards animate-bounce bg-gradient-radial from-green-200 to-green-400 p-2 flex rounded-xl flex-col  border-2 border-black"}>
           <h2 className="text-xl font-bold uppercase">{option.name}</h2>
           <img width={100} height={100} className="animate-wiggle-more animate-duration-500 animate-infinite mx-auto p-2 items flex-grow" src={option.image} />
           </div>
