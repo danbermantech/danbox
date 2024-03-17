@@ -48,6 +48,10 @@ const Shop = ()=>{
 
   const [selectedOption, setSelectedOption] = useState<Item>();
 
+  useEffect(()=>{
+    if(selectedOption) return triggerSoundEffect(`chaching${Math.floor(Math.random()*3)}`)
+    return triggerSoundEffect('shop0')
+  },[triggerSoundEffect, selectedOption])
 
   const dataReceivedCallback = useCallback((data: PeerDataCallbackPayload, peerId:string) => {
     console.log(data, peerId);
@@ -71,7 +75,7 @@ const Shop = ()=>{
         disp(clearAllPlayerControls())
       })
       setSelectedOption(item);
-      triggerSoundEffect(`chaching${Math.floor(Math.random()*3)}`)
+      // triggerSoundEffect(`chaching${Math.floor(Math.random()*3)}`)
       setTimeout(()=>{
         dispatch(endMinigame());
       }, 2000)
@@ -79,7 +83,7 @@ const Shop = ()=>{
         dispatch(triggerNextQueuedAction());
       }, 3000)
     }
-  }, [dispatch, player, triggerSoundEffect, options])
+  }, [dispatch, player, options])
 
   usePeerDataReceived(dataReceivedCallback,actionId);
 
