@@ -7,11 +7,16 @@ import lava4 from "./images/backgrounds/lava4.png";
 import lava5 from "./images/backgrounds/lava5.png";
 import rhiannon from "./images/backgrounds/rhiannon.png";
 import stormy from "./images/backgrounds/stormy.png";
+import arnold from "./images/characters/arnold.png";
+import batman from "./images/characters/batman.png";
 import bear from "./images/characters/bear.png";
 import borat from "./images/characters/borat.png";
 import bossBaby from "./images/characters/bossBaby.png";
 import cia from "./images/characters/cia.png";
 import gollum from "./images/characters/gollum.png";
+import gritty from "./images/characters/gritty.png";
+import joker from "./images/characters/joker.png";
+import jughead from "./images/characters/jughead.png";
 import kennedy from "./images/characters/kennedy.png";
 import krillin from "./images/characters/krillin.png";
 import mario from "./images/characters/mario.png";
@@ -24,6 +29,7 @@ import rat from "./images/characters/rat.png";
 import ratatouille from "./images/characters/ratatouille.png";
 import rob from "./images/characters/rob.png";
 import robot from "./images/characters/robot.png";
+import runningMan from "./images/characters/runningMan.png";
 import sheldon from "./images/characters/sheldon.png";
 import shrek from "./images/characters/shrek.png";
 import shrek2 from "./images/characters/shrek2.png";
@@ -57,11 +63,16 @@ export const backgrounds = {
 }
 
 export const characters = { 
+  arnold,
+  batman,
   bear,
   borat,
   bossBaby,
   cia,
   gollum,
+  gritty,
+  joker,
+  jughead,
   kennedy,
   krillin,
   mario,
@@ -74,6 +85,7 @@ export const characters = {
   ratatouille,
   rob,
   robot,
+  runningMan,
   sheldon,
   shrek,
   shrek2,
@@ -117,11 +129,16 @@ export {
   lava5,
   rhiannon,
   stormy,
+  arnold,
+  batman,
   bear,
   borat,
   bossBaby,
   cia,
   gollum,
+  gritty,
+  joker,
+  jughead,
   kennedy,
   krillin,
   mario,
@@ -134,6 +151,7 @@ export {
   ratatouille,
   rob,
   robot,
+  runningMan,
   sheldon,
   shrek,
   shrek2,
