@@ -66,9 +66,21 @@ const RegistrationScreen = () => {
             DanBox
           </div>
         </h1>
-      <h2 className=" text-2xl text-bold text-black text-center">Scan this QR code to join the game</h2> 
-      <h2 className="select-text text-center font-extrabold font-mono text-8xl">{myShortId}</h2>
-      <QRShare />
+        <div className="flex gap-4 items-center">
+        <div className="flex gap-4 items-center flex-col bg-white p-4 rounded-xl bg-opacity-50 shadow-xl w-96 h-96 justify-center">
+          <h2 className=" text-4xl text-bold text-black text-center">Scan this QR code</h2> 
+          <QRShare />
+        </div>
+        <div className="text-6xl bg-white p-4 rounded-xl bg-opacity-50 aspect-square flex items-center justify-center font-semibold">OR</div>
+        <div className="flex gap-4 items-center flex-col bg-white p-4 rounded-xl bg-opacity-50 shadow-xl w-96 h-96 justify-center text-4xl max-w-full text-center">
+
+          <div className="">Visit</div> <div className="text-2xl bg-white p-2 rounded-xl bg-opacity-50 shadow-xl">
+            Danbox.DanBerman.dev/play 
+            </div>
+           <div> and use code</div>
+          <div className="select-text text-center font-extrabold font-mono text-8xl bg-white p-2 rounded-xl bg-opacity-50 shadow-xl">{myShortId}</div>
+        </div>
+        </div>
       <MuteToggle />
         {/* {isMuted ? <button onClick={unmuteAudio}><VolumeUp /></button> : <button onClick={muteAudio}><VolumeMute /></button>} */}
         {/* // <button onClick={initializeAudio}><VolumeUp /></button> */}
