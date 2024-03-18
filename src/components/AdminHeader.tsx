@@ -22,7 +22,9 @@ import { Fullscreen } from "@mui/icons-material";
 import { endMinigame } from "$store/slices/gameProgressSlice";
 import items from "$constants/items";
 import { useAppSelector } from "$store/hooks";
+import removeSpace from "$store/actions/removeSpace";
 import { createPath, createSpace, moveSpace, removePath, shiftSpace } from "$store/slices/boardSlice";
+import clsx from "clsx";
 
 enum InputType {
   TEXT = 'text',
@@ -174,12 +176,26 @@ const createBoardSpace:ControlDefinition = {
     {label: 'width', type: InputType.NUMBER, value: 0.06, key:'width'},
     {label: 'height', type: InputType.NUMBER, value: 0.06, key:'height'},
     {label: 'type', type: InputType.SELECT, options: Object.entries(GAME_MODE).map(([key, value])=>({id:key, label:value})), value: GAME_MODE.TRIVIA, key:'type'},
+    {label: 'Path From 1', value:'home', type: InputType.SELECT, options: 'spaces', key:'pathsFrom1'},
+    {label: 'Path From 2', value:'', type: InputType.SELECT, options: 'spaces', key:'pathsFrom2'},
+    {label: 'Path From 3', value:'', type: InputType.SELECT, options: 'spaces', key:'pathsFrom3'},
+    {label: 'Path To 1', value:'home', type: InputType.SELECT, options: 'spaces', key:'pathsTo1'},
+    {label: 'Path To 2', value:'', type: InputType.SELECT, options: 'spaces', key:'pathsTo2'},
+    {label: 'Path To 3', value:'', type: InputType.SELECT, options: 'spaces', key:'pathsTo3'}
     // {label: 'connections', type: InputType.SELECT, options: 'spaces', value: [], key:'connections'},
   
   ]
 }
 
-const SpecialSelectControl = ({param, value, onChange}:{param:SpecialSelectInputParams, value:string, onChange:(name:string, value:string)=>void})=>{
+const removeBoardSpace:ControlDefinition<{id:string}> = {
+  label: 'Remove Space',
+  action: removeSpace,
+  inputs:[
+    {label: 'id', type: InputType.SELECT, value: '', options: 'spaces_except_home', key:'id'},
+  ]
+}
+
+const SpecialSelectControl = ({param, value, onChange, className}:{param:SpecialSelectInputParams, value:string, onChange:(name:string, value:string)=>void, className:string})=>{
 
   const {id, teamId} = useMe()
   const options = useAppSelector((state) => {
@@ -193,14 +209,22 @@ const SpecialSelectControl = ({param, value, onChange}:{param:SpecialSelectInput
       case 'teams':
         return state.teams.map(team=>({label: team.name, value: team.id}))
       case 'spaces':
-        return Object.values(state.board).map(space=>({label: space.label, value: space.id}))
+        return [
+          {label: 'none', value: ''},
+          ...Object.values(state.board).map(space=>({label: space.label, value: space.id}))
+        ]
+      case 'spaces_except_home':
+        return [
+          {label: 'none', value: ''},
+          ...Object.values(state.board).map(space=>({label: space.label, value: space.id})).filter((space)=>space.value !== 'home')
+        ]
       default:
         return []
     }
     // state[param.options]
   });
   return (
-    <select value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
+    <select className={clsx(className, 'accent-blue-400')} value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
       <option disabled>Select</option>
       {options.map(option=>{
         return <option key={option.value} value={option.value}>{option.label}</option>
@@ -218,6 +242,7 @@ const boardControls = [
   createBoardPath,
   removeBoardPath,
   createBoardSpace,
+  removeBoardSpace,
   // randomizeSpaces,
 ]
 
@@ -259,30 +284,32 @@ const Control = ({staticProps={}, control}:{staticProps:Record<string,unknown>, 
 
   return (
     <div className="text-center p-4 bg-slate-200 border-2 rounded border-black place-content-center place-items-center justify-center items-center content-center ">
-      <div>{label}</div>
+      <details>
+      <summary className="text-left">{label}</summary>
+      <div className="flex flex-col text-black">
       {
         inputs?.map((input)=>{
           switch(input.type){
             case InputType.NUMBER:
-              return <div key={input.key} className="flex flex-row gap-2 justify-items-stretch w-max">
+              return <div key={input.key} className="flex w-full flex-col text-left font-semibold text-lg gap-2 justify-items-stretch">
                 <label>{input.label}</label>
-                <input type="number" value={form[input.key] as number} onChange={(e)=>{onChange(input.key, e.target.value)}} />
+                <input className="bg-white bg-opacity-50 drop-shadow-xl rounded-xl p-4 w-full" type="number" value={form[input.key] as number} onChange={(e)=>{onChange(input.key, e.target.value)}} />
               </div>
             case InputType.TEXT:
-              return <div key={input.key} className="flex flex-row gap-2 justify-items-stretch w-max">
+              return <div key={input.key} className="flex w-full flex-col text-left font-semibold text-lg gap-2 justify-items-stretch">
                 <label>{input.label}</label>
-                <input type="text" value={form[input.key] as string} onChange={(e)=>{onChange(input.key, e.target.value)}} />
+                <input className="bg-white bg-opacity-50 drop-shadow-xl rounded-xl p-4 w-full" type="text" value={form[input.key] as string} onChange={(e)=>{onChange(input.key, e.target.value)}} />
               </div>
             case InputType.SELECT:
               if(typeof(input.options) == 'string'){
-                return (<div key={input.key} className="flex flex-row gap-2 justify-items-stretch w-max">
+                return (<div key={input.key} className="flex w-full flex-col text-left font-semibold text-lg gap-2 justify-items-stretch">
                 <label>{input.label}</label>
-                <SpecialSelectControl param={{...input, special:input.options, name:input.key}} value={form[input.key] as string} onChange={onChange} />
+                <SpecialSelectControl className="bg-white bg-opacity-50 drop-shadow-xl rounded-xl p-4 w-full" param={{...input, special:input.options, name:input.key}} value={form[input.key] as string} onChange={onChange} />
                 </div>)
               }
-              return <div key={input.key} className="flex flex-row gap-2 justify-items-stretch w-max">
+              return <div key={input.key} className="flex w-full flex-col text-left font-semibold text-lg gap-2 justify-items-stretch">
                 <label>{input.label}</label>
-                <select value={form[input.key] as string} onChange={(e)=>{onChange(input.key, e.target.value)}}>
+                <select className="bg-white bg-opacity-50 drop-shadow-xl rounded-xl p-4 w-full" value={form[input.key] as string} onChange={(e)=>{onChange(input.key, e.target.value)}}>
                   {
                     input.options.map((option)=>{
                       return <option key={option.id} value={option.id}>{option.label}</option>
@@ -293,7 +320,9 @@ const Control = ({staticProps={}, control}:{staticProps:Record<string,unknown>, 
           }
         })
       }
+      </div>
       <button onClick={onSubmit} className=" p-2 bg-blue-400 text-white rounded-xl ">Submit</button>
+      </details>
     </div>
   )
 
@@ -313,7 +342,7 @@ const AdminHeader = () =>{
   return (<AppBar sx={{background: 'red', bg: 'red'}}>
         <Toolbar variant="dense" sx={{display:'flex', justifyItems: 'stretch'}}>
           <div className="flex items-center flex-grow pt-2">
-            <img src={me?.image} width={48} height={48} className="rounded-full " onClick={()=>setModalOpen(true)} />
+            <img src={me?.image} width={48} height={48} className="rounded-full w-12 h-12 " onClick={()=>setModalOpen(true)} />
             <Typography variant="h4" fontWeight={800} fontFamily="dancing script" color="inherit" component="div">
               {me?.name}
             </Typography>
@@ -333,7 +362,7 @@ const AdminHeader = () =>{
             <button className="border-black w-max mx-auto bg-slate-200 p-2 rounded-xl text-black" onClick={()=>{sendPeersMessage({type:'admin', payload:triggerNextQueuedAction()})}}>Trigger next action</button>
             <button className="border-black w-max mx-auto bg-slate-200 p-2 rounded-xl text-black" onClick={()=>{sendPeersMessage({type:'admin', payload:endMinigame()})}}>close modal</button>
             {boardControls.map(control=>{
-              return <Control key={control.label} staticProps={{connections:[]}} control={control} />
+              return <Control key={control.label} staticProps={{connections:[]}} control={control as ControlDefinition} />
               })
             }
             {

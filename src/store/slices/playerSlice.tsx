@@ -10,6 +10,7 @@ import movePlayerFinal from "$store/actions/movePlayerFinal";
 import items from "$constants/items";
 import {v4 as uuidv4} from 'uuid'
 import { playerPlaceholder } from "$assets/images";
+import removeSpace from "$store/actions/removeSpace";
 
 function isRejectedAction(action: Action): action is RejectedAction {
   return action.type.endsWith("rejected");
@@ -296,11 +297,24 @@ export const playerSlice = createSlice({
             target.points = 0;
             break;
           }
+          case('cheat'):{
+            if(!action.payload.target) return;
+            const targetIndex = state.findIndex((player)=>(player.id == action.payload.target));
+            state[targetIndex].effects?.push('CHEAT')
+            break;
+          }
+          case('demolition crew'):{
+            const {id} = action.payload.value as {id: string};
+            return state.map((player)=>({...player, spaceId: player.spaceId == id ? 'home' : player.spaceId, previousSpaceId: player.previousSpaceId == id ? 'home' : player.previousSpaceId}))
+          }
         }
         player.items = player.items.filter((item)=>(item.name !== action.payload.item));
         })
       .addCase(restart, (state)=>{
         return state.map((player)=>({...player, spaceId: 'home', previousSpaceId: 'home', points: 0, gold: 0, items:[], movesRemaining: defaultMovesPerRound, hasMoved:false, controls:[]}))
+      })
+      .addCase(removeSpace, (state, action)=>{
+        return state.map((player)=>({...player, spaceId: player.spaceId == action.payload.id ? 'home' : player.spaceId, previousSpaceId: player.previousSpaceId == action.payload.id ? 'home' : player.previousSpaceId}))
       })
       .addMatcher(
         isRejectedAction,

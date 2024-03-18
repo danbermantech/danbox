@@ -1,6 +1,6 @@
 import {shrimp, magicHat, teleport, cheat, souperSoup, soup, magicHand} from '$assets/images.ts';
 // import activateItem from '$store/actions/activateItem'
-import { ItemDefinition } from '$store/types';
+import { GAME_MODE, ItemDefinition } from '$store/types';
 
 const items:ItemDefinition[] = [
   {
@@ -42,8 +42,8 @@ const items:ItemDefinition[] = [
   },
   {
     name: 'cheat', 
-    description: 'Cheat',
-    price: 100,
+    description: 'Become like Jitney Spears',
+    price: 500,
     image: cheat,
     params: [{
       name: 'target',
@@ -87,7 +87,97 @@ const items:ItemDefinition[] = [
       special: 'players',
     }],
     weight: 1,
-  }
+  },
+  {
+    name: 'traffic engineer', 
+    description: 'Add or remove a path on the board',
+    price: 10,
+    image: teleport,
+    params: [
+      {
+        name: 'action',
+        type: 'select',
+        options: ['add', 'remove'],
+      },
+      {
+        name: 'from',
+        type: 'select',
+        special: 'spaces',
+      },
+      {
+        name: 'to',
+        type: 'select',
+        special: 'spaces',
+      }
+    ],
+    weight: 5,
+  },
+  {
+    name: 'demolition crew', 
+    description: 'Remove a space from the board',
+    price: 10,
+    image: teleport,
+    params: [
+      {
+        name: 'id',
+        type: 'select',
+        special: 'spaces',
+      },
+    ],
+    weight: 5,
+  },
+  {
+    name: 'construction crew', 
+    description: 'Remove a space from the board',
+    price: 10,
+    image: teleport,
+    params: [
+      {
+        name: 'type',
+        type: 'select',
+        options: [GAME_MODE.DUEL, GAME_MODE.FRENZY, GAME_MODE.GET_ASSET, GAME_MODE.LOSE_ASSET, GAME_MODE.SLOTS, GAME_MODE.SHOP],
+      },
+      {
+        name: 'label',
+        type: 'string',
+      },
+      {
+        name: 'color',
+        type: 'color',
+      },
+      {
+        name: 'pathsFrom1',
+        type: 'select',
+        special: 'spaces',
+      },
+      {
+        name: 'pathsFrom2',
+        type: 'select',
+        special: 'spaces',
+      },
+      {
+        name: 'pathsFrom3',
+        type: 'select',
+        special: 'spaces',
+      },
+      {
+        name: 'pathsTo1',
+        type: 'select',
+        special: 'spaces',
+      },
+      {
+        name: 'pathsTo2',
+        type: 'select',
+        special: 'spaces',
+      },
+      {
+        name: 'pathsTo3',
+        type: 'select',
+        special: 'spaces',
+      }
+    ],
+    weight: 5,
+  },
 ]
 
 export default items;

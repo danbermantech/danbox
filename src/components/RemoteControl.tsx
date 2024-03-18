@@ -5,13 +5,13 @@ const RemoteControl = ({
   onClick,
   value,
   label,
-  image,
+  img,
   classNames,
 }: {
   onClick: (value: unknown) => void;
   value: string;
   label: string;
-  image?: string;
+  img?: string;
   classNames?: {button:string, image:string} | string;
 }) => {
   const onPress = useCallback(() => {
@@ -25,8 +25,8 @@ const RemoteControl = ({
         typeof classNames == 'string' && classNames,
         typeof classNames == 'object' && classNames.button
       ])} onClick={onPress}>
-      {image && 
-      <img src={image} alt={label} 
+      {img && 
+      <img src={img} alt={label} 
         className={clsx(["w-full h-full object-contain", 
         typeof classNames == 'object' && classNames.image])} 
       />}

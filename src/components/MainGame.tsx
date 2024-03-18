@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { GAME_MODE, StoreData } from "$store/types";
 import { lazy } from "react";
 import Implore from "./Implore";
-const RandomAssetChange = lazy(async()=>await import("$components/RandomAssetChange"));
+const Slots = lazy(async()=>await import("$components/Slots"));
 const RegistrationScreen = lazy(async()=>await import("$components/RegistrationScreen"));
 const GameOverScreen = lazy(async()=>await import("$components/GameOverScreen"));
 const Trivia = lazy(async()=>await import("$components/Trivia"));
@@ -24,8 +24,8 @@ const MainGame = () =>{
       return <RegistrationScreen />
     case GAME_MODE.GAME_OVER:
       return <GameOverScreen />
-    case GAME_MODE.RANDOM_ASSET_CHANGE:
-      return <RandomAssetChange  />
+    case GAME_MODE.SLOTS:
+      return <Slots  />
     case GAME_MODE.TRIVIA:
       return <Trivia />
     case GAME_MODE.SHOP:

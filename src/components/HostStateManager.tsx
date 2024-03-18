@@ -81,6 +81,9 @@ const HostStateManager = () => {
         if(!connections) return;
         const availableSpaces = Object.values(board).filter((space)=>connections.includes(space.id));
         const options = availableSpaces.map((connection)=>({label:connection.label, value:connection.id, action:movementActionId}));
+        if(options.length == 0){
+          options.push({label:mySpace.label, value:mySpace.id, action:movementActionId})
+        }
         dispatch(setPlayerInstructions({playerId: player.id, instructions: `${player.movesRemaining} moves remaining`}))
         if(isEqual(player.controls, options)) return;
         dispatch(setPlayerControls({playerId: player.id, controls:options}))

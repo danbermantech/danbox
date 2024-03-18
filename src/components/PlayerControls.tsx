@@ -31,6 +31,7 @@ function CustomControls({controls}:{controls:PlayerActions}){
       value={opt.action}
       label={opt.label}
       classNames={opt.classNames}
+      img={opt.img}
       />
       )
     }

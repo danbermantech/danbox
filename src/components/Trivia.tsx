@@ -59,13 +59,22 @@ const Trivia =
           disp(setPlayerControls({playerId: player.id, controls:[]}) )
         } else{
           disp(setPlayerInstructions({playerId: player.id, instructions: triviaQuestion.question}))
+        if(player.effects.includes('CHEAT')){
           disp(setPlayerControls({playerId: player.id,
-            controls:answers}),
-            )}
-          }
-          );
+            controls:[...answers]
+            .map((answer)=>(
+              {...answer, 
+                classNames: `${answer.value == triviaQuestion.answer ? 'border-green-800 bg-green-400' : 'border-red-800 bg-red-400'}`}
+            ))
+          }));
+          return;
+        } 
+        disp(setPlayerControls({playerId: player.id,
+          controls:answers}),
+          )}
+        });
       })
-    },[players, playerAnswers, dispatch, answers, triviaQuestion.question])
+    },[players, playerAnswers, dispatch, answers, triviaQuestion.question, triviaQuestion.answer])
 
 
     const dataReceivedCallback = useCallback((data:PeerDataCallbackPayload, peerId:string) => {
@@ -165,6 +174,7 @@ const Trivia =
               filter:  "drop-shadow(4px 4px 8px #2200ff)",
             }}
           >
+            <div className="hidden animate-delay-100 animate-delay-200 animate-delay-300 animate-delay-400 animate-delay-500 animate-delay-600 animate-delay-700 animate-delay-800 animate-delay-900" />
             <div style={{ textTransform: "capitalize" }}>
               {label}
             </div>

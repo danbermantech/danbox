@@ -130,7 +130,7 @@ const rhiannon: BoardSpaceConfig = {
   id: 'rhiannon',
   label: "Rhiannon's Casino",
   connections: ['middleBottom'],
-  type: GAME_MODE.RANDOM_ASSET_CHANGE
+  type: GAME_MODE.SLOTS
 }
 
 const stormy: BoardSpaceConfig = {
@@ -142,10 +142,10 @@ const stormy: BoardSpaceConfig = {
   id: 'stormy',
   label: "Stormy's \rSlots",
   connections: ['middleBottom'],
-  type: GAME_MODE.RANDOM_ASSET_CHANGE
+  type: GAME_MODE.SLOTS
 }
 
-const createRandomAssetChangeSpace = ({x=randomLocation(), y=randomLocation(), label='random', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig=>{
+const createSlotsSpace = ({x=randomLocation(), y=randomLocation(), label='random', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig=>{
   return {
     x,
     y,
@@ -155,7 +155,7 @@ const createRandomAssetChangeSpace = ({x=randomLocation(), y=randomLocation(), l
     id,
     label,
     connections,
-    type: GAME_MODE.RANDOM_ASSET_CHANGE,
+    type: GAME_MODE.SLOTS,
   }
 }
 
@@ -285,8 +285,8 @@ export const randomLayout:Board = {
   frenzy:createFrenzySpace({id:'frenzy'}),
   get: createGetAssetSpace({id:'get'}),
   lose: createLoseAssetSpace({id:'lose'}),
-  random: createRandomAssetChangeSpace({id:'random'}),
-  random2: createRandomAssetChangeSpace({id:'random2'}),
+  random: createSlotsSpace({id:'random'}),
+  random2: createSlotsSpace({id:'random2'}),
   get2: createGetAssetSpace({id:'get2'}),
   lose2: createLoseAssetSpace({id:'lose2'}),
 } 

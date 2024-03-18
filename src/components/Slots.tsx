@@ -8,7 +8,7 @@ import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import {stormy, rhiannon} from '$assets/images.ts'
 import useAudio from "$hooks/useAudio";
 
-const RandomAssetChange = () => {
+const Slots = () => {
   const [state, setState] = useState<Record<string, string>>({});
 
   const players = useSelector((state:StoreData) => state.players);
@@ -89,4 +89,4 @@ return (
   </div>)
 }
 
-export default RandomAssetChange
+export default Slots

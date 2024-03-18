@@ -6,6 +6,7 @@ export type PlayerAction = {
   value: string;
   styles?: React.CSSProperties;
   classNames?: string;
+  img?: string;
 }
 
 export type PlayerActions = PlayerAction[] | string;
@@ -20,6 +21,11 @@ export type NumberInputParams = {
   type: 'number',
 }
 
+export type ColorInputParams = {
+  name: string,
+  type: 'color',
+}
+
 export type BooleanInputParams = {
   name: string,
   type: 'boolean',
@@ -31,7 +37,7 @@ export type StandardSelectInputParams = {
   options: (string|{label:string, value:string})[]
 }
 
-export type SpecialSelectOptions = 'players'|'opponents'|'teammates'|'spaces'|'teams'
+export type SpecialSelectOptions = 'players'|'opponents'|'teammates'|'spaces'|'teams'|'spaces_except_home'
 
 export type SpecialSelectInputParams = {
   name: string,
@@ -41,7 +47,7 @@ export type SpecialSelectInputParams = {
 
 export type SelectInputParams = StandardSelectInputParams | SpecialSelectInputParams
 
-export type UserControlledParam = StringInputParams | NumberInputParams | BooleanInputParams | SelectInputParams
+export type UserControlledParam = StringInputParams | NumberInputParams | BooleanInputParams | SelectInputParams | ColorInputParams
 
 export type ItemDefinition = {
   name: string,
@@ -102,7 +108,7 @@ export enum GAME_MODE {
   GAME_OVER = 'GAME_OVER',
   RESULTS = 'RESULTS',
   TRIVIA = 'TRIVIA',
-  RANDOM_ASSET_CHANGE = 'RANDOM_ASSET_CHANGE',
+  SLOTS = 'SLOTS',
   HOME = 'HOME',
   DUEL = 'DUEL',
   EVENT = 'EVENT',

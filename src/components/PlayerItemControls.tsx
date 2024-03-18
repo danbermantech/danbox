@@ -7,13 +7,14 @@ import { Item } from "$store/types";
 import { Modal } from "@mui/material";
 import { useAppSelector } from "$store/hooks";
 import type { SelectInputParams, SpecialSelectInputParams, StandardSelectInputParams, UserControlledParam } from "$store/types";
+import clsx from "clsx";
 // import activateItem from "$store/actions/activateItem";
 
 
-const ItemStandardParamSelectControl = ({param, value, onChange}:{param:StandardSelectInputParams, value:string, onChange:(name:string, value:string)=>void})=>{
+const ItemStandardParamSelectControl = ({param, value, onChange, className}:{param:StandardSelectInputParams, value:string, onChange:(name:string, value:string)=>void, className: string})=>{
   
   return (
-    <select value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
+    <select className={className} value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
       {param.options.map(option=>{
         if(typeof option == 'string') return <option key={option} value={option}>{option}</option>
         return <option key={option.value} value={option.label}>{option.label}</option>
@@ -22,7 +23,7 @@ const ItemStandardParamSelectControl = ({param, value, onChange}:{param:Standard
   )
 }
 
-const ItemParamSpecialSelectControl = ({param, value, onChange}:{param:SpecialSelectInputParams, value:string, onChange:(name:string, value:string)=>void})=>{
+const ItemParamSpecialSelectControl = ({param, value, onChange, className}:{param:SpecialSelectInputParams, value:string, onChange:(name:string, value:string)=>void, className: string})=>{
 
   const {id, teamId} = useMe()
   const options = useAppSelector((state) => {
@@ -43,7 +44,7 @@ const ItemParamSpecialSelectControl = ({param, value, onChange}:{param:SpecialSe
     // state[param.options]
   });
   return (
-    <select value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
+    <select className={className} value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
       <option value="" selected disabled>Select</option>
       {options.map(option=>{
         return <option key={option.value} value={option.value}>{option.label}</option>
@@ -53,23 +54,25 @@ const ItemParamSpecialSelectControl = ({param, value, onChange}:{param:SpecialSe
 
 }
 
-const ItemParamSelectControl = ({param, value,  onChange}:{param:SelectInputParams, value:string, onChange: (name:string, value:string)=>void})=>{
+const ItemParamSelectControl = ({param, value,  onChange, className}:{param:SelectInputParams, value:string, onChange: (name:string, value:string)=>void, className:string})=>{
 
   if('special' in param){
-    return <ItemParamSpecialSelectControl value={value}  param={param} onChange={onChange} />
+    return <ItemParamSpecialSelectControl value={value}  param={param} onChange={onChange} className={className} />
   }
-  return <ItemStandardParamSelectControl value={value} param={param} onChange={onChange} />
+  return <ItemStandardParamSelectControl value={value} param={param} onChange={onChange} className={className} />
 
 }
 
-const ItemParamControl = ({param, value, onChange}:{param:UserControlledParam,value:string, onChange:(name:string, value:string)=>void}) =>{
+const ItemParamControl = ({param, value, onChange, className}:{param:UserControlledParam,value:string, onChange:(name:string, value:string)=>void, className:string}) =>{
   switch(param.type){
     case 'string':
-      return <input type="text" value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}/>
+      return <input type="text" value={value} onChange={(event)=>{onChange(param.name, event.target.value)}} className={className}/>
     case 'number':
-      return <input type="number" value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}/>
+      return <input type="number" value={value} onChange={(event)=>{onChange(param.name, event.target.value)}} className={className} />
+    case 'color':
+      return <input type="color" value={value} onChange={(event)=>{onChange(param.name, event.target.value)}} className={clsx('h-12 w-full',className)} />
     case 'select':
-      return <ItemParamSelectControl param={param} value={value} onChange={onChange} />
+      return <ItemParamSelectControl param={param} value={value} onChange={onChange} className={className}/>
     default:
        return null;
   }
@@ -110,14 +113,15 @@ const ItemControl = ({item}:{item:Item})=>{
         {item.name}
       </button>
       <Modal open={modalOpen} className=" flex w-full h-full min-w-full min-h-full" onClose={()=>setModalOpen(false)}>
-          <div className="mx-auto min-w-max max-w-full my-auto p-4 bg-white w-min flex flex-col">
+          <div className="mx-auto min-w-max max-w-full my-auto p-4 bg-slate-50 rounded-xl w-min flex flex-col text-black">
           {/* <h1 className="text-3xl p-2 text-center text-black">Select your target</h1> */}
-          <div className="flex flex-row flex-wrap gap-2 p-4">
+          <div className="text-lg text-black">{item.description}</div>
+          <div className="flex flex-col flex-wrap gap-2 p-4">
           {
             item.params !== undefined && item.params.map((param)=>{
-              return <div key={param.name}>
-                {param.name}
-                <ItemParamControl param={param} value={state[param.name]} onChange={handleParamChanged} />
+              return <div key={param.name} className="flex flex-col">
+                <div className="uppercase font-semibold">{param.name}</div>
+                <ItemParamControl className="drop-shadow-xl p-2 rounded" param={param} value={state[param.name]} onChange={handleParamChanged} />
                 </div>
             })
           }
