@@ -8,7 +8,7 @@ const trivia: BoardSpaceConfig = {
   color: '#8888ff',
   id: "trivia",
   label: 'trivia',
-  connections: ['middleLeft', 'middleTop','implore'],
+  connections: ['middleTop','implore'],
   type: GAME_MODE.TRIVIA,
 }
 
@@ -166,7 +166,7 @@ const middleLeft: BoardSpaceConfig = {
   height: 0.045,
   color: "#228822",
   id: 'middleLeft',
-  label: '😊',
+  label: 'GOOD STUFF',
   connections: ['home', 'trivia', 'rhiannon'],
   type: GAME_MODE.GET_ASSET
 }
@@ -194,7 +194,7 @@ const frenzy: BoardSpaceConfig = {
   id: 'frenzy',
   label: 'FRENZY',
   type: GAME_MODE.FRENZY,
-  connections: ['duel', 'home', 'stormy'],
+  connections: ['duel', 'stormy'],
 }
 
 function createFrenzySpace({x=randomLocation(), y=randomLocation(), label='frenzy', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
@@ -218,7 +218,7 @@ const middleTop: BoardSpaceConfig = {
   height: 0.045,
   color: "#ff2222",
   id: 'middleTop',
-  label: '🙁',
+  label: 'OH NO',
   connections: ['trivia', 'duel', 'home'],
   type: GAME_MODE.LOSE_ASSET,
 }
@@ -230,7 +230,7 @@ const middleBottom: BoardSpaceConfig = {
   height: 0.045,
   color: "#ff2222",
   id: 'middleBottom',
-  label: '🙁',
+  label: 'BAD STUFF',
   connections: ['shop', 'home'],
   type: GAME_MODE.LOSE_ASSET,
 }

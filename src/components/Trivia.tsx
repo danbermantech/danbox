@@ -137,7 +137,7 @@ const Trivia =
         </div>
         <div className="grid grid-flow-dense gap-2 bg-slate-100 border-black rounded-b-xl w-full bg-opacity-85 p-8 border-4">
         {completed &&
-          <div>
+          <div className="flex flex-col gap-4">
             <h1 className="text-4xl text-black text-center">Correct Answer: {triviaQuestion.answer}</h1>
             <div className="flex flex-row gap-2">
               {players.map((player)=>{

@@ -60,17 +60,19 @@ const PlayerPiece = ({id}:{id:string}) => {
       height={boardWidth > 720 ? boardWidth * 0.1 : boardWidth * 0.04}
       image={player.image}
       />
-      <Text text={player.name.toLocaleUpperCase()} style={new TextStyle({align: 'center',
-        fontFamily: 'sans-serif',
-        fontSize: 100,
-        fontWeight: '600',
-        stroke: '#ffffff',
-        strokeThickness: 5,
-        letterSpacing: 20,
-        dropShadowAngle: Math.PI / 6,
-        dropShadowDistance: 6,
-        wordWrap: true,
-        wordWrapWidth: 440,})}  
+      <Text text={player.name.toLocaleUpperCase()} 
+        style={new TextStyle({align: 'center',
+          fontFamily: 'sans-serif',
+          fontSize: 125,
+          fontWeight: '800',
+          stroke: '#ffffff',
+          strokeThickness: 18,
+          letterSpacing: 0,
+          dropShadowAngle: Math.PI / 6,
+          dropShadowDistance: 6,
+          wordWrap: true,
+          wordWrapWidth: 440,
+        })}  
         width={boardWidth > 1200 ? boardWidth * 0.08: boardWidth * 0.022 } 
         height={boardHeight > 720 ? boardWidth * 0.06 : boardWidth * 0.012 } 
         x={0} 
