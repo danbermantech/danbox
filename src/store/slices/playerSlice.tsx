@@ -49,6 +49,21 @@ export const playerSlice = createSlice({
       });
       return state;
     },
+    changePlayerImage: (state, action) => {
+      console.log('setting player image')
+      const player = state.find((player) => player.id === action.payload.playerId);
+      console.log(state, action.payload.playerId)
+      console.log(player)
+      if (!player) return state;
+      player.image = action.payload.image;
+    
+    },
+    changePlayerName: (state, action) => {
+      console.log('changing')
+      const player = state.find((player) => player.id === action.payload.playerId);
+      if (!player) return state;
+      player.name = action.payload.name;
+    },
     removePlayer: (state, action) => {
       return state.filter((player) => player.id !== action.payload.playerId);
     },
@@ -327,7 +342,7 @@ export const playerSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { addPlayer, removePlayer, removeEffect, givePlayerGold, givePlayerPoints, givePlayerItem, handleTransfer, setPlayers, renamePlayer, setPlayerInstructions, setPlayerControls, clearAllPlayerControls } =
+export const { addPlayer, changePlayerImage, changePlayerName, removePlayer, removeEffect, givePlayerGold, givePlayerPoints, givePlayerItem, handleTransfer, setPlayers, renamePlayer, setPlayerInstructions, setPlayerControls, clearAllPlayerControls } =
   playerSlice.actions;
 
 export default playerSlice.reducer;

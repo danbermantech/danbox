@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { usePeer } from "$hooks/usePeer";
 import movePlayer from "$store/actions/movePlayer";
-import { removeEffect, setPlayerControls, setPlayerInstructions, } from "$store/slices/playerSlice";
+import { changePlayerImage, removeEffect, setPlayerControls, setPlayerInstructions, } from "$store/slices/playerSlice";
 import { GAME_MODE, StoreData } from "$store/types";
 import activateItem from "$store/actions/activateItem";
 import usePeerDataReceived from "$hooks/useDataReceived";
@@ -62,6 +62,10 @@ const HostStateManager = () => {
     console.log(data);
     dispatch(data.payload)
   }, 'admin')
+  usePeerDataReceived<{sprite:string, playerId:string}>(data=>{
+    console.log(data);
+    dispatch(changePlayerImage({playerId: data.payload.playerId, image: data.payload.sprite}))
+  }, 'avatar_changed');
 
   const {triggerSoundEffect} = useAudio();
 

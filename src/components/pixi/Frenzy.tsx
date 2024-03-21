@@ -35,8 +35,8 @@ export const Frenzy = () =>
 {
   const {boardWidth, boardHeight } = useBoardDimensions();
   const players = useAppSelector((state) => state.players);
-  const [points, setPoints] = useState(seedAssets(Math.floor(Math.random() *1 + 1)));
-  const [gold, setGold] = useState(seedAssets(Math.floor(Math.random() *1 + 1)));
+  const [points, setPoints] = useState(seedAssets(Math.floor(Math.random() * 95 + 5)));
+  const [gold, setGold] = useState(seedAssets(Math.floor(Math.random() * 95 + 5)));
   const dispatch = useAppDispatch();
 
   const [playerPoints, setPlayerPoints] = useState<{[key:string]:number}>({});

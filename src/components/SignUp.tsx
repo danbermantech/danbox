@@ -1,8 +1,9 @@
 import { usePeer } from "$hooks/usePeer";
 import { useCallback, useEffect, useState } from "react";
 import { getCookie, useCookie } from "utilities/cookies";
-import { characters } from "$assets/images.ts";
+// import { characters } from "$assets/images.ts";
 import { useLocation, useSearchParams } from "react-router-dom";
+import CharacterCarousel from "./CharacterCarousel";
 
 const SignUp = ()=>{
   const connect = usePeer((cv) => cv.connect) as (
@@ -68,22 +69,7 @@ const SignUp = ()=>{
       <input disabled={hostId.length < 4} type="text" id="nameInput" className="animate-fade  text-black w-64 placeholder:text-slate-400 under text-xl bg-white bg-opacity-20 p-2 rounded-xl shadow-xl text-center disabled:hidden" placeholder="Please enter a name" value={tempName} onChange={(event)=>{setTempName(event.currentTarget.value)}} />
       <div data-disabled={tempName.length < 4 || hostId.length < 4} className="animate-fade  text-transparent bg-clip-text bg-gradient-to-br from-pink-400 to-violet-600 text-2xl font-semibold data-[disabled=true]:hidden">Avatar</div>
       <div data-disabled={tempName.length < 4 || hostId.length < 4} className="animate-fade w-full p-4 bg-white bg-opacity-40 rounded-xl shadow-xl data-[disabled=true]:hidden">
-      <div className="flex animate-fade  gap-2 h-56 items-center overflow-x-scroll snap-x select-none max-w-lg drop-shadow-xl ">
-        {Object.entries(characters).map(([key, value])=>{
-          return <img 
-            key={key}
-            src={value} 
-            data-selected={value== selectedSprite} 
-            className=" data-[selected=true]:ring-blue-500 data-[selected=true]:ring-4 h-48 w-48 aspect-square rounded-full border-4 border-black snap-center select-none" 
-            width={256} 
-            height={256} 
-            onClick={()=>{
-              console.log(value)
-              setSelectedSprite(value);
-            }} 
-          />
-        })}
-        </div>
+      <CharacterCarousel selected={selectedSprite} onChange={setSelectedSprite} />
 
       </div>
         {alert && <p className="text-red-600">{alert}</p>}
