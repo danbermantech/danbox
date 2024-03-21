@@ -37,7 +37,7 @@ const HostStateManager = () => {
       const nextPlayer = getState().players.find((player)=>(player.id == data.payload.playerId));
       if(nextPlayer && nextPlayer?.movesRemaining > 0 || !nextPlayer) return;
       console.log(data.payload.value)
-      disp(addQueuedAction({mode: board[data.payload.value].type, for: [player.id], when:'start'}))
+      disp(addQueuedAction({mode: board[data.payload.value].type, for: [player.id], when:'end'}))
       disp(movePlayerFinal({playerId: player.id, spaceId: data.payload.value}))
       console.log(getState().players.reduce((acc, player)=>(acc + player.movesRemaining), 0))
       if(getState().players.reduce((acc, player)=>(acc + player.movesRemaining), 0) == 0){

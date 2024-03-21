@@ -395,6 +395,507 @@ const TriviaQuestions:TriviaQuestion[] =[
       'Smithers'
     ],
   },
+  {
+    question: 'Who shot JFK',
+    answer: 'George H.W. Bush',
+    category: 'History',
+    difficulty: 'expert',
+    type: 'multiple',
+    incorrect_answers: [
+      'Lee Harvey Oswald',
+      'Jack Ruby',
+      'Lyndon B. Johnson',
+    ],
+  },
+  {
+    question: 'When was the date of Dan\'s bar mitzvah',
+    answer: 'April 9',
+    category: 'friendship',
+    difficulty: 'expert',
+    type: 'multiple',
+    incorrect_answers: [
+      'March 28',
+      'March 22',
+      'April 3',
+    ],
+  },
+  {
+    question: "What Charles Manson son was covered by Guns n Roses?",
+    answer: 'Look at Your Game, Girl',
+    category: 'Entertainment',
+    difficulty: 'hard',
+    type: 'multiple',
+    incorrect_answers: [
+      'People say I\'m no good',
+      'I\'m on fire',
+      'Cease to Exist',
+    ],
+  },
+  {
+    question: 'Who won the first Grammy for Album of the Year?',
+    answer: 'Henry Mancini',
+    category: 'Entertainment',
+    difficulty: 'hard',
+    type: 'multiple',
+    incorrect_answers: [
+      'Dean Martin',
+      'Frank Sinatra',
+      'Benny Goodman',
+    ]
+  },
+  {
+    question: 'Who said the foolowing quote? "It is possible to make no mistakes and still lose. That is not a weakness; that is life."',
+    answer: 'Jean-Luc Picard',
+    category: 'history',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'John Brown',
+      'Ben Sisko',
+      'Lee Adama',
+    ]
+  },
+  {
+    question: 'Who invented the first movable type printing press?',
+    answer: 'Bi Sheng',
+    category: 'history',
+    difficulty: 'hard',
+    type: 'multiple',
+    incorrect_answers: [
+      'Johannes Gutenberg',
+      'William Caxton',
+      'Laurence Coster',
+    ]
+  },
+  {
+    question: 'Which of the following musical acts has music videos directed by Michel Gondry?',
+    answer: 'The Chemical Brothers',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Fatboy Slim',
+      'The Prodigy',
+      'The Crystal Method',
+    ]
+  },
+  {
+    question: 'Which of the following music videos was directed by Johnathan Glazer?',
+    answer: 'Virtual Insanity',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Bitter Sweet Symphony',
+      'Karma Police',
+      'Praise You',
+    ]
+  },
+  {
+    question: 'Which of the following songs is based on Dune?',
+    answer: 'Weapon of Choice',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Spice World',
+      'Mind Killer',
+      'The Worm',
+    ]
+  },
+  {
+    question: 'How long was Moses on the mountain?',
+    answer: '40 days and 40 nights',
+    category: 'Religion',
+    difficulty: 'easy',
+    type: 'multiple',
+    incorrect_answers: [
+      '7 days and 7 nights',
+      '12 hours',
+      '1 year',
+    ]
+  },
+  {
+    question: 'Which of the following bands does not appear in Gilmore Girls?',
+    answer: 'Letters to Cleo',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Sonic Youth',
+      'The Bangles',
+      'Yo La Tengo',
+    ]
+  },
+  {
+    question: 'Why was Jesus given 39 lashes?',
+    answer: 'Because 40 would have killed him',
+    category: 'Religion',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'One lash for each crime he was accused of',
+      'Because the whip broke after the 39th',
+      '39 was a holy number for the Romans as a multiple of 3 and 13',
+    ]
+  },
+  {
+    question: 'Who said the following quote? "Because it it my name. Because I cannot have another in my life. Because I lie and sign myself to lies! Because I am not worth the dust on the feet of them that hang! How may I live without my name? I have given you my soul; leave me my name!"',
+    answer: 'John Proctor',
+    category: 'Literature',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Stanley Kowalski',
+      'Willy Loman',
+      'Atticus Finch',
+    ]
+  },
+  {
+    question: 'Who said the following quote? "All animals are equal, but some animals are more equal than others."',
+    answer: 'Napoleon',
+    category: 'Literature',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Snowball',
+      'Khan',
+      'Lenin',
+    ]
+  },
+  {
+    question: 'Who said the following quote? "You may live to see man-made horrors beyond your comprehension"',
+    answer: 'Nikola Tesla',
+    category: 'History',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Thomas Edison',
+      'Albert Einstein',
+      'Robert Oppenheimer',
+    ]
+  },
+  {
+    question: 'What was the name of L. Ron Hubbard\'s cat?',
+    answer: 'DAN stop no don\'t do this',
+    category: 'History',
+    difficulty: 'hard',
+    type: 'multiple',
+    incorrect_answers: [
+      'Cthulu',
+      'Mr. Whiskers',
+      'Mittens',
+    ]
+  },
+  {
+    question: 'What is the name of the first electronic computer?',
+    answer: 'ENIAC',
+    category: 'Modernity',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'UNIVAC',
+      'EDVAC',
+      'IBM 701',
+    ]
+  },
+  {
+    question: 'Which of the following obsolete programming languages still handles over 3 trillion dollars worth of financial transactions each year?',
+    answer: 'COBOL',
+    category: 'Modernity',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'FORTRAN',
+      'BASIC',
+      'Pascal',
+    ]
+  },
+  {
+    question: 'How long did the Buddha meditate under the Bodhi tree?',
+    answer: '49 days',
+    category: 'Religion',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      '7 days',
+      '40 days',
+      '1 year',
+    ]
+  },
+  {
+    question: 'What is the threefold path of Asha?',
+    answer: 'Good thoughts, good words, good deeds',
+    category: 'Religion',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Live, Laugh, Love',
+      'Left, Right, Center',
+      'Faith, Hope, Charity',
+    ]
+  },
+  {
+    question: 'Which new religious movement operates the Epoch Times?',
+    answer: 'Falun Gong',
+    category: 'Religion',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Scientology',
+      'Raelism',
+      'Anastasia\'s Garden',
+    ]
+  },
+  {
+    question: 'Which new religous movement operates the Washington Times?',
+    answer: 'Unification Church',
+    category: 'Religion',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Scientology',
+      'Raelism',
+      'Falun Gong',
+    ]
+  },
+  {
+    question: 'How many mitzvot are there?',
+    answer: '613',
+    category: 'Religion',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      '10',
+      '512',
+      '256',
+    ]
+  },
+  {
+    question: 'What was Harrison Ford\'s job before he was an actor?',
+    answer: 'Carpenter',
+    category: 'Entertainment',
+    difficulty: 'easy',
+    type: 'multiple',
+    incorrect_answers: [
+      'Plumber',
+      'Electrician',
+      'Mechanic',
+    ]
+  },
+  {
+    question: 'Which channel did Mike Rowe present for?',
+    answer: 'QVC',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'OWN',
+      'HSN',
+      'TBS',
+    ]
+  },
+  {
+    question: 'When was the last peonage slaves freed in the US?',
+    answer: '1963',
+    category: 'History',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      '1908',
+      '1863',
+      '1867',
+    ]
+  },
+  {
+    question: 'Who was the first American convicted of cannibalism?',
+    answer: 'Alfred Packer',
+    category: 'History',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'James Beard',
+      'Ed Gein',
+      'Albert Fish',
+    ]
+  },
+  {
+    question: 'Who wrote the first commercially available album of electronic music?',
+    answer: 'Wendy Carlos',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Karlheinz Stockhausen',
+      'John Cage',
+      'Morton Subotnick',
+    ]
+  },{
+    question: 'Which of the following is a member of Kraftwerk?',
+    answer: 'Ralf Hütter',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Manuel Göttsching',
+      'Jaki Liebezeit',
+      'Karlheinz Stockhausen',
+    ]
+  },
+  {
+    question: 'Who revealed the secrets of chirpractic to D.D. Palmer?',
+    answer: 'A ghost',
+    category: 'History',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Robert Kraft',
+      'John Smith',
+      'John Kellogg',
+    ]
+  },
+  {
+    question: 'Which of the following began their career reading radio ads for chiropractic?',
+    answer: 'Ronald Reagan',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'John Wayne',
+      'Chris Pratt',
+      'Jesse Ventura',
+    ]
+  },
+  {
+    question: 'Dude, where WAS his car?',
+    answer: 'In the garage',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'On a spaceship',
+      'In the street',
+      'In the lake',
+    ]
+  },
+  {
+    question: 'Guy was a name before it was a word',
+    answer: 'True',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'False',
+    ]
+  },
+  {
+    question: 'Which of the following legendary synth designers is still alive?',
+    answer: 'Dave Smith',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Bob Moog',
+      'Don Buchla',
+      'Alan R. Pearlman',
+    ]
+  },
+  {
+    question: 'Which of the following corporations encouraged the US to back a coup in Nicaragua?',
+    answer: 'United Fruit',
+    category: 'History',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Standard Oil',
+      'Ford',
+      'General Electric',
+    ]
+  },
+  {
+    question: 'Which president denounced the CIA?',
+    answer: 'Harry Truman',
+    category: 'History',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Dwight Eisenhower',
+      'John F. Kennedy',
+      'Lyndon B. Johnson',
+    ]
+  },
+  {
+    question: 'Why of the following is the numerological representation of chai?',
+    answer: '18',
+    category: 'Religion',
+    difficulty: 'hard',
+    type: 'multiple',
+    incorrect_answers: [
+      '36',
+      '9',
+      '72',
+    ]  
+  },
+  {
+    question: 'How many notes are there in a chromatic scale?',
+    answer: '12',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      '8',
+      '5',
+      '7',
+    ]
+  },
+  {
+    question: 'What region is spanish moss native to?',
+    answer: 'South America',
+    category: 'Geography',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Europe',
+      'Asia',
+      'Australia',
+    ]
+  },
+  {
+    question: 'Who provided funding for the original run of Star Trek?',
+    answer: 'Lucille Ball',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Rod Serling',
+      'Orson Welles',
+      'NBC',
+    ]
+  },
+  {
+    question: 'What type of droid is C-3PO?',
+    answer: 'Protocol',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'easy',
+    incorrect_answers: [
+      'Astromech',
+      'Gundam',
+      'Humaniform',
+    ]
+  },
+  {
+    question: 'Which of the following movies features Roddy Piper?',
+    answer: 'The Mystical Adventures of Billy Owens',
+    category: 'Entertainment',
+    difficulty: 'medium',
+    type: 'multiple',
+    incorrect_answers: [
+      'Llamageddon',
+      'The Beastmaster',
+      'Legend of the GUardians: The Owls of Ga\'hoole',
+    ]
+  },
 ]
 
 export default TriviaQuestions;

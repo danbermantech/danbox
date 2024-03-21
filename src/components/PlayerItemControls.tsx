@@ -112,7 +112,7 @@ const ItemControl = ({item}:{item:Item})=>{
         
         {item.name}
       </button>
-      <Modal open={modalOpen} className=" flex w-full h-full min-w-full min-h-full" onClose={()=>setModalOpen(false)}>
+      <Modal open={modalOpen} className=" flex w-full h-full min-w-full min-h-full overflow-auto" onClose={()=>setModalOpen(false)}>
           <div className="mx-auto min-w-max max-w-full my-auto p-4 bg-slate-50 rounded-xl w-min flex flex-col text-black">
           {/* <h1 className="text-3xl p-2 text-center text-black">Select your target</h1> */}
           <div className="text-lg text-black">{item.description}</div>
@@ -126,6 +126,7 @@ const ItemControl = ({item}:{item:Item})=>{
             })
           }
           <button 
+          className="rounded shadow bg-blue-500 text-white p-2"
           // disabled={Object.values(state).every((value)=>value.length !== 0)}
           onClick={()=>{
             console.log(state);

@@ -128,7 +128,7 @@ const items:ItemDefinition[] = [
   },
   {
     name: 'construction crew', 
-    description: 'Remove a space from the board',
+    description: 'Add a space to the board',
     price: 10,
     image: teleport,
     params: [

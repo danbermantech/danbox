@@ -9,6 +9,7 @@ import {v4 as uuidv4} from 'uuid'
 import {swords} from '$assets/images.ts';
 
 import { useAppDispatch, useAppSelector } from "$store/hooks";
+import useAudio from "$hooks/useAudio";
 
 type Challenge = {
   category: string,
@@ -59,11 +60,27 @@ const challenges:Challenge[] = [
     audienceDelay: 30000,
   },
   {
+    category: 'Ego',
+    name: 'Namedrop',
+    difficulty: 'medium',
+    description: 'Tell a story about meeting someone famous. The player with the most famous namedrop wins.',
+    audienceDescription: 'Whose story happened most recently?',
+    audienceDelay: 30000,
+  },
+  {
     category: 'Party',
     name: 'Take off a piece of clothing',
     difficulty: 'medium',
     description: 'Take off a piece of clothing. The first person to remove an article of clothing wins.',
     audienceDescription: 'Whose piece of clothing was lighter?',
+    audienceDelay: 20000,
+  },
+  {
+    category: 'Party',
+    name: 'Take off a piece of clothing',
+    difficulty: 'medium',
+    description: 'Take off a piece of clothing. The first person to remove an article of clothing wins.',
+    audienceDescription: 'Whose piece of clothing was darker?',
     audienceDelay: 20000,
   },
   {
@@ -74,13 +91,43 @@ const challenges:Challenge[] = [
     audienceDescription: 'Who kissed an animal first?',
   },
   {
+    category: 'Ego',
+    name: 'Kiss an animal',
+    difficulty: 'medium',
+    description: 'Kiss an animal. The first player to kiss an animal wins.',
+    audienceDescription: 'Whose animal was tallest?',
+  },
+  {
     category: 'Party',
     name: 'Dance',
     difficulty: 'medium',
     description: 'Dance. The player who does the most interesting dance wins.',
     audienceDescription: 'Whose dance was the most out of character?',
     audienceDelay: 30000,
-    
+  },
+  {
+    category: 'Party',
+    name: 'Dance',
+    difficulty: 'medium',
+    description: 'Dance. The player who does the most interesting dance wins.',
+    audienceDescription: 'Whose dance was the most old school?',
+    audienceDelay: 30000,
+  },
+  {
+    category: 'Party',
+    name: 'Dance',
+    difficulty: 'medium',
+    description: 'Dance. The player who does the most interesting dance wins.',
+    audienceDescription: 'Whose dance was the most athletic?',
+    audienceDelay: 30000,
+  },
+  {
+    category: 'Party',
+    name: 'Dance',
+    difficulty: 'medium',
+    description: 'Dance. The player who does the most interesting dance wins.',
+    audienceDescription: 'Whose dance was longer?',
+    audienceDelay: 30000,
   },
   {
     category: 'Ego',
@@ -140,7 +187,12 @@ const Duel =
 
     const [actionId] = useState(()=>uuidv4());
 
+    const {triggerSoundEffect} = useAudio();
     
+    useEffect(()=>{
+      return triggerSoundEffect('duel');
+    },[triggerSoundEffect])
+
     const [playerAnswers, setPlayerAnswers] = useState<{[key:string]:string}>({});
 
 
@@ -188,9 +240,10 @@ const Duel =
           next[peerId] = data.payload.value;
           return next;
         })
+        triggerSoundEffect(`dink`);
         dispatch(setPlayerInstructions({playerId: peerId, instructions: `Thanks for voting! Please wait for the results...`}))
         dispatch(setPlayerControls({playerId: peerId, controls:[]}) )
-    }, [setPlayerAnswers, dispatch]);
+    }, [setPlayerAnswers, dispatch, triggerSoundEffect]);
 
     usePeerDataReceived(dataReceivedCallback, actionId)
 

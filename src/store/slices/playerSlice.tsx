@@ -45,6 +45,7 @@ export const playerSlice = createSlice({
         movesPerRound: defaultMovesPerRound,
         hasMoved: false,
         instructions:"",
+        movesRemaining: defaultMovesPerRound,
         ...action.payload,
       });
       return state;

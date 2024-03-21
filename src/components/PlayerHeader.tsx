@@ -37,13 +37,16 @@ const PlayerHeader = () =>{
           </Typography>
           </div>
           <PlayerMap />
-          <Fullscreen className="flex-shrink" sx={{width:48, height:48}} onClick={()=>{
-            if(document.fullscreenElement){
-              document.exitFullscreen();
-            } else {
-              document.documentElement.requestFullscreen();
-            }
-          }} />
+          {
+            window.matchMedia("(display-mode: browser)").matches &&
+            <Fullscreen className="flex-shrink" sx={{width:48, height:48}} onClick={()=>{
+              if(document.fullscreenElement){
+                document.exitFullscreen();
+              } else {
+                document.documentElement.requestFullscreen();
+              }
+            }} />
+          }
         </Toolbar>
   </AppBar>)
 }
