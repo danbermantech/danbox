@@ -52,7 +52,7 @@ const HostStateManager = () => {
   usePeerDataReceived<{playerId:string, value: string, action:string}>(movementListener, movementActionId)
 
   usePeerDataReceived<{playerId: string, value:{item:string, [x:string]:string}, target:string}>(data=>{
-      dispatch(activateItem({user: data.payload.playerId,target: data.payload.target, item: data.payload.value.item, value: data.payload.value}))
+      dispatch(activateItem({user: data.payload.playerId,target: data.payload.target, item: data.payload.value.item, id: data.payload.value.id, value: data.payload.value}))
   }, 'activateItem')
 
   usePeerDataReceived<{playerId: string, value:string}>((data)=>{

@@ -19,6 +19,7 @@ const ItemStandardParamSelectControl = ({param, value, onChange, className}:{par
         if(typeof option == 'string') return <option key={option} value={option}>{option}</option>
         return <option key={option.value} value={option.label}>{option.label}</option>
     })}
+    <option key="default" value="" selected disabled>Select</option>
     </select>
   )
 }
@@ -95,12 +96,12 @@ const ItemControl = ({item}:{item:Item})=>{
   const handleParamChanged = useCallback((name:string, value:string)=>{
     setState((prev)=>({...prev, [name]: value}))
   },[setState])
-
+  console.log(state, Object.values(state).every((value)=>value.length !== 0))
   return (
     <>
       <button 
-      // disabled={item.name.length == 0} 
-      className="text-xl font-bold text-black border-black border-2 bg-white rounded-xl p-4 flex flex-col items-center justify-center place-content-stretch"
+      disabled={item.name.length == 0} 
+      className=" text-xl font-bold disabled:bg-gray-400 text-black border-black border-2 bg-white rounded-xl p-4 flex flex-col items-center justify-center place-content-stretch"
       onClick={()=>{
         setModalOpen(true);
       }} >
@@ -127,10 +128,10 @@ const ItemControl = ({item}:{item:Item})=>{
           }
           <button 
           className="rounded shadow bg-blue-500 text-white p-2"
-          // disabled={Object.values(state).every((value)=>value.length !== 0)}
+          disabled={Object.keys(state) && !(Object.values(state).every((value)=>value.length !== 0))}
           onClick={()=>{
             console.log(state);
-            sendPeersMessage({type: 'activateItem', payload: {playerId:me.id, target:state.target ?? me.id, action: 'activateItem',  value:{item:item.name,...state}}})
+            sendPeersMessage({type: 'activateItem', payload: {playerId:me.id, target:state.target ?? me.id, action: 'activateItem',  value:{item:item.name,...state,id: item.id}}})
             setModalOpen(false);
           }} >SUBMIT</button>
           </div>

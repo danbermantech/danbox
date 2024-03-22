@@ -1,4 +1,4 @@
-import {shrimp, magicHat, teleport, cheat, souperSoup, soup, magicHand} from '$assets/images.ts';
+import {shrimp, magicHat, teleport, cheat, souperSoup, soup, magicHand, wrecking_ball, men_at_work, add_space} from '$assets/images.ts';
 // import activateItem from '$store/actions/activateItem'
 import { GAME_MODE, ItemDefinition } from '$store/types';
 
@@ -92,7 +92,7 @@ const items:ItemDefinition[] = [
     name: 'traffic engineer', 
     description: 'Add or remove a path on the board',
     price: 10,
-    image: teleport,
+    image: men_at_work,
     params: [
       {
         name: 'action',
@@ -116,10 +116,10 @@ const items:ItemDefinition[] = [
     name: 'demolition crew', 
     description: 'Remove a space from the board',
     price: 10,
-    image: teleport,
+    image: wrecking_ball,
     params: [
       {
-        name: 'id',
+        name: 'space',
         type: 'select',
         special: 'spaces',
       },
@@ -130,7 +130,7 @@ const items:ItemDefinition[] = [
     name: 'construction crew', 
     description: 'Add a space to the board',
     price: 10,
-    image: teleport,
+    image: add_space,
     params: [
       {
         name: 'type',

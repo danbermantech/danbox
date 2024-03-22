@@ -109,7 +109,7 @@ export const playerSlice = createSlice({
     },
     givePlayerItem: (state, action) => {
       const { playerId, item } = action.payload;
-      let value = item
+      let value = {id: uuidv4(), ...item};
       if(typeof(item) == 'string') {
         const temp = items.find((i)=>i.name == item); 
         if(!temp) return;
@@ -321,10 +321,11 @@ export const playerSlice = createSlice({
           }
           case('demolition crew'):{
             const {id} = action.payload.value as {id: string};
-            return state.map((player)=>({...player, spaceId: player.spaceId == id ? 'home' : player.spaceId, previousSpaceId: player.previousSpaceId == id ? 'home' : player.previousSpaceId}))
+            state.map((player)=>({...player, spaceId: player.spaceId == id ? 'home' : player.spaceId, previousSpaceId: player.previousSpaceId == id ? 'home' : player.previousSpaceId}))
+            break;
           }
         }
-        player.items = player.items.filter((item)=>(item.name !== action.payload.item));
+        player.items = player.items.filter((item)=>(item.id !== action.payload.id));
         })
       .addCase(restart, (state)=>{
         return state.map((player)=>({...player, spaceId: 'home', previousSpaceId: 'home', points: 0, gold: 0, items:[], movesRemaining: defaultMovesPerRound, hasMoved:false, controls:[]}))

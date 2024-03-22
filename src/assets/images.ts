@@ -37,14 +37,18 @@ import spooky2 from "./images/characters/spooky2.png";
 import spookyboi from "./images/characters/spookyboi.png";
 import yugi from "./images/characters/yugi.png";
 import yuyuhakusho from "./images/characters/yuyuhakusho.png";
+import add_space from "./images/items/add_space.png";
 import cheat from "./images/items/cheat.png";
 import itemPlaceholder from "./images/items/itemPlaceholder.png";
 import magicHand from "./images/items/magicHand.png";
 import magicHat from "./images/items/magicHat.png";
+import men_at_work from "./images/items/men_at_work.png";
+import paver from "./images/items/paver.png";
 import shrimp from "./images/items/shrimp.png";
 import soup from "./images/items/soup.png";
 import souperSoup from "./images/items/souperSoup.png";
 import teleport from "./images/items/teleport.png";
+import wrecking_ball from "./images/items/wrecking_ball.png";
 import gold from "./images/resources/gold.png";
 import playerPlaceholder from "./images/resources/playerPlaceholder.png";
 import points from "./images/resources/points.png";
@@ -96,14 +100,18 @@ export const characters = {
 }
 
 export const items = { 
+  add_space,
   cheat,
   itemPlaceholder,
   magicHand,
   magicHat,
+  men_at_work,
+  paver,
   shrimp,
   soup,
   souperSoup,
   teleport,
+  wrecking_ball,
 }
 
 export const resources = { 
@@ -159,14 +167,18 @@ export {
   spookyboi,
   yugi,
   yuyuhakusho,
+  add_space,
   cheat,
   itemPlaceholder,
   magicHand,
   magicHat,
+  men_at_work,
+  paver,
   shrimp,
   soup,
   souperSoup,
   teleport,
+  wrecking_ball,
   gold,
   playerPlaceholder,
   points,

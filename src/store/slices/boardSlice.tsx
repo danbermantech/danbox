@@ -8,10 +8,22 @@ import activateItem from "$store/actions/activateItem";
 
 const minDistance = 0.2;
 
+function onlyUnique<T>(value:T, index:number, array: T[]) {
+  return array.indexOf(value) === index;
+}
+
 function distanceBetween(space:BoardSpaceConfig, otherSpace:BoardSpaceConfig){
 return Math.sqrt((space.x - otherSpace.x)**2 + (space.y - otherSpace.y)**2);
 }
 
+function incrementString(str:string) {
+  // Find the trailing number or it will match the empty string
+  const count = str.match(/\d*$/);
+  if(!count) return str + '1';
+  // Take the substring up until where the integer was matched
+  // Concatenate it to the matched count incremented by 1
+  return str.substring(0, count.index) + (count[0]+1);
+}
 
 function boardHasConflicts(board: Board) {
   let result = false;
@@ -178,41 +190,49 @@ export const gameSlice = createSlice({
         const {payload} = action;
         switch(action.payload.item){
           case('traffic engineer'):{
+            console.log('traffing engineer', payload)
             const {value} = payload as unknown as {value:{action: string, from: string, to: string}};
             switch(value.action){
               case('add'):
-                state[value.from].connections.push(value.from);
+                state[value.from].connections.push(value.to);
                 return state;
               case('remove'):
-                state[value.to].connections = state[value.to].connections.filter((id) => id !== value.from);
+                state[value.from].connections = state[value.from].connections.filter((id) => id !== value.to);
                 return state;
             }
             break;
           }
           case('demolition crew'):{
-            const {value} = payload as unknown as {value:{id: string}}
-            delete state[value.id];
-                Object.values(state).forEach((space) => {
-                  space.connections = space.connections.filter((id) => id !== value.id);
-                });
-                return state;
-            break;
+            console.log(payload);
+            const {value} = payload as unknown as {value:{space: string}}
+            if(value.space === 'home') return state;
+            // const {[value.space_id]:_, ...rest} = state;
+            // console.log(Object.keys(state));
+            // console.log('removed', _)
+            console.log(value)
+            delete state[value.space];
+            Object.values(state).forEach((space) => {
+              space.connections = space.connections.filter((id) => id !== value.space).filter(onlyUnique);
+            });
+            return state;
           }
           case('construction crew'):{
             const {value} = payload as unknown as {value:{label:string, color:string, type:GAME_MODE, pathsFrom1:string, pathsFrom2:string, pathsFrom3:string, pathsTo1:string, pathsTo2:string, pathsTo3:string}};
-            state[value.label] = {
-              id: value.label,
-              label: value.label,
+            const label = Object.keys(state).includes(value.label) ? incrementString(value.label) : value.label;
+            state[label] = {
+              id: label,
+              label: label,
               x: randomPosition(),
               y: randomPosition(),
               color: value.color,
               width: 0.06,
               height: 0.06,
               type: value.type,
-              connections: [value.pathsTo1, value.pathsTo2, value.pathsTo3].filter((path)=>path !== ''),
+              connections: [value.pathsTo1, value.pathsTo2, value.pathsTo3].filter((path)=>path !== '').filter(onlyUnique),
             };
             [value.pathsFrom1, value.pathsFrom2, value.pathsFrom3].filter((path)=>path !== '').forEach((path)=>{
-              state[path].connections.push(value.label);
+              state[path].connections.push(label);
+              state[path].connections = state[path].connections.filter(onlyUnique);
             });
             return state;
           }
