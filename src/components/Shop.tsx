@@ -10,8 +10,6 @@ import { endMinigame } from '$store/slices/gameProgressSlice';
 import items from '$constants/items';
 import { useAppDispatch, useAppSelector } from '$store/hooks';
 import PlayerCard from './PlayerCard';
-import { set } from 'lodash';
-// import clsx from 'clsx';
 
 
 
