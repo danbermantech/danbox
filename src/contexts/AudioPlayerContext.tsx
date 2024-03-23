@@ -7,6 +7,8 @@ type AudioContextValue = {
   unmuteAudio: ()=>void;
   isMuted: boolean;
   playBackgroundMusic: ()=>void;
+  volume: number;
+  setVolume: (volume:number)=>void;
 }
 
 const AudioPlayerContext = createContext<AudioContextValue>({
@@ -14,7 +16,9 @@ const AudioPlayerContext = createContext<AudioContextValue>({
   triggerSoundEffect: () => { }, 
   muteAudio: ()=>{}, 
   unmuteAudio: ()=>{}, 
-  isMuted: true 
+  isMuted: true,
+  volume: 1,
+  setVolume: ()=>{}
 });
 
 const AudioPlayerContextProvider = ({ children }:{children:React.ReactNode}) => {
@@ -50,6 +54,19 @@ const AudioPlayerContextProvider = ({ children }:{children:React.ReactNode}) => 
     }
   },[audioContext, soundBuffers, isMuted]);
   
+  const [outputGainNode] = useState(audioContext.createGain());
+
+  useEffect(()=>{
+    outputGainNode.gain.setValueAtTime(1, audioContext.currentTime);
+    outputGainNode.connect(audioContext.destination);
+  },[outputGainNode, audioContext])
+
+  const setVolume = useCallback((volume:number)=>{
+    outputGainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+  },[outputGainNode, audioContext])
+
+  const volume = outputGainNode.gain.value;
+
   const playNote = useCallback(()=>{
     // Create a gain node to control the volume
     const gainNode = audioContext.createGain();
@@ -77,10 +94,11 @@ const AudioPlayerContextProvider = ({ children }:{children:React.ReactNode}) => 
     });
 
     // Connect the gain node to the audio context destination (e.g., speakers)
-    gainNode.connect(audioContext.destination);
+    // gainNode.connect(audioContext.destination);
+    gainNode.connect(outputGainNode);
     source.start();
     return ()=>{source.stop()}
-  },[soundBuffers, audioContext])
+  },[soundBuffers, audioContext, outputGainNode])
 
   const playBackgroundMusic = useCallback(()=>{
     const noteRefs:(()=>void)[] = []
@@ -103,7 +121,7 @@ const AudioPlayerContextProvider = ({ children }:{children:React.ReactNode}) => 
   }, [audioContext]);
 
   return (
-    <AudioPlayerContext.Provider value={{ triggerSoundEffect, muteAudio, unmuteAudio, isMuted, playBackgroundMusic }}>
+    <AudioPlayerContext.Provider value={{ triggerSoundEffect, muteAudio, unmuteAudio, isMuted, playBackgroundMusic, volume, setVolume }}>
       {children}
     </AudioPlayerContext.Provider>
   );

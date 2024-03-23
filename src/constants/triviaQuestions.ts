@@ -893,7 +893,7 @@ const TriviaQuestions:TriviaQuestion[] =[
     incorrect_answers: [
       'Llamageddon',
       'The Beastmaster',
-      'Legend of the GUardians: The Owls of Ga\'hoole',
+      'Legend of the Guardians: The Owls of Ga\'hoole',
     ]
   },
 ]

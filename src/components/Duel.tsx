@@ -189,9 +189,7 @@ const Duel =
 
     const {triggerSoundEffect} = useAudio();
     
-    useEffect(()=>{
-      return triggerSoundEffect('duel');
-    },[triggerSoundEffect])
+
 
     const [playerAnswers, setPlayerAnswers] = useState<{[key:string]:string}>({});
 
@@ -248,6 +246,12 @@ const Duel =
     usePeerDataReceived(dataReceivedCallback, actionId)
 
     const [completed, setCompleted] = useState(false);
+
+    useEffect(()=>{
+      
+      if(!completed) return triggerSoundEffect('duel');
+      return triggerSoundEffect('hooray')
+    },[triggerSoundEffect, completed])
 
     useEffect(()=>{
       const t = setTimeout(()=>{
@@ -360,10 +364,10 @@ const Duel =
         }
         {
           completed && winner == undefined &&
-          <div>
+          <div className="w-full flex flex-col">
             <h1 className="text-4xl text-black text-center">Tie</h1>
-            <div className="text-2xl">
-            Nobody gets anything. Deal with it.
+            <div className="text-2xl text-center">
+              <p>It's a tie! No one wins.</p>
             </div>
           </div>
         }

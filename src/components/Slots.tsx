@@ -47,7 +47,7 @@ return (
           label: "asset",
           options:
             state.type == "swap"
-              ? ["points", "teams", "items"]
+              ? ["points", "items", "gold"]
               : [
                   "all points",
                   "1 point",
@@ -60,7 +60,6 @@ return (
                   "10 gold",
                   "20 gold",
                   "1 item",
-                  "all items"
                 ],
         },
         { label: "target", options: players.filter((player)=>player.id !== activePlayerName && player.name !== activePlayerName).map((player) => player.name) },

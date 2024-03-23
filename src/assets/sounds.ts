@@ -9,6 +9,8 @@ import dink4 from "./sounds/dink/dink4.mp3";
 import dink5 from "./sounds/dink/dink5.mp3";
 import dink6 from "./sounds/dink/dink6.mp3";
 import dink7 from "./sounds/dink/dink7.mp3";
+import duel0 from "./sounds/duel/duel0.mp3";
+import duel1 from "./sounds/duel/duel1.mp3";
 import fanfare1 from "./sounds/fanfare/fanfare1.mp3";
 import frenzy0 from "./sounds/frenzy/frenzy0.mp3";
 import frenzy1 from "./sounds/frenzy/frenzy1.mp3";
@@ -17,6 +19,9 @@ import hooray0 from "./sounds/hooray/hooray0.mp3";
 import loss0 from "./sounds/loss/loss0.mp3";
 import movement0 from "./sounds/movement/movement0.mp3";
 import movement1 from "./sounds/movement/movement1.mp3";
+import movement2 from "./sounds/movement/movement2.mp3";
+import movement3 from "./sounds/movement/movement3.mp3";
+import movement4 from "./sounds/movement/movement4.mp3";
 import note0 from "./sounds/notes/note0.wav";
 import note1 from "./sounds/notes/note1.wav";
 import note2 from "./sounds/notes/note2.wav";
@@ -53,6 +58,11 @@ export const dink = [
   dink7,
 ]
 
+export const duel = [ 
+  duel0,
+  duel1,
+]
+
 export const fanfare = [ 
   fanfare1,
 ]
@@ -77,6 +87,9 @@ export const loss = [
 export const movement = [ 
   movement0,
   movement1,
+  movement2,
+  movement3,
+  movement4,
 ]
 
 export const notes = [ 
@@ -114,6 +127,7 @@ export const victory = [
 const index = {
   chaching,
   dink,
+  duel,
   fanfare,
   frenzy,
   gamble,

@@ -84,9 +84,9 @@ const HostStateManager = () => {
         const connections = mySpace?.connections
         if(!connections) return;
         const availableSpaces = Object.values(board).filter((space)=>connections.includes(space.id));
-        const options = availableSpaces.map((connection)=>({label:connection.label, value:connection.id, action:movementActionId}));
+        const options = availableSpaces.map((connection)=>({label:connection.label, value:connection.id, action:movementActionId, style: {backgroundColor: connection.color, fontWeight: 700, letterSpacing: '-0.1rem' }, className:'uppercase'} ));
         if(options.length == 0){
-          options.push({label:mySpace.label, value:mySpace.id, action:movementActionId})
+          options.push({label:mySpace.label, value:mySpace.id, action:movementActionId, style: {backgroundColor: mySpace.color, fontWeight:600, letterSpacing: '-0.1rem'}, className:'uppercase'})
         }
         dispatch(setPlayerInstructions({playerId: player.id, instructions: `${player.movesRemaining} moves remaining`}))
         if(isEqual(player.controls, options)) return;

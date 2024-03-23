@@ -6,6 +6,7 @@ export type PlayerAction = {
   value: string;
   styles?: React.CSSProperties;
   classNames?: string;
+  style?: React.CSSProperties;
   img?: string;
 }
 

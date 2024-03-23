@@ -190,7 +190,7 @@ const frenzy: BoardSpaceConfig = {
   y: 0.5,
   width: 0.045,
   height: 0.045,
-  color: "#000000",
+  color: "#35a6b2",
   id: 'frenzy',
   label: 'FRENZY',
   type: GAME_MODE.FRENZY,

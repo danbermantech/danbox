@@ -21,6 +21,23 @@ body {
   background-color: #2f3241;
 }
 
+.scoreboardContainer::-webkit-scrollbar{
+  background: var(--f);
+  width:0px;
+  height:0px;
+}
+
+.scoreBoardContainer::webkit-scrollbar-track{
+  width:1px;
+}
+
+.scoreboardContainer::-webkit-scrollbar-thumb {
+  background-color: var(--none);
+  border-radius: 100%;
+  border:none;
+  width:0px;
+  /* border: 2px solid white; */
+}
 /* Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
   background: #ffffff44;
