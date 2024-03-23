@@ -130,7 +130,7 @@ const GetAssetScreen = ()=>{
     <h1 className="animate-jump-in animate-ease-linear text-8xl text-center bg-gradient-radial from-white w-min p-8 rounded-full aspect-square flex items-center">
     😊
     </h1>
-    <div className="animate-jump-in animate-ease-linear animate-delay-500 text-center text-6xl font-bold">
+    <div className="animate-jump-in font-titan uppercase animate-ease-linear animate-delay-500 text-center text-6xl font-bold">
       Select your prize
     </div>    
     <div className='animate-jump-in animate-ease-linear animate-delay-1000 flex flex-row items-center justify-center  p-2'>

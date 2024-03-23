@@ -5,6 +5,7 @@ import lava2 from "./images/backgrounds/lava2.png";
 import lava3 from "./images/backgrounds/lava3.png";
 import lava4 from "./images/backgrounds/lava4.png";
 import lava5 from "./images/backgrounds/lava5.png";
+import mew from "./images/backgrounds/mew.png";
 import rhiannon from "./images/backgrounds/rhiannon.png";
 import stormy from "./images/backgrounds/stormy.png";
 import arnold from "./images/characters/arnold.png";
@@ -62,6 +63,7 @@ export const backgrounds = {
   lava3,
   lava4,
   lava5,
+  mew,
   rhiannon,
   stormy,
 }
@@ -135,6 +137,7 @@ export {
   lava3,
   lava4,
   lava5,
+  mew,
   rhiannon,
   stormy,
   arnold,

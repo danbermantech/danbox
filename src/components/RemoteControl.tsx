@@ -24,7 +24,7 @@ const RemoteControl = ({
     <button 
       style={style}
       className={clsx([
-        "w-full text-2xl bg-gray-200 rounded-2xl min-h-max flex-grow border-black border-2 border-solid text-black",
+        "w-full font-titan tracking-wide text-2xl bg-gray-200 rounded-2xl min-h-max flex-grow border-black border-2 border-solid text-black",
         typeof classNames == 'string' && classNames,
         typeof classNames == 'object' && classNames.button
       ])} onClick={onPress}>

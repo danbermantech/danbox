@@ -51,7 +51,7 @@ function Instructions (){
 
 function ControlWrapper({children}:{children:React.ReactNode}){
   return (
-    <div className=" p-4 w-full h-[calc(100dvh - 64px)] flex-grow flex ">
+    <div className=" p-4 w-full h-[calc(100dvh - 64px)] flex-grow flex font-titan">
       
       <div
       className="flex flex-col min-h-72 gap-2 h-full flex-grow "

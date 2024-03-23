@@ -57,18 +57,18 @@ const SignUp = ()=>{
   }, [location.pathname, peerConnected, searchParams, connect])
 
   return (
-    <div className="w-full flex items-center justify-items-center content-center justify-center ">
+    <div className="w-full flex items-center justify-items-center content-center justify-center font-titan">
       {/* <div className="flex flex-row flex-grow w-full items-center justify-items-center content-center justify-center"> */}
     <div className="h-76 transition-[height] min-h-min  my-auto rounded-xl border-green-600 border-2 border-solid bg-white flex flex-col gap-4 items-center max-w-full bg-gradient-to-bl p-4 from-pink-200 to-fuchsia-400">
       <div className="flex flex-row justify-between items-center ">
         <h1 className="animate-fade animate-duration-1000 text-8xl font-cursive font-bold text-center w-full text-transparent bg-clip-text bg-gradient-to-br from-pink-400 to-violet-600">Welcome</h1>
       </div>
-      <label htmlFor="hostIdInput" className="animate-fade animate-delay-1000 transition-all text-transparent bg-clip-text bg-gradient-to-br from-pink-400 to-violet-600 text-2xl font-bold uppercase">Host ID</label>
-      <input type="text" className="animate-fade animate-delay-1000 text-black w-64 placeholder:text-slate-600 under text-xl bg-white bg-opacity-20 p-2 rounded-xl shadow-xl text-center uppercase font-bold" id="hostIdInput" placeholder="Please enter a host ID" value={hostId} onChange={(event)=>{setHostId(event.currentTarget.value.substring(0,4))}} />
-      <label data-disabled={hostId.length < 4} htmlFor="nameInput" className="animate-fade  transition-all text-transparent bg-clip-text bg-gradient-to-br from-pink-400 to-violet-600 text-2xl font-bold uppercase data-[disabled=true]:hidden">Name</label>
-      <input disabled={hostId.length < 4} type="text" id="nameInput" className="animate-fade  text-black w-64 placeholder:text-slate-400 under text-xl bg-white bg-opacity-20 p-2 rounded-xl shadow-xl text-center disabled:hidden" placeholder="Please enter a name" value={tempName} onChange={(event)=>{setTempName(event.currentTarget.value)}} />
-      <div data-disabled={tempName.length < 4 || hostId.length < 4} className="animate-fade  text-transparent bg-clip-text bg-gradient-to-br from-pink-400 to-violet-600 text-2xl font-semibold data-[disabled=true]:hidden">Avatar</div>
-      <div data-disabled={tempName.length < 4 || hostId.length < 4} className="animate-fade w-full p-4 bg-white bg-opacity-40 rounded-xl shadow-xl data-[disabled=true]:hidden">
+      <label htmlFor="hostIdInput" className="animate-fade animate-delay-1000 transition-all text-transparent bg-clip-text bg-gradient-to-br from-pink-600 to-violet-600 text-2xl font-bold uppercase">Host ID</label>
+      <input type="text" data-length={hostId.length} className="animate-fade animate-delay-1000 text-black w-64 placeholder:text-slate-600 under text-xl bg-white bg-opacity-20 p-2 rounded-xl shadow-xl text-center uppercase font-bold" id="hostIdInput" placeholder="Please enter a host ID" value={hostId} onChange={(event)=>{setHostId(event.currentTarget.value.substring(0,4))}} />
+      <label data-disabled={hostId.length < 4} htmlFor="nameInput" className="animate-fade  transition-all text-transparent bg-clip-text bg-gradient-to-br from-pink-600 to-violet-600 text-2xl font-bold uppercase data-[disabled=true]:scale-0">Name</label>
+      <input disabled={hostId.length < 4} type="text" id="nameInput" className="animate-fade  text-black w-64 placeholder:text-slate-400 under text-xl bg-white bg-opacity-20 p-2 rounded-xl shadow-xl text-center disabled:scale-0" placeholder="Please enter a name" value={tempName} onChange={(event)=>{setTempName(event.currentTarget.value.substring(0,8))}} />
+      <div data-disabled={tempName.length < 4 || hostId.length < 4} className="animate-fade  text-transparent bg-clip-text bg-gradient-to-br from-pink-600 to-violet-600 text-2xl font-semibold data-[disabled=true]:scale-0 transition-all">Avatar</div>
+      <div data-disabled={tempName.length < 4 || hostId.length < 4} className="animate-fade w-full p-4 bg-white bg-opacity-40 rounded-xl shadow-xl data-[disabled=true]:hidden data-[disabled=true]:scale-0 transition-all">
       <CharacterCarousel selected={selectedSprite} onChange={setSelectedSprite} />
 
       </div>

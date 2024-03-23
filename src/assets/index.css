@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Titan+One&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -19,6 +20,10 @@ body {
     sans-serif;
   color: #86a5b1;
   background-color: #2f3241;
+}
+
+.titan-one{
+  font-family: 'Titan One', Roboto, sans-serif;
 }
 
 .scoreboardContainer::-webkit-scrollbar{

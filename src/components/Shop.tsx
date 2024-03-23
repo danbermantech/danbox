@@ -5,11 +5,12 @@ import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
 import useAudio from '$hooks/useAudio';
 import usePeerDataReceived, { PeerDataCallbackPayload } from '$hooks/useDataReceived';
 import {v4 as uuidv4} from 'uuid'
-import {gold, itemPlaceholder} from '$assets/images.ts';
+import {gold, itemPlaceholder, mew} from '$assets/images.ts';
 import { endMinigame } from '$store/slices/gameProgressSlice';
 import items from '$constants/items';
 import { useAppDispatch, useAppSelector } from '$store/hooks';
 import PlayerCard from './PlayerCard';
+import { set } from 'lodash';
 // import clsx from 'clsx';
 
 
@@ -55,21 +56,23 @@ const Shop = ()=>{
     console.log(data, peerId);
     const item = options.find((item)=>(item.id == data.payload.value));
     console.log(player, item)
+    if(!player) return
     if(data.payload.value == 'none'){
       setSelectedOption({name: 'Nothing', id:'nothing', description: 'You bought nothing. Maybe next time', price: 0, image: itemPlaceholder, weight: 1, })
-      dispatch(clearAllPlayerControls());
+      dispatch(setPlayerControls({playerId: player.id, controls:[]}));
       setTimeout(()=>{
         dispatch(triggerNextQueuedAction());
       }, 2000)
       return;    
     }
-    if(!player || !item) return;
+    if(!item) return;
     if(player.gold >= item.price){
       console.log('purchasing')
       dispatch((disp)=>{
 
         disp(givePlayerItem({playerId: player.id, item: {name: item.name, image: item.image, description: item.description, params: item.params,}}))
         disp(givePlayerGold({playerId: player.id, gold: -item.price}))
+        disp(setPlayerControls({playerId: player.id, controls:[]}))
         disp(clearAllPlayerControls())
       })
       setSelectedOption(item);
@@ -79,7 +82,7 @@ const Shop = ()=>{
       }, 2000)
       setTimeout(()=>{
         dispatch(triggerNextQueuedAction());
-      }, 3000)
+      }, 2500)
     }
   }, [dispatch, player, options])
 
@@ -87,11 +90,11 @@ const Shop = ()=>{
 
   const activePlayer = useAppSelector((state) => state.players.find((player)=>player.id == activePlayers[0])) as Player;
 
-  return (<div className="w-full flex flex-col text-black gap-36">
-    <h1 className="text-8xl font-bold text-center">
-      SHOP
+  return (<div className="w-full font-titan  flex flex-col text-black gap-36" style={{backgroundImage: `url(${mew})`, backgroundSize:'contain', backgroundPosition: 'center', backgroundRepeat:'no-repeat'}}>
+    <h1 className="text-8xl font-bold text-center italic">
+      SHOPPE
     </h1>
-    <PlayerCard player={activePlayer} className="mx-auto bg-yellow-500 " />
+    <PlayerCard player={activePlayer} showGold className="mx-auto bg-yellow-500 " />
     {selectedOption ? 
       <div key={selectedOption.name} className="max-w-48 mx-auto font-bold rounded-xl bg-green-200 p-2 flex flex-col border-2 border-green-400">
         <h2 className="text-4xl uppercase text-center">{selectedOption.name}</h2>

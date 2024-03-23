@@ -71,7 +71,7 @@ const OptionMachine =
         dispatch(
           setPlayerControls({playerId: forPlayer,
             controls:[
-            { label: "SPIN", value: "stop", action:actionId, filters: {} },
+            { label: "SPIN!", value: "stop", action:actionId, className:'text-4xl bg-green-600 text-white', filters: {} },
           ]}),
         );
         return;
@@ -80,7 +80,7 @@ const OptionMachine =
         dispatch(
           setPlayerControls({playerId:forPlayer,
             controls: [
-            { label: "STOP", value: "stop",action:actionId,  filters: {} },
+            { label: "STOP!", value: "stop",action:actionId, className:'text-4xl bg-red-600 text-white',  filters: {} },
           ]}),
         );
         return;

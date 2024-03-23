@@ -24,22 +24,24 @@ const BoardSpace = ({id}:{id:string}) =>{
           <Text
             text={location.label.toLocaleUpperCase()} 
             style={new TextStyle({align: 'center',
-            fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
-            fontSize: 100,
+            fontFamily: '"Titan One", "Source Sans Pro", Helvetica, sans-serif',
+            fontSize: 50,
             fontWeight: '400',
-            fill: ['#880000', '#000000'], // gradient
-            stroke: '#880000',
-            strokeThickness: 5,
-            letterSpacing: 20,
+            fill:['#ffffff', '#cccccc'],
+            // fillGradientType: TEXT_GRADIENT.LINEAR_VERTICAL,
+            // fill: ['#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff',], // gradient
+            stroke: '#000000',
+            strokeThickness: 8,
+            letterSpacing: 1,
             dropShadow: true,
-            dropShadowColor: '#FF0000',
+            dropShadowColor: '#000000',
             dropShadowBlur: 4,
             dropShadowAngle: Math.PI / 6,
             dropShadowDistance: 6,
             wordWrap: true,
             wordWrapWidth: 440,})} 
-            width={boardWidth * location.width}
-            height={boardHeight * location.width*.8} 
+            width={boardWidth * location.width * 1.2}
+            height={boardHeight * location.width} 
             x={boardWidth * location.x} y={boardHeight * (location.y + location.width * .5)} 
             anchor={{x:0.5, y: 0}} 
           />

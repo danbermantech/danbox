@@ -62,19 +62,19 @@ const PlayerPiece = ({id}:{id:string}) => {
       />
       <Text text={player.name.toLocaleUpperCase()} 
         style={new TextStyle({align: 'center',
-          fontFamily: 'sans-serif',
-          fontSize: 125,
+          fontFamily: 'Titan One',
+          fontSize: 50,
           fontWeight: '800',
           stroke: '#ffffff',
-          strokeThickness: 18,
+          strokeThickness: 8,
           letterSpacing: 0,
           dropShadowAngle: Math.PI / 6,
           dropShadowDistance: 6,
           wordWrap: true,
           wordWrapWidth: 440,
         })}  
-        width={boardWidth > 1200 ? boardWidth * 0.08: boardWidth * 0.022 } 
-        height={boardHeight > 720 ? boardWidth * 0.06 : boardWidth * 0.012 } 
+        // width={boardWidth > 1200 ? boardWidth * 0.08: boardWidth * 0.022 } 
+        // height={boardHeight > 720 ? boardWidth * 0.04 : boardWidth * 0.012 } 
         x={0} 
         y={boardWidth * 0.01} 
         anchor={{x:0.5, y: 0./5}} 

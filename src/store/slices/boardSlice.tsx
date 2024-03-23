@@ -71,7 +71,7 @@ export const gameSlice = createSlice({
     setBoardLayout: (state, action) => {
       // const board = action.payload as Board;
       state = action.payload;
-        shuffleBoard(state);
+        // shuffleBoard(state);
       
       Object.values(state).forEach((space) => {
         // if(space.connections.length > 0) return;

@@ -138,8 +138,11 @@ const Trivia =
       <div
         className="flex flex-col w-full items-center max-w-[50dvw] transition-all" 
       >
+        <h1 className="font-titan text-6xl text-black pb-4">
+        Trivia Time!
+        </h1>
         <div className="bg-slate-100 border-black rounded-t-xl w-full flex flex-col gap-2 p-2 bg-opacity-85 border-4">
-        <h1 className="text-4xl font-bold text-black pb-2">{triviaQuestion.category}</h1>
+        <h1 className="text-4xl font-titan font-bold text-black pb-2">{triviaQuestion.category}</h1>
         <h2 className="text-4xl text-black max-w-screen">
           {triviaQuestion.question}
         </h2>
@@ -168,19 +171,19 @@ const Trivia =
         {!completed &&answers.map(({ label }, index) => (
           <div
             key={label as string}
-            className={`text-center w-full mx-auto border-2 animate-fill-forwards border-white rounded-xl animate-shake animate-infinite animate-duration-2000 animate-ease-linear px-4 overflow-hidden text-ellipsis flex justify-center items-center select-none min-w-96 bg-black text-white animate-delay-${index*2}00`}
+            className={`text-center font-titan w-full mx-auto border-2 animate-fill-forwards border-white rounded-xl animate-shake animate-infinite animate-duration-2000 animate-ease-linear px-4 overflow-hidden text-ellipsis flex justify-center items-center select-none min-w-96 bg-black text-white animate-delay-${index*2}00`}
             style={{
               fontSize: "clamp(2rem, 100rem, 4rem)",
               filter:  "drop-shadow(4px 4px 8px #2200ff)",
             }}
           >
-            <div className="hidden animate-delay-100 animate-delay-200 animate-delay-300 animate-delay-400 animate-delay-500 animate-delay-600 animate-delay-700 animate-delay-800 animate-delay-900" />
             <div style={{ textTransform: "capitalize" }}>
               {label}
             </div>
           </div>
         ))}
         </div>
+        <div className="hidden animate-delay-100 animate-delay-200 animate-delay-300 animate-delay-400 animate-delay-500 animate-delay-600 animate-delay-700 animate-delay-800 animate-delay-900" />
       </div>
     );
   };

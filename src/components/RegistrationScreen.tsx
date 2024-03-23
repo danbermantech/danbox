@@ -12,7 +12,8 @@ import usePeerDataReceived, { PeerDataCallbackPayload } from "$hooks/useDataRece
 import {v4 as uuidv4} from 'uuid'
 import MuteToggle from "./MuteToggle";
 import { setBoardLayout } from "$store/slices/boardSlice";
-import boardLayout from "$constants/boardLayout";
+import {boardLayout, boardLayout2, randomLayout} from "$constants/boardLayout";
+import Logo from "./Logo";
 const playerSelector = createSelector(state=>state.players, 
   (players:StoreData['players']) => players.map((player)=>({id:player.id, name:player.name, image:player.image, controls: player.controls})),
   );
@@ -44,7 +45,7 @@ const RegistrationScreen = () => {
   const peerDataCallback = useCallback((data:PeerDataCallbackPayload) => {
     console.log(data);
       if(data.payload.value == "start"){
-        dispatch(setBoardLayout(boardLayout))
+        dispatch(setBoardLayout([boardLayout,boardLayout2,boardLayout,boardLayout2, boardLayout2, randomLayout][Math.floor(Math.random()*6)]))
         dispatch(clearAllPlayerControls());
         dispatch(triggerNextQueuedAction());
       }
@@ -55,15 +56,9 @@ const RegistrationScreen = () => {
   return (
     <div className="text-black flex flex-col gap-2 to-black-400">
       <h1 className="text-4xl text-bold text-black text-center p-4">
-        <div className="font-cursive font-bold text-8xl -rotate-12 -translate-x-8 text-transparent bg-clip-text bg-gradient-to-br from-pink-600 to-violet-400">
-          Welcome to 
-        </div>
-        <br />
-          <div className="font-bold text-transparent bg-clip-text bg-gradient-to-br from-pink-400 to-violet-600 text-8xl rotate-12 translate-x-12 -translate-y-5 skew-x-12 back">
-            DanBox
-          </div>
+        <Logo />
         </h1>
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-4 items-center font-titan">
         <div className="flex gap-4 items-center flex-col bg-white p-4 rounded-xl bg-opacity-50 shadow-xl w-96 h-96 justify-center">
           <h2 className=" text-4xl text-bold text-black text-center">Scan this QR code</h2> 
           <QRShare />
@@ -71,7 +66,7 @@ const RegistrationScreen = () => {
         <div className="text-6xl bg-white p-4 rounded-xl bg-opacity-50 aspect-square flex items-center justify-center font-semibold">OR</div>
         <div className="flex gap-4 items-center flex-col bg-white p-4 rounded-xl bg-opacity-50 shadow-xl w-96 h-96 justify-center text-4xl max-w-full text-center">
           <div className="">Visit</div> 
-          <div className="text-2xl font-bold bg-white p-2 rounded-xl bg-opacity-50 shadow-xl">
+          <div className="text-2xl font-bold font-mono bg-white p-2 rounded-xl bg-opacity-50 shadow-xl">
             Danbox.DanBerman.dev 
           </div>
            <div> and use code</div>

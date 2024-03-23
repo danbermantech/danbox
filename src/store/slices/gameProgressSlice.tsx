@@ -3,7 +3,6 @@ import { GAME_MODE, type GameState, type RejectedAction } from "../types";
 import setState from "$store/actions/setState";
 import addQueuedAction from "$store/actions/addQueuedAction";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
-// import boardLayout from "$constants/boardLayout";
 import restart from "$store/actions/restart";
 function isRejectedAction(action: Action): action is RejectedAction {
   return action.type.endsWith("rejected");

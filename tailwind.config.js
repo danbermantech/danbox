@@ -9,7 +9,8 @@ export default {
   theme: {
     extend: {
       fontFamily:{
-        'cursive': ['dancing script', 'cursive']
+        'cursive': ['dancing script', 'cursive'],
+        'titan': ['titan one', 'Roboto', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

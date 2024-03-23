@@ -5,7 +5,7 @@ import { GAME_MODE, ItemDefinition } from '$store/types';
 const items:ItemDefinition[] = [
   {
     name: 'shrimp',
-    description: 'throw a shrimp at somebody (they will be very confused)',
+    description: 'Throw a shrimp at somebody (they will be very confused)',
     price: 10,
     image: shrimp,
     params: [{
@@ -54,7 +54,7 @@ const items:ItemDefinition[] = [
   },
   {
     name: 'souper soup',
-    description: 'permanent movement +1',
+    description: 'Permanent movement +1',
     price: 200,
     image: souperSoup,
     params: [{
@@ -66,7 +66,7 @@ const items:ItemDefinition[] = [
   },
   {
     name: 'soup',
-    description: 'movement +1',
+    description: 'Movement +1',
     price: 20,
     image: soup,
     params: [{
@@ -78,7 +78,7 @@ const items:ItemDefinition[] = [
   },
   {
     name: 'magic hand',
-    description: 'steal all of an opponents assets',
+    description: 'Steal all of an opponents assets',
     price: 500,
     image: magicHand,
     params: [{
@@ -113,7 +113,7 @@ const items:ItemDefinition[] = [
     weight: 5,
   },
   {
-    name: 'demolition crew', 
+    name: 'demo crew', 
     description: 'Remove a space from the board',
     price: 10,
     image: wrecking_ball,
@@ -127,7 +127,7 @@ const items:ItemDefinition[] = [
     weight: 5,
   },
   {
-    name: 'construction crew', 
+    name: 'construct crew', 
     description: 'Add a space to the board',
     price: 10,
     image: add_space,

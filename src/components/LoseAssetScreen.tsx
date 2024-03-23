@@ -139,11 +139,11 @@ const LoseAssetScreen = ()=>{
     <h1 className="animate-jump-in animate-ease-linear text-8xl text-center bg-gradient-radial from-black w-min p-8 rounded-full aspect-square flex items-center">
     🙁
     </h1>
-    <div className="animate-jump-in animate-ease-linear animate-delay-500 text-center text-4xl">
+    <div className="animate-jump-in font-titan uppercase animate-ease-linear animate-delay-500 text-center text-4xl">
       Select your sacrifice
     </div>    
     <div className='animate-jump-in animate-ease-linear animate-delay-500 flex flex-row items-center justify-center  p-2'>
-    <PlayerCard player={player as Player} className='bg-orange-400'/>
+    <PlayerCard player={player as Player} showGold showPoints className='bg-orange-400'/>
     </div>
     {selectedOption ? 
       <div className="grid grid-cols-1 gap-2 p-4">
