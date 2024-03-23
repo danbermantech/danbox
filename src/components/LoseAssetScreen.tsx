@@ -83,7 +83,7 @@ function createOptions(options: AssetDefinition[], count: number = 3) {
   return weightedOptions.sort(() => Math.random() - 0.5).slice(0, count);
 }
 
-const GetAssetScreen = ()=>{
+const LoseAssetScreen = ()=>{
   
   const activePlayers = useSelector((state:StoreData) => state.game.activePlayers);
   const dispatch = useDispatch();
@@ -100,6 +100,10 @@ const GetAssetScreen = ()=>{
   const player = useSelector((state:StoreData) => state.players.find((player)=>(player.id == activePlayers[0] || player.name == activePlayers[0])));
 
   const {triggerSoundEffect} = useAudio();
+
+  useEffect(()=>{
+    return triggerSoundEffect('sad');
+  }, [triggerSoundEffect])
 
   const peerDataCallback = useCallback(
     (data:PeerDataCallbackPayload, peerId:string) => {
@@ -161,4 +165,4 @@ const GetAssetScreen = ()=>{
   </div>)
 }
 
-export default GetAssetScreen;
+export default LoseAssetScreen;

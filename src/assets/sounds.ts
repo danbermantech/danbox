@@ -15,6 +15,7 @@ import fanfare1 from "./sounds/fanfare/fanfare1.mp3";
 import frenzy0 from "./sounds/frenzy/frenzy0.mp3";
 import frenzy1 from "./sounds/frenzy/frenzy1.mp3";
 import gamble0 from "./sounds/gamble/gamble0.mp3";
+import glad0 from "./sounds/glad/glad0.mp3";
 import hooray0 from "./sounds/hooray/hooray0.mp3";
 import loss0 from "./sounds/loss/loss0.mp3";
 import movement0 from "./sounds/movement/movement0.mp3";
@@ -33,6 +34,7 @@ import note7 from "./sounds/notes/note7.wav";
 import note8 from "./sounds/notes/note8.wav";
 import note9 from "./sounds/notes/note9.wav";
 import registration0 from "./sounds/registration/registration0.mp3";
+import sad0 from "./sounds/sad/sad0.mp3";
 import shop0 from "./sounds/shop/shop0.mp3";
 import trivia0 from "./sounds/trivia/trivia0.mp3";
 import trivia1 from "./sounds/trivia/trivia1.mp3";
@@ -76,6 +78,10 @@ export const gamble = [
   gamble0,
 ]
 
+export const glad = [ 
+  glad0,
+]
+
 export const hooray = [ 
   hooray0,
 ]
@@ -109,6 +115,10 @@ export const registration = [
   registration0,
 ]
 
+export const sad = [ 
+  sad0,
+]
+
 export const shop = [ 
   shop0,
 ]
@@ -131,11 +141,13 @@ const index = {
   fanfare,
   frenzy,
   gamble,
+  glad,
   hooray,
   loss,
   movement,
   notes,
   registration,
+  sad,
   shop,
   trivia,
   victory,

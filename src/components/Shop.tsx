@@ -10,6 +10,7 @@ import { endMinigame } from '$store/slices/gameProgressSlice';
 import items from '$constants/items';
 import { useAppDispatch, useAppSelector } from '$store/hooks';
 import PlayerCard from './PlayerCard';
+// import clsx from 'clsx';
 
 
 
@@ -31,15 +32,17 @@ const Shop = ()=>{
   const [actionId] = useState(()=>uuidv4());
 
   const [options] = useState<Item[]>(createOptions(items, 3));
-
+  
+  const player = useAppSelector((state) => state.players.find((player)=>(player.id == activePlayers[0] || player.name == activePlayers[0])));
+  
   useEffect(()=>{
     console.log(activePlayers);
     console.log(items)
-    dispatch(setPlayerControls({playerId: activePlayers[0], controls: [{name:'none', id: 'none'},...options].map((item)=>({label: item.name, value: item.id, action: actionId}))}))
+    if(!player || !options) return;
+    dispatch(setPlayerControls({playerId: activePlayers[0], controls: [{name:'none', id: 'none', price:0},...options].map((item)=>({label: item.name, value: item.id, action: actionId, className: (item.price && item.price > player.gold) ? 'text-gray-500 opacity-50 cursor-default uppercase text-sm' : item.id == 'none' ? 'bg-yellow-500 uppercase' : 'bg-green-400 uppercase'})), }))
   }
-  ,[activePlayers, dispatch, actionId, options])
+  ,[activePlayers, dispatch, actionId, options, player])
 
-  const player = useAppSelector((state) => state.players.find((player)=>(player.id == activePlayers[0] || player.name == activePlayers[0])));
 
   const [selectedOption, setSelectedOption] = useState<Item>();
 

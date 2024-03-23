@@ -22,11 +22,12 @@ const HostStateManager = () => {
   const dispatch = useAppDispatch();
 
   const [movementActionId] = useState(()=>uuidv4())
+  const {triggerSoundEffect} = useAudio();
 
   const movementListener = useCallback((data:{type:string, payload:{action:string, playerId: string, value:string}})=>{
     const player = players.find((player)=>(player.id == data.payload.playerId || player.name == data.payload.playerId));
     if(!player || gameState.mode !== GAME_MODE.MOVEMENT) return;
-
+    triggerSoundEffect('dink')
     //@ts-expect-error I didn't type these yet
     dispatch<ThunkAction<void, StoreData, unknown, UnknownAction>>((disp, getState)=>{
       const state = getState();
@@ -47,7 +48,7 @@ const HostStateManager = () => {
         },2000)
       }
       })
-  },[players, dispatch, board, gameState.mode]); 
+  },[players, dispatch, board, gameState.mode, triggerSoundEffect]); 
 
   usePeerDataReceived<{playerId:string, value: string, action:string}>(movementListener, movementActionId)
 
@@ -67,8 +68,6 @@ const HostStateManager = () => {
     dispatch(changePlayerImage({playerId: data.payload.playerId, image: data.payload.sprite}))
   }, 'avatar_changed');
 
-  const {triggerSoundEffect} = useAudio();
-
   useEffect(()=>{
     if(gameState.mode == 'MOVEMENT') return triggerSoundEffect(`movement`)
   },[gameState.mode, triggerSoundEffect])
@@ -84,9 +83,9 @@ const HostStateManager = () => {
         const connections = mySpace?.connections
         if(!connections) return;
         const availableSpaces = Object.values(board).filter((space)=>connections.includes(space.id));
-        const options = availableSpaces.map((connection)=>({label:connection.label, value:connection.id, action:movementActionId, style: {backgroundColor: connection.color, fontWeight: 700, letterSpacing: '-0.1rem' }, className:'uppercase'} ));
+        const options = availableSpaces.map((connection)=>({label:connection.label, value:connection.id, action:movementActionId, style: {backgroundColor: connection.color, fontWeight: 700, letterSpacing: '-0.1rem', color:'white'}, className:'uppercase', } ));
         if(options.length == 0){
-          options.push({label:mySpace.label, value:mySpace.id, action:movementActionId, style: {backgroundColor: mySpace.color, fontWeight:600, letterSpacing: '-0.1rem'}, className:'uppercase'})
+          options.push({label:mySpace.label, value:mySpace.id, action:movementActionId, style: {backgroundColor: mySpace.color, color:'white', fontWeight:600, letterSpacing: '-0.1rem'}, className:'uppercase'})
         }
         dispatch(setPlayerInstructions({playerId: player.id, instructions: `${player.movesRemaining} moves remaining`}))
         if(isEqual(player.controls, options)) return;

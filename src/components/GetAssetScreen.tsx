@@ -102,6 +102,7 @@ const GetAssetScreen = ()=>{
 
   const {triggerSoundEffect} = useAudio();
 
+  useEffect(()=>{return triggerSoundEffect('glad')},[triggerSoundEffect])
   const peerDataCallback = useCallback((data:PeerDataCallbackPayload) => {
     if(data.payload.action){
       dispatch(setPlayerInstructions({playerId: activePlayers[0], instructions: 'Please wait...'}));

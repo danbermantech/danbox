@@ -30,7 +30,7 @@ function CustomControls({controls}:{controls:PlayerActions}){
       }}
       value={opt.action}
       label={opt.label}
-      classNames={opt.classNames}
+      classNames={opt.className}
       style={opt?.style ?? {}}
       img={opt.img}
       />

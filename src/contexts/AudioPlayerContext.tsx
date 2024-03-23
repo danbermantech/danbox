@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useState, useCallback } from 'react';
 import sounds from '$assets/sounds.ts'
 
 type AudioContextValue = {
-  triggerSoundEffect: (name: string) => (()=>void)|void;
+  triggerSoundEffect: (name: keyof typeof sounds) => (()=>void)|void;
   muteAudio: ()=>void;
   unmuteAudio: ()=>void;
   isMuted: boolean;
@@ -10,6 +10,7 @@ type AudioContextValue = {
   volume: number;
   setVolume: (volume:number)=>void;
 }
+
 
 const AudioPlayerContext = createContext<AudioContextValue>({
   playBackgroundMusic:()=>{}, 

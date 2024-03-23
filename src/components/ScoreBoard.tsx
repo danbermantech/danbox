@@ -28,8 +28,8 @@ const ScoreBoard = () => {
   },[scrollRef])
 
 
-    return <div className="text-black relative flex-grow p-2 h-full overflow-clip max-h-full rounded-xl bg-cover" style={{background:`url(${bgImage})`, backgroundPosition:'center', height:'calc(100dvh - 32px)'}}>
-      <div className="flex absolute w-full bg-slate-200 left-0 top-0 justify-items-center justify-center  items-center mx-auto">
+    return <div className="text-black gap-4 p-0 flex flex-col relative flex-grow p-2 h-full overflow-clip max-h-full rounded-xl bg-cover" style={{ height:'calc(100dvh - 32px)'}}>
+      <div className="flex w-full bg-slate-200 left-0 rounded-xl top-0 justify-items-center justify-center  items-center mx-auto">
         <div className="w-32 flex items-center justify-center font-bold">
           <div className="w-24 h-24 aspect-square flex items-center justify-center text-2xl bg-white p-4 rounded-xl bg-opacity-50">
           {myShortId}
@@ -47,10 +47,16 @@ const ScoreBoard = () => {
       </div>
 
       </div>
-      <div ref={scrollRef} className="scoreboardContainer place-items-center grid grid-cols-3 top-8 bg-transparent gap-1 max-h-full w-full justify-center overflow-auto pt-36">
-        {players.map((player)=>(
+      <div 
+        ref={scrollRef} 
+        style={{
+          background:`url(${bgImage})`, 
+          backgroundPosition:'center',
+        }} 
+      className="scoreboardContainer min-h-full items-start py-4 rounded-xl place-items-center grid grid-cols-3 top-8 bg-transparent gap-1 max-h-full w-full justify-center overflow-auto">
+        {[...players].sort((a,b)=>(b.points * 1000) + (b.gold * 0.0001 ) - (a.points * 1000) - (a.gold * 0.0001)).map((player)=>(
           <PlayerCard key={player.id} player={player} showGold={true} showPoints={true} showItems={true} className={`flex-shrink ${activePlayers.includes(player.id) && 'bg-green-400'} ${gameMode == GAME_MODE.MOVEMENT && (player.movesRemaining > 0 ? 'bg-blue-400': 'bg-green-400')} bg-[#88888888] border-black border-2 `} />
-          ))}
+        ))}
       </div>
     </div>
 }

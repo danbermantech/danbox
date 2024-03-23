@@ -15,7 +15,7 @@ export default function Implore() {
     }
     dispatch((disp)=>{
       disp(setPlayerInstructions({playerId: activePlayer.id, instructions: 'Did you get what you wanted?'}))
-      disp(setPlayerControls({playerId: activePlayer.id, controls: [{label:'Yes', value:'yes', classNames: 'bg-green-200', action:'implore',}, {label:'No', value:'no', action:'implore',}]}))
+      disp(setPlayerControls({playerId: activePlayer.id, controls: [{label:'Yes', value:'yes', className: 'bg-green-200', action:'implore',}, {label:'No', value:'no', action:'implore', className:'bg-red-400'}]}))
   })
   },[activePlayer, dispatch])
 

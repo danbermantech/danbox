@@ -10,6 +10,7 @@ import {swords} from '$assets/images.ts';
 
 import { useAppDispatch, useAppSelector } from "$store/hooks";
 import useAudio from "$hooks/useAudio";
+import clsx from "clsx";
 
 type Challenge = {
   category: string,
@@ -320,24 +321,49 @@ const Duel =
       
     },[dispatch, challenge.difficulty,  playerA, playerB, rewardsGranted, winner]);
 
-    const endDuel = useCallback(()=>{
-      if(!completed) return;
-      // let t1: NodeJS.Timeout, t2: NodeJS.Timeout;
-      const t = setTimeout(()=>{
-        if(rewardsGranted) return;
-        giveRewards();
-        setTimeout(()=>{
-          dispatch(clearAllPlayerControls());
-          dispatch(endMinigame());
-          setTimeout(()=>{
-          dispatch(triggerNextQueuedAction());
-          }, 500)
-        },3000)
-      }, 1000);
-      return ()=>{clearTimeout(t);};
-    },[completed, dispatch, giveRewards, rewardsGranted])
+    // const endDuel = useCallback(()=>{
+    //   if(!completed) return;
+    //   // let t1: NodeJS.Timeout, t2: NodeJS.Timeout;
+    //   const t = setTimeout(()=>{
+    //     if(rewardsGranted) return;
+    //     dispatch(clearAllPlayerControls());
+    //     setTimeout(()=>{
+    //       dispatch(endMinigame());
+    //       setTimeout(()=>{
+    //       dispatch(triggerNextQueuedAction());
+    //       }, 500)
+    //     },3000)
+    //     giveRewards();
+    //   }, 1000);
+    //   return ()=>{clearTimeout(t);};
+    // },[completed, dispatch, giveRewards, rewardsGranted])
 
-    useEffect(endDuel,[endDuel])
+    // useEffect(endDuel,[endDuel])
+
+      if(completed && !rewardsGranted) {
+
+        // let t1: NodeJS.Timeout, t2: NodeJS.Timeout;
+        dispatch(clearAllPlayerControls());
+        giveRewards();
+        // setTimeout(()=>{
+        //   // if(rewardsGranted) return;
+        //   setTimeout(()=>{
+        //     dispatch(endMinigame());
+        //     setTimeout(()=>{
+        //       dispatch(triggerNextQueuedAction());
+        //     }, 500)
+        //   },3000)
+        // }, 1000);
+      }
+
+    if(rewardsGranted){
+      setTimeout(()=>{
+        dispatch(endMinigame());
+        setTimeout(()=>{
+          dispatch(triggerNextQueuedAction());
+        }, 500)
+      },3000)
+    }
 
     if(!playerA || !playerB) return (<div></div>)
 
@@ -367,17 +393,25 @@ const Duel =
           <div className="w-full flex flex-col">
             <h1 className="text-4xl text-black text-center">Tie</h1>
             <div className="text-2xl text-center">
-              <p>It's a tie! No one wins.</p>
+              <p>It's a tie! No one wins. Whomp whomp whomp</p>
             </div>
           </div>
         }
-        {!completed && 
+        {!completed &&
+        <div className="flex flex-col items-center w-full"> 
         <div className="flex items-center w-full justify-center gap-8 place-content-between flex-row">
           <img src={swords} width="128" className="animate-wiggle-more animate-infinite animate-delay-500 "/>
-          <PlayerCard player={playerA} className="animate-wiggle-more animate-infinite" />
+          <PlayerCard player={playerA} className="animate-wiggle-more animate-infinite bg-gradient-radial from-red-400 to-red-600" />
           <div className="text-8xl font-extrabold text-black">VS</div>
-          <PlayerCard player={playerB} className="animate-wiggle-more animate-delay-500 animate-infinite " />
+          <PlayerCard player={playerB} className="animate-wiggle-more animate-delay-500 animate-infinite bg-gradient-radial from-red-400 to-red-600" />
           <img src={swords} width="128" className="animate-wiggle-more animate-infinite " />
+        </div>
+        <div className="max-w-full flex flex-col border-2 mt-8 p-4 rounded-xl w-min border-black">
+          <h1 className="text-center font-bold text-2xl text-black">AUDIENCE</h1>
+          <div className="w-min max-w-full flex flex-wrap items-center flex-row min-w-max gap-2 place-items-center justify-center mx-auto">
+            {audience.map((player)=><PlayerCard player={player} key={player.id} className={clsx(playerAnswers[player.id] ? "bg-green-400" : "bg-blue-400")} />)}
+          </div>
+        </div>
         </div>}
         </div>
         {/* </div> */}
