@@ -68,10 +68,10 @@ const peerOptions = import.meta.env.VITE_DEV_MODE
   : {};
 
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const idPrefix = `danbox00000000000000000000000000`
+const idPrefix = `danbox000000000000000000000000`
 
 function generateShortId(){
-  return [...Array(4)].map(()=>(chars[Math.floor(Math.random()*chars.length)])).join('');
+  return [...Array(6)].map(()=>(chars[Math.floor(Math.random()*chars.length)])).join('');
 }
 const PeerContextProvider = ({
   children,

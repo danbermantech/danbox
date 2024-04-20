@@ -103,6 +103,7 @@ export const Frenzy = () =>
       console.log(results)
       setResults(()=>{
         return players.sort((a,b)=>{
+          if(! (a.id in playerPoints) || ! (b.id in playerPoints)) return 0;
           if(playerPoints[a.id] !== playerPoints[b.id]){
             return playerPoints[a.id] - playerPoints[b.id] 
           }

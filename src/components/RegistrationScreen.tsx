@@ -70,7 +70,9 @@ const RegistrationScreen = () => {
             Danbox.DanBerman.dev 
           </div>
            <div> and use code</div>
-          <div className="select-text text-center font-extrabold font-mono text-8xl bg-white p-2 rounded-xl bg-opacity-50 shadow-xl">{myShortId}</div>
+          <div className="select-text text-center font-extrabold font-mono text-8xl bg-white p-2 rounded-xl bg-opacity-50 shadow-xl">
+            {myShortId}
+          </div>
         </div>
         </div>
       <MuteToggle />
