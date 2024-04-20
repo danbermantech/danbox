@@ -1,12 +1,9 @@
 import { createContext, useMemo, useCallback, useState, useRef } from "react";
 import { Peer } from "peerjs";
-// import PropTypes from 'prop-types'
 import type { DataConnection } from "peerjs";
 import { addPlayer } from "../store/slices/playerSlice";
 import { useDispatch } from "react-redux";
-import { getCookie, setCookie } from "../utilities/cookies";
-import { useLocation } from "react-router-dom";
-// import { useMIDI } from 'react-midi-context';
+import { setCookie } from "../utilities/cookies";
 export type OnDataReceivedPayload ={
   type: string;
   payload: { deviceName: string, peerId?:string};
@@ -95,7 +92,7 @@ const PeerContextProvider = ({
   //   return newShortId;
   // },[]);
 
-  const [myShortId, setMyShortId] = useState(generateShortId())
+  const myShortId= useMemo(generateShortId, []);
 
   const myPeerId = useMemo(()=>{
     return `${idPrefix}${myShortId}`
@@ -114,7 +111,7 @@ const PeerContextProvider = ({
   const [onConnectSendValue, setOnConnectSendValue] = useState<unknown | null>(
     null,
   );
-  const peerRef = useRef<{ value: Peer | null }>({ value: null });
+  const peerRef = useRef<Peer>(null);
 
   const callbackRef = useRef<
     Record<string, (data:OnDataReceivedPayload, peerId?:string) => unknown>
@@ -155,16 +152,12 @@ const PeerContextProvider = ({
     (func?: () => void) => {
       if (peerInitialized) return;
 
-      const initializePeer = (id: string): Peer => {
-        console.log("initializing peer", id);
-        const newPeer = new Peer(id, peerOptions);
-
-        newPeer.on("open", () => {
-          addNotification({
-            message: "Opening connection",
-            level: "success",
-            id: "open_notification",
-          });
+      const initializePeer = (id?: string) => {
+        const newPeer = new Peer(id ?? myPeerId, peerOptions);
+        console.log(peerOptions)
+  
+        newPeer.on('open', () => {
+          // toast.info('Opening connection');
           setPeerReady(true);
           func && func();
         });
@@ -190,44 +183,27 @@ const PeerContextProvider = ({
         newPeer.on("connection", (conn) => {
           conn.on("error", (err) => {
             console.warn(err);
-            addNotification({
-              level: "error",
-              message: err.message,
-              id: "conn_error_",
-            });
+            // toast.error(err.message);
           });
-          // console.log(conn);
-
-          addNotification({
-            level: "info",
-            message: conn,
-          });
-          // console.log("connectered");
-          conn.on("open", (...v) => {
-            
-            console.log(v);
-            // console.log("i am open");
+          // toast.info(
+          //   `Connection initiated from ${conn.metadata?.email} - ${conn.metadata?.deviceName}`
+          // );
+          conn.on("open", () => {
             Object.values(onPeerConnectRef.current).forEach((cb) => {
               const result = cb(conn.peer);
-              // console.log('send result')
               if (result as unknown) conn.send(result);
             });
-            // console.log(onConnectSendValue);
             if (onConnectSendValue) {
               // console.log(onConnectSendValue);
               conn.send({ type: "state", payload: { ...onConnectSendValue } });
             }
-            conn.on("data", (data): void => {
-              console.log("data recieved ", data);
+            conn.on('data', (data) => {
               const { type, payload } = data as {
                 type: string;
-                payload: unknown;
+                payload: unknown
               };
-              // console.log("callbackRef:",callbackRef.current)
               Object.values(callbackRef.current).forEach((cb) => {
-                // console.log(cb, data);
                 const result = cb(data as OnDataReceivedPayload, conn.peer);
-                // console.log(result);
                 if (result) conn.send(result);
               });
               if (type == "connection") {
@@ -259,8 +235,8 @@ const PeerContextProvider = ({
           conn.on("close", () => {
             setConnections((prev) =>
               prev.filter(
-                (connection) => connection.connectionId !== conn.connectionId,
-              ),
+                (connection) => connection.connectionId !== conn.connectionId
+              )
             );
           });
         });
@@ -289,14 +265,13 @@ const PeerContextProvider = ({
                 });
                 break;
             }
-          },
-        );
-
+          });
         setPeerInitialized(true);
         return newPeer;
       };
+      //@ts-expect-error - This is where peerRef should be initialized
 
-      peerRef.current.value = peerRef.current.value || initializePeer(myPeerId);
+      peerRef.current = peerRef.current || initializePeer(myPeerId);
     },
     [
       myPeerId,
@@ -313,7 +288,8 @@ const PeerContextProvider = ({
     (peerId: string, options: {deviceName: string}, req: unknown) => {
       req;
       function connectToPeer() {
-        const peer = peerRef.current.value;
+        if(!peerRef.current) return;
+        const peer = peerRef.current;
         if (!peer) return;
         console.log("connecting to peer", `${idPrefix}${peerId}`);
         const conn = peer.connect(`${idPrefix}${peerId}`);
@@ -400,9 +376,9 @@ const PeerContextProvider = ({
 
   const sendOnGuestConnected = useCallback(
     (value: unknown) => {
-      if (!peerRef.current.value) return;
-      if (peerRef.current.value) {
-        peerRef.current.value.on("connection", (conn) => {
+      if (!peerRef.current) return;
+      if (peerRef.current) {
+        peerRef.current.on("connection", (conn) => {
           conn.on("open", () => {
             conn.send(value);
           });
