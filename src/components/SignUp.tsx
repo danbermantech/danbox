@@ -51,7 +51,7 @@ const SignUp = ()=>{
   useEffect(()=>{
     if(location.pathname == '/play' && !peerConnected && getCookie('lastHostId') == searchParams.get('hostId') && getCookie('playerName') && getCookie('playerSprite')){
       connect(searchParams.get('hostId') as string, {deviceName: getCookie('playerName'), image: getCookie('playerSprite')}, (x) => {
-        // console.log(x);
+        console.log(x);
       });
       // sendPeersMessage({type: 'connection_accepted', payload: {deviceName: getCookie('playerName'), image: getCookie('playerSprite')}});
     }
