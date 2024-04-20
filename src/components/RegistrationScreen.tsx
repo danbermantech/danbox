@@ -43,7 +43,7 @@ const RegistrationScreen = () => {
   },[playBackgroundMusic])
   
   const peerDataCallback = useCallback((data:PeerDataCallbackPayload) => {
-    console.log(data);
+    // console.log(data);
       if(data.payload.value == "start"){
         dispatch(setBoardLayout([boardLayout,boardLayout2,boardLayout,boardLayout2, boardLayout2, randomLayout][Math.floor(Math.random()*6)]))
         dispatch(clearAllPlayerControls());
@@ -55,9 +55,9 @@ const RegistrationScreen = () => {
 
   return (
     <div className="text-black flex flex-col gap-2 to-black-400">
-      <h1 className="text-4xl text-bold text-black text-center p-4">
+      {/* <h1 className="text-4xl text-bold text-black text-center p-4"> */}
         <Logo />
-        </h1>
+        {/* </h1> */}
         <div className="flex gap-4 items-center font-titan">
         <div className="flex gap-4 items-center flex-col bg-white p-4 rounded-xl bg-opacity-50 shadow-xl w-96 h-96 justify-center">
           <h2 className=" text-4xl text-bold text-black text-center">Scan this QR code</h2> 

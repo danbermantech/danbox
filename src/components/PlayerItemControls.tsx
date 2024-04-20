@@ -96,7 +96,7 @@ const ItemControl = ({item}:{item:Item})=>{
   const handleParamChanged = useCallback((name:string, value:string)=>{
     setState((prev)=>({...prev, [name]: value}))
   },[setState])
-  console.log(state, Object.values(state).every((value)=>value.length !== 0))
+  // console.log(state, Object.values(state).every((value)=>value.length !== 0))
   return (
     <>
       <button 
@@ -130,7 +130,7 @@ const ItemControl = ({item}:{item:Item})=>{
           className="rounded shadow bg-blue-500 text-white p-2"
           disabled={Object.keys(state) && !(Object.values(state).every((value)=>value.length !== 0))}
           onClick={()=>{
-            console.log(state);
+            // console.log(state);
             sendPeersMessage({type: 'activateItem', payload: {playerId:me.id, target:state.target ?? me.id, action: 'activateItem',  value:{item:item.name,...state,id: item.id}}})
             setModalOpen(false);
           }} >SUBMIT</button>

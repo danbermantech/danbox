@@ -40,7 +40,7 @@ const OptionMachine =
     useEffect(() => {
       const interval = setInterval(() => {
         const firstSpinning = spinning.findIndex((s) => s);
-        console.log(firstSpinning, started, completed)
+        // console.log(firstSpinning, started, completed)
         if (!started ||  firstSpinning == -1 || completed) return;
         setSelections((prevSelections) => {
           const nextSelections = [...prevSelections];
@@ -90,8 +90,7 @@ const OptionMachine =
 
     const handleOnComplete = useCallback(() => {
       setCompleted(true);
-      console.log(completed, resultsSent);
-        console.log("completed");
+      if(!resultsSent){
         setResultsSent(true);
         const obj: Record<string, string> = {};
         options.forEach(({ label }, i) => {
@@ -103,8 +102,9 @@ const OptionMachine =
           values: selections.map((s, i) => options[i].options[s]),
           obj,
         });
+      }
     }, [
-      completed,
+      // completed,
       selections,
       options,
       onComplete,
@@ -114,7 +114,7 @@ const OptionMachine =
     ]);
 
     const handleClick = useCallback(() => {
-      console.log('clicked')
+      // console.log('clicked')
       let _nextSpinning = [...spinning];
       setSpinning((prevSpinning) => {
         const nextSpinning = [...prevSpinning];
@@ -131,7 +131,7 @@ const OptionMachine =
       if (_nextSpinning.findIndex((x)=>x) == (spinning.length - 1) && started) return handleOnComplete();
       if (!started) return
       // setChangeSent(() => _nextSpinning.map((s) => !s));
-      console.log(_nextSpinning)
+      // console.log(_nextSpinning)
       if (_nextSpinning.every((s) => !s) ) return;
       onChange(
         options[spinning.findIndex((x)=>x)].label,

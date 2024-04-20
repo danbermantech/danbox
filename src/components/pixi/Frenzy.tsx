@@ -100,7 +100,7 @@ export const Frenzy = () =>
 
   useEffect(()=>{
     if(gold.filter(g=>!g.collected).length + points.filter(g=>!g.collected).length == 0 && results.length == 0){
-      console.log(results)
+      // console.log(results)
       setResults(()=>{
         return players.sort((a,b)=>{
           if(! (a.id in playerPoints) || ! (b.id in playerPoints)) return 0;

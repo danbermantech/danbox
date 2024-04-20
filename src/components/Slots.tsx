@@ -12,9 +12,9 @@ const Slots = () => {
   const [state, setState] = useState<Record<string, string>>({});
 
   const players = useSelector((state:StoreData) => state.players);
-  console.log(players);
+  // console.log(players);
 
-  console.log(state);
+  // console.log(state);
 const dispatch = useDispatch();
 const activePlayerName = useSelector((state:StoreData) => state.game.activePlayers[0]);
 const activePlayer = useSelector((state:StoreData) => state.players.find((player)=>(player.name == activePlayerName || player.id == activePlayerName))) as Player;
@@ -66,9 +66,9 @@ return (
       ]}
       onComplete={(value) => {
         setComplete(true);
-        console.log(value);
+        // console.log(value);
         setState(value.obj);
-        console.log({from: activePlayerName, ...value.obj})
+        // console.log({from: activePlayerName, ...value.obj})
         setTimeout(()=>{
           dispatch(endMinigame());
           dispatch(handleTransfer({from: activePlayerName, ...value.obj}))

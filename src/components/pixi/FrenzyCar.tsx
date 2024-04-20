@@ -51,7 +51,7 @@ const FrenzyCar = (
 
     points.forEach((point)=>{
       if(Math.abs(position.x - point.x) < 0.05 && Math.abs(position.y - point.y) < 0.05){
-        console.log('point collected')
+        // console.log('point collected')
         onPointCollected(player.id, point.id);
         return;
       }
@@ -59,7 +59,7 @@ const FrenzyCar = (
 
     gold.forEach((point)=>{
       if(Math.abs(position.x - point.x) < 0.05 && Math.abs(position.y - point.y) <0.05){
-        console.log('point collected')
+        // console.log('point collected')
         onGoldCollected(player.id, point.id);
         return;
       }

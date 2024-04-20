@@ -39,7 +39,7 @@ function Fader(props:FaderProps) {
           const scale = max - min;
           const offset = min;
           const nextValue = Math.max((1 - p) * scale + offset, min);
-          console.log(value);
+          // console.log(value);
           if (value !== nextValue) {
             onChange(nextValue)
           }
@@ -53,9 +53,9 @@ function Fader(props:FaderProps) {
           const p = Math.abs(offsetY / offsetHeight);
           const scale = max - min;
           const offset = min;
-          console.log(p, scale)
+          // console.log(p, scale)
           const nextValue = Math.max((1 - p) * scale + offset, min);
-          console.log(value)
+          // console.log(value)
           if (value !== nextValue) {
             onChange(nextValue)
           }
@@ -70,7 +70,7 @@ function Fader(props:FaderProps) {
           const offset = min;
           // console.log(p)
           const nextValue = max - Math.max(p * scale + offset, min);
-          console.log(value)
+          // console.log(value)
           if (value !== nextValue) {
             onChange(nextValue)
           }
@@ -84,7 +84,7 @@ function Fader(props:FaderProps) {
           const scale = max - min;
           const offset = min;
           const nextValue =  max - Math.max(p * scale + offset, min);
-          console.log(value)
+          // console.log(value)
           if (value !== nextValue) {
             onChange(nextValue)
           }

@@ -8,7 +8,7 @@ const GameOverScreen = ()=>{
 
   const players = useSelector((state:StoreData) => state.players);
 
-  console.log(players);
+  // console.log(players);
   const sortedPlayers = useMemo(()=>([...players].sort((a,b)=>{
     if(a.points == b.points){
       if(a.gold == b.gold){
@@ -19,7 +19,7 @@ const GameOverScreen = ()=>{
     return b.points - a.points
   })),[players])
   const dispatch = useDispatch();
-  console.log(sortedPlayers)
+  // console.log(sortedPlayers)
   return (
     <div className="flex flex-col justify-items-center place-items-center gap-16">
       <h1 className="text-8xl font-bold uppercase text-black text-center">Game Over</h1>

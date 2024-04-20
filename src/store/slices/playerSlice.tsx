@@ -23,7 +23,7 @@ export const playerSlice = createSlice({
   initialState: [] as Players,
   reducers: {
     addPlayer: (state, action) => {
-      console.log(state, action)
+      // console.log(state, action)
       const player = state.findIndex((player)=>player.name == action.payload.name);
       if(player > -1){
         state[player].id = action.payload.id;
@@ -51,16 +51,16 @@ export const playerSlice = createSlice({
       return state;
     },
     changePlayerImage: (state, action) => {
-      console.log('setting player image')
+      // console.log('setting player image')
       const player = state.find((player) => player.id === action.payload.playerId);
-      console.log(state, action.payload.playerId)
-      console.log(player)
+      // console.log(state, action.payload.playerId)
+      // console.log(player)
       if (!player) return state;
       player.image = action.payload.image;
     
     },
     changePlayerName: (state, action) => {
-      console.log('changing')
+      // console.log('changing')
       const player = state.find((player) => player.id === action.payload.playerId);
       if (!player) return state;
       player.name = action.payload.name;
@@ -115,7 +115,7 @@ export const playerSlice = createSlice({
         if(!temp) return;
         value = {...temp, id: uuidv4()}
       }
-      console.log(item, value, items)
+      // console.log(item, value, items)
       const player = state.find((player) => player.id === playerId || player.name === playerId);
       if (!player) return state;
       player.items.push(value);
@@ -143,7 +143,7 @@ export const playerSlice = createSlice({
       const { playerId, effect } = action.payload;
       const player = state.find((player) => player.id === playerId);
       if (!player) return state;
-      console.log("removing ", effect, "from", player.name)
+      // console.log("removing ", effect, "from", player.name)
       player.effects = player.effects.filter(eff=> eff == effect)
     },
     handleTransfer: (state, action) => {
@@ -235,7 +235,7 @@ export const playerSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(setState, (_, action) => {
-        console.log(action);
+        // console.log(action);
         return action.payload.players;
         // action is inferred correctly here if using TS
       })

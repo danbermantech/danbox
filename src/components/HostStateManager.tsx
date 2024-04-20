@@ -30,17 +30,17 @@ const HostStateManager = () => {
     triggerSoundEffect('dink')
     //@ts-expect-error I didn't type these yet
     dispatch<ThunkAction<void, StoreData, unknown, UnknownAction>>((disp, getState)=>{
-      const state = getState();
-      console.log(state);
+      // const state = getState();
+      // console.log(state);
       
       if(!player.movesRemaining) return;
       disp(movePlayer({playerId: player.id, spaceId: data.payload.value}))
       const nextPlayer = getState().players.find((player)=>(player.id == data.payload.playerId));
       if(nextPlayer && nextPlayer?.movesRemaining > 0 || !nextPlayer) return;
-      console.log(data.payload.value)
+      // console.log(data.payload.value)
       disp(addQueuedAction({mode: board[data.payload.value].type, for: [player.id], when:'end'}))
       disp(movePlayerFinal({playerId: player.id, spaceId: data.payload.value}))
-      console.log(getState().players.reduce((acc, player)=>(acc + player.movesRemaining), 0))
+      // console.log(getState().players.reduce((acc, player)=>(acc + player.movesRemaining), 0))
       if(getState().players.reduce((acc, player)=>(acc + player.movesRemaining), 0) == 0){
         setTimeout(()=>{
 
@@ -60,11 +60,11 @@ const HostStateManager = () => {
     dispatch(removeEffect({playerId: data.payload.playerId, value: data.payload.value}))
   }, 'removeEffect')
   usePeerDataReceived<UnknownAction>(data=>{
-    console.log(data);
+    // console.log(data);
     dispatch(data.payload)
   }, 'admin')
   usePeerDataReceived<{sprite:string, playerId:string}>(data=>{
-    console.log(data);
+    // console.log(data);
     dispatch(changePlayerImage({playerId: data.payload.playerId, image: data.payload.sprite}))
   }, 'avatar_changed');
 

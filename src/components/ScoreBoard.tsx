@@ -42,7 +42,7 @@ const ScoreBoard = () => {
           <div className="text-sm font-titan ">
             Host ID
           </div>
-          <div>
+          <div className="text-xl font-titan font-thin">
           {myShortId}
           </div>
           </div>

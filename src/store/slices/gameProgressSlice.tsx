@@ -61,12 +61,12 @@ export const gameSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(setState, (_, action) => {
-        console.log(action);
+        // console.log(action);
         return action.payload.game;
         // action is inferred correctly here if using TS
       })
       .addCase(addQueuedAction, (state, action) => {
-        console.log('adding', action.payload)
+        // console.log('adding', action.payload)
         if(action.payload.when == 'start') state.queuedActions.unshift(action.payload);
         else state.queuedActions.push(action.payload);
 

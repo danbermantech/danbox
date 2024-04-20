@@ -198,7 +198,7 @@ const Duel =
     useEffect(()=>{
       const x = setTimeout(()=>{
         if(!playerA || !playerB) return;
-        console.log('assigning controls', playerA, playerB)
+        // console.log('assigning controls', playerA, playerB)
 
         const controls =             [
           {
@@ -214,7 +214,7 @@ const Duel =
             image: playerB.image
           }
         ]
-        console.log(controls)
+        // console.log(controls)
 
         audience.forEach((player)=>{
           dispatch(setPlayerInstructions({playerId: player.id, instructions: challenge.audienceDescription}))
@@ -286,7 +286,7 @@ const Duel =
       if(rewardsGranted) return;
       setRewardsGranted(()=>true);
       if(!winner) return;
-      console.log('giving rewards')
+      // console.log('giving rewards')
       // const votesA = Object.values(playerAnswers).filter((answer)=>answer == playerA.id).length;
       // const votesB = Object.values(playerAnswers).filter((answer)=>answer == playerB.id).length;
       // if(votesA == votesB){

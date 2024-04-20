@@ -126,7 +126,7 @@ const Trivia =
         }, 1000);
         setCompleted(true);
         if(completed) return ()=>{
-          console.log('returning')
+          // console.log('returning')
           clearTimeout(t);
           clearTimeout(t1);
         }

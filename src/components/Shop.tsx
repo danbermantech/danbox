@@ -35,8 +35,8 @@ const Shop = ()=>{
   const player = useAppSelector((state) => state.players.find((player)=>(player.id == activePlayers[0] || player.name == activePlayers[0])));
   
   useEffect(()=>{
-    console.log(activePlayers);
-    console.log(items)
+    // console.log(activePlayers);
+    // console.log(items)
     if(!player || !options) return;
     dispatch(setPlayerControls({playerId: activePlayers[0], controls: [{name:'none', id: 'none', price:0},...options].map((item)=>({label: item.name, value: item.id, action: actionId, className: (item.price && item.price > player.gold) ? 'text-gray-500 opacity-50 cursor-default uppercase text-sm' : item.id == 'none' ? 'bg-yellow-500 uppercase' : 'bg-green-400 uppercase'})), }))
   }
@@ -50,10 +50,10 @@ const Shop = ()=>{
     return triggerSoundEffect('shop')
   },[triggerSoundEffect, selectedOption])
 
-  const dataReceivedCallback = useCallback((data: PeerDataCallbackPayload, peerId:string) => {
-    console.log(data, peerId);
+  const dataReceivedCallback = useCallback((data: PeerDataCallbackPayload) => {
+    // console.log(data, peerId);
     const item = options.find((item)=>(item.id == data.payload.value));
-    console.log(player, item)
+    // console.log(player, item)
     if(!player) return
     if(data.payload.value == 'none'){
       setSelectedOption({name: 'Nothing', id:'nothing', description: 'You bought nothing. Maybe next time', price: 0, image: itemPlaceholder, weight: 1, })
@@ -65,7 +65,7 @@ const Shop = ()=>{
     }
     if(!item) return;
     if(player.gold >= item.price){
-      console.log('purchasing')
+      // console.log('purchasing')
       dispatch((disp)=>{
 
         disp(givePlayerItem({playerId: player.id, item: {name: item.name, image: item.image, description: item.description, params: item.params,}}))

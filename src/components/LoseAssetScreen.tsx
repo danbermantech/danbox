@@ -106,8 +106,8 @@ const LoseAssetScreen = ()=>{
   }, [triggerSoundEffect])
 
   const peerDataCallback = useCallback(
-    (data:PeerDataCallbackPayload, peerId:string) => {
-      console.log(data, peerId);
+    (data:PeerDataCallbackPayload, ) => {
+      // console.log(data, peerId);
       dispatch(setPlayerControls({playerId: activePlayers[0], controls:[]}) )
       setSelectedOption(
         filteredOptions.find((option)=>(option.name == data.payload.value))

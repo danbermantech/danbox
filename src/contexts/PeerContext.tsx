@@ -83,17 +83,19 @@ const PeerContextProvider = ({
   // const location = useLocation();
   // console.log(location)
 
-  const location = useLocation();
+  // const location = useLocation();
   // const [searchParams] = useSearchParams();
 
-  const myShortId = useMemo(()=>{
-    if(location.pathname == '/host') return generateShortId();
-      if(getCookie('deviceId')) return getCookie('deviceId');
-      const newShortId = generateShortId();
-      setCookie('deviceId', newShortId, 14);
-    // }
-    return newShortId;
-  },[location.pathname]);
+  // const myShortId = useMemo(()=>{
+  //   if(location.pathname == '/host') return generateShortId();
+  //     if(getCookie('deviceId')) return getCookie('deviceId');
+  //     const newShortId = generateShortId();
+  //     setCookie('deviceId', newShortId, 14);
+  //   // }
+  //   return newShortId;
+  // },[]);
+
+  const [myShortId, setMyShortId] = useState(generateShortId())
 
   const myPeerId = useMemo(()=>{
     return `${idPrefix}${myShortId}`
@@ -167,6 +169,24 @@ const PeerContextProvider = ({
           func && func();
         });
 
+        newPeer.on('error', (e) => {
+          console.log(e)
+          // setMyShortId(generateShortId());
+          // initialize(func);
+          addNotification({
+            message: e.message,
+            level: "error",
+            id: "peer_error",
+          });
+        });
+        newPeer.on('disconnected', (e) => {
+          console.log(e)
+          addNotification({
+            message: "Disconnected",
+            level: "warning",
+            id: "disconnected_notification",
+          });
+        })
         newPeer.on("connection", (conn) => {
           conn.on("error", (err) => {
             console.warn(err);
@@ -363,7 +383,7 @@ const PeerContextProvider = ({
         )
         .forEach((conn) => {
           if (conn.open) {
-            console.log("sending ", msg, "to", conn);
+            // console.log("sending ", msg, "to", conn);
             conn.send(msg);
           } else {
             addNotification({

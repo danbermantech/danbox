@@ -13,7 +13,7 @@ const CharacterCarousel = ({onChange, selected}:{onChange:(sprite:string)=>void,
           width={256} 
           height={256} 
           onClick={()=>{
-            console.log(value)
+            // console.log(value)
             onChange(value);
           }} 
         />

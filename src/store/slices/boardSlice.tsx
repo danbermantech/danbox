@@ -45,7 +45,7 @@ function randomPosition(){
 }
 
 function shuffleBoard(state:Board){
-  console.log(state);
+  // console.log(state);
   if(!boardHasConflicts(state)) return state;
   Object.entries(state).forEach(([spaceId, space], index) => {
   let conflictPotentiallyResolved = false;
@@ -172,7 +172,7 @@ export const gameSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(setState, (_, action) => {
-        console.log(action);
+        // console.log(action);
         return action.payload.board;
         // action is inferred correctly here if using TS
       })
@@ -190,7 +190,7 @@ export const gameSlice = createSlice({
         const {payload} = action;
         switch(action.payload.item){
           case('traffic engineer'):{
-            console.log('traffing engineer', payload)
+            // console.log('traffing engineer', payload)
             const {value} = payload as unknown as {value:{action: string, from: string, to: string}};
             switch(value.action){
               case('add'):
@@ -203,18 +203,20 @@ export const gameSlice = createSlice({
             break;
           }
           case('demolition crew'):{
-            console.log(payload);
+            // console.log(payload);
             const {value} = payload as unknown as {value:{space: string}}
             if(value.space === 'home') return state;
             // const {[value.space_id]:_, ...rest} = state;
             // console.log(Object.keys(state));
             // console.log('removed', _)
-            console.log(value)
-            delete state[value.space];
-            Object.values(state).forEach((space) => {
+            // console.log(value)
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const {[value.space]:_, ...next} = state;
+            // delete state[value.space];
+            Object.values(next).forEach((space) => {
               space.connections = space.connections.filter((id) => id !== value.space).filter(onlyUnique);
             });
-            return state;
+            return next;
           }
           case('construction crew'):{
             const {value} = payload as unknown as {value:{label:string, color:string, type:GAME_MODE, pathsFrom1:string, pathsFrom2:string, pathsFrom3:string, pathsTo1:string, pathsTo2:string, pathsTo3:string}};
