@@ -69,9 +69,9 @@ const SignUp = ()=>{
       <div className={clsx("text-red-600 text-sm ", (hostId.length === 6 || hostId.length === 0) ? 'hidden' : null)}>HostID should be 6 characters long</div>
       <label data-disabled={hostId.length < 6} htmlFor="nameInput" className="animate-fade  transition-all text-transparent bg-clip-text bg-gradient-to-br from-pink-600 to-violet-600 text-2xl font-bold uppercase data-[disabled=true]:scale-0">Name</label>
       <input disabled={hostId.length <6} type="text" id="nameInput" className="animate-fade  text-black w-64 placeholder:text-slate-400 under text-xl bg-white bg-opacity-20 p-2 rounded-xl shadow-xl text-center disabled:scale-0" placeholder="Please enter a name" value={tempName} onChange={(event)=>{setTempName(event.currentTarget.value.substring(0,12))}} />
-      <div className={clsx("text-red-600 text-sm ", (tempName.length >= 3 || tempName.length == 0) ? 'hidden' : null)}>Name should be at least 3 characters long</div>
-      <div data-disabled={tempName.length < 3 || hostId.length < 6} className="animate-fade  text-transparent bg-clip-text bg-gradient-to-br from-pink-600 to-violet-600 text-2xl font-semibold data-[disabled=true]:scale-0 transition-all">Avatar</div>
-      <div data-disabled={tempName.length < 3 || hostId.length < 6} className="animate-fade w-full p-4 bg-white bg-opacity-40 rounded-xl shadow-xl data-[disabled=true]:hidden data-[disabled=true]:scale-0 transition-all">
+      <div className={clsx("text-red-600 text-sm ", (tempName.length >= 4 || tempName.length == 0) ? 'hidden' : null)}>Name should be at least 4 characters long</div>
+      <div data-disabled={tempName.length < 4 || hostId.length < 6} className="animate-fade  text-transparent bg-clip-text bg-gradient-to-br from-pink-600 to-violet-600 text-2xl font-semibold data-[disabled=true]:scale-0 transition-all">Avatar</div>
+      <div data-disabled={tempName.length < 4 || hostId.length < 6} className="animate-fade w-full p-4 bg-white bg-opacity-40 rounded-xl shadow-xl data-[disabled=true]:hidden data-[disabled=true]:scale-0 transition-all">
       <CharacterCarousel selected={selectedSprite} onChange={setSelectedSprite} />
 
       </div>
