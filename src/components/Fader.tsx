@@ -19,6 +19,7 @@ type FaderProps = {
   max: number,
   value: number,
   onChange: (value:number)=>void,
+  label: string,
 }
 
 function Fader(props:FaderProps) {
@@ -222,11 +223,16 @@ function Fader(props:FaderProps) {
         ref={faderRef}
         aria-valuenow={value}
         style={{background: bgString}}
-        className={`fader ${faderControlClasses}`}
+        className={`fader ${faderControlClasses} rounded-xl  flex  items-center content-center justify-center`}
         onPointerMove={interact}
         onPointerDown={handleMouseDown}
         onPointerUp={handleMouseUp}
-      />
+      >
+        <div className="text-4xl text-black bg-white uppercase font-sans font-bold p-2 rounded-xl bg-opacity-50 select-none pointer-events-none">
+
+        {props.label}
+        </div>
+      </div>
     </div>
   )
 }

@@ -16,11 +16,11 @@ function CustomControls({controls}:{controls:PlayerActions}){
   if(! Array.isArray(controls)) return null  
   return (<>
   {controls.map((opt) => {
-    // console.log(opt)
+    console.log(opt)
     return (
       
       <RemoteControl
-      key={opt.value}
+      key={opt.key ? opt.key : opt.value}
       onClick={() => {
         // console.log("sending message", opt.action, opt.value)
         sendPeersMessage({

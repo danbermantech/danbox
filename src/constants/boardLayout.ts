@@ -43,7 +43,7 @@ function randomLocation(){
 }
 
 
-function createTriviaSpace({x=randomLocation(), y=randomLocation(), label='trivia', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
+export function createTriviaSpace({x=randomLocation(), y=randomLocation(), label='trivia', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
   return {
     x,
     y,
@@ -65,11 +65,11 @@ const duel: BoardSpaceConfig = {
   color: '#558826',
   id: "duel",
   label: 'Showdown',
-  connections: ['frenzy', 'middleTop',],
+  connections: ['frenzy', 'middleTop'],
   type: GAME_MODE.DUEL,
 }
 
-function createDuelSpace({x=randomLocation(), y=randomLocation(), label='duel', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
+export function createDuelSpace({x=randomLocation(), y=randomLocation(), label='duel', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
   return {
     x,
     y,
@@ -84,10 +84,10 @@ function createDuelSpace({x=randomLocation(), y=randomLocation(), label='duel', 
 }
 
 const shop: BoardSpaceConfig = {
-  x: 0.4,
+  x: 0.35,
   y: 0.7,
-  width: 0.06,
-  height: 0.06,
+  width: 0.04,
+  height: 0.04,
   color: '#00ff00',
   id: "shop",
   label: 'shop',
@@ -95,7 +95,19 @@ const shop: BoardSpaceConfig = {
   type: GAME_MODE.SHOP,
 }
 
-function createShopSpace({x=randomLocation(), y=randomLocation(), label='shop', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
+const shop2: BoardSpaceConfig = {
+  x: 0.65,
+  y: 0.3,
+  width: 0.04,
+  height: 0.04,
+  color: '#00ff00',
+  id: "shop2",
+  label: 'shop',
+  connections: ['home', 'frenzy'],
+  type: GAME_MODE.SHOP,
+}
+
+export function createShopSpace({x=randomLocation(), y=randomLocation(), label='shop', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
   return {
     x,
     y,
@@ -141,11 +153,11 @@ const stormy: BoardSpaceConfig = {
   color: '#aa6688',
   id: 'stormy',
   label: "Stormy's \rSlots",
-  connections: ['middleBottom'],
+  connections: ['middleBottom', 'implore2'],
   type: GAME_MODE.SLOTS
 }
 
-const createSlotsSpace = ({x=randomLocation(), y=randomLocation(), label='random', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig=>{
+export const createSlotsSpace = ({x=randomLocation(), y=randomLocation(), label='random', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig=>{
   return {
     x,
     y,
@@ -171,7 +183,7 @@ const middleLeft: BoardSpaceConfig = {
   type: GAME_MODE.GET_ASSET
 }
 
-function createGetAssetSpace({x=randomLocation(), y=randomLocation(), label='get asset', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
+export function createGetAssetSpace({x=randomLocation(), y=randomLocation(), label='get asset', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
   return {
     x,
     y,
@@ -194,10 +206,10 @@ const frenzy: BoardSpaceConfig = {
   id: 'frenzy',
   label: 'FRENZY',
   type: GAME_MODE.FRENZY,
-  connections: ['duel', 'stormy'],
+  connections: ['duel', 'stormy', 'home'],
 }
 
-function createFrenzySpace({x=randomLocation(), y=randomLocation(), label='frenzy', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
+export function createFrenzySpace({x=randomLocation(), y=randomLocation(), label='frenzy', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
   return {
     x,
     y,
@@ -219,12 +231,12 @@ const middleTop: BoardSpaceConfig = {
   color: "#ff2222",
   id: 'middleTop',
   label: 'OH NO',
-  connections: ['trivia', 'duel', 'home'],
+  connections: ['trivia', 'duel', 'home', 'shop2'],
   type: GAME_MODE.LOSE_ASSET,
 }
 
-const middleBottom: BoardSpaceConfig = {
-  x: 0.6,
+export const middleBottom: BoardSpaceConfig = {
+  x: 0.5,
   y: 0.9,
   width: 0.045,
   height: 0.045,
@@ -235,7 +247,7 @@ const middleBottom: BoardSpaceConfig = {
   type: GAME_MODE.LOSE_ASSET,
 }
 
-function createLoseAssetSpace({x=randomLocation(), y=randomLocation(), label='lose asset', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
+export function createLoseAssetSpace({x=randomLocation(), y=randomLocation(), label='lose asset', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
   return {
     x,
     y,
@@ -250,7 +262,7 @@ function createLoseAssetSpace({x=randomLocation(), y=randomLocation(), label='lo
 }
 
 const implore: BoardSpaceConfig = {
-  x: 0.4,
+  x: 0.35,
   y: 0.3,
   width: 0.045,
   height: 0.045,
@@ -258,6 +270,18 @@ const implore: BoardSpaceConfig = {
   id: 'implore',
   label: 'Implore',
   connections: ['home', 'shop'],
+  type: GAME_MODE.IMPLORE,
+}
+
+const implore2: BoardSpaceConfig = {
+  x: 0.65,
+  y: 0.7,
+  width: 0.045,
+  height: 0.045,
+  color: "#aa22aa",
+  id: 'implore2',
+  label: 'Implore',
+  connections: ['home', 'shop2', 'frenzy'],
   type: GAME_MODE.IMPLORE,
 }
 
@@ -273,6 +297,8 @@ export const boardLayout: Board = {
   middleTop,
   middleBottom,
   implore,
+  implore2,
+  shop2
 }
 
 export const boardLayout2: Board = {
@@ -443,19 +469,19 @@ export const boardLayout2: Board = {
   }
 }
 
-export const randomLayout:Board = {
-  trivia:createTriviaSpace({id:'trivia'}),
-  duel:createDuelSpace({id:'duel'}),
-  shop:createShopSpace({id:'shop'}),
-  home,
-  rhiannon,
-  stormy,
-  frenzy:createFrenzySpace({id:'frenzy'}),
-  get: createGetAssetSpace({id:'get'}),
-  lose: createLoseAssetSpace({id:'lose'}),
-  random: createSlotsSpace({id:'random'}),
-  random2: createSlotsSpace({id:'random2'}),
-  get2: createGetAssetSpace({id:'get2'}),
-  lose2: createLoseAssetSpace({id:'lose2'}),
-} 
+// export const randomLayout:Board = {
+//   trivia:createTriviaSpace({id:'trivia'}),
+//   duel:createDuelSpace({id:'duel'}),
+//   shop:createShopSpace({id:'shop'}),
+//   home,
+//   rhiannon,
+//   stormy,
+//   frenzy:createFrenzySpace({id:'frenzy'}),
+//   get: createGetAssetSpace({id:'get'}),
+//   lose: createLoseAssetSpace({id:'lose'}),
+//   random: createSlotsSpace({id:'random'}),
+//   random2: createSlotsSpace({id:'random2'}),
+//   get2: createGetAssetSpace({id:'get2'}),
+//   lose2: createLoseAssetSpace({id:'lose2'}),
+// } 
 export default boardLayout;

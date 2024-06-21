@@ -19,6 +19,7 @@ type Challenge = {
   description: string,
   audienceDescription: string,
   audienceDelay?: number,
+  nsfw?: boolean,
 }
 
 const challenges:Challenge[] = [
@@ -29,6 +30,7 @@ const challenges:Challenge[] = [
     description: 'Tell a lie. The player with the best lie wins.',  
     audienceDescription: 'Vote for the best lie.',
     audienceDelay: 30000,
+    nsfw: true,
   },
   {
     category: 'Task',
@@ -51,6 +53,7 @@ const challenges:Challenge[] = [
     difficulty: 'easy',
     description: 'Take a shot of whatever you want. Whoever takes their shot first wins.',
     audienceDescription: 'Who took their shot first?',
+    nsfw: true,
   },
   {
     category: 'Ego',
@@ -75,6 +78,7 @@ const challenges:Challenge[] = [
     description: 'Take off a piece of clothing. The first person to remove an article of clothing wins.',
     audienceDescription: 'Whose piece of clothing was lighter?',
     audienceDelay: 20000,
+    nsfw: true,
   },
   {
     category: 'Party',
@@ -83,6 +87,7 @@ const challenges:Challenge[] = [
     description: 'Take off a piece of clothing. The first person to remove an article of clothing wins.',
     audienceDescription: 'Whose piece of clothing was darker?',
     audienceDelay: 20000,
+    nsfw: true,
   },
   {
     category: 'Ego',
@@ -90,6 +95,7 @@ const challenges:Challenge[] = [
     difficulty: 'medium',
     description: 'Kiss an animal. The first player to kiss an animal wins.',
     audienceDescription: 'Who kissed an animal first?',
+    nsfw: true,
   },
   {
     category: 'Ego',
@@ -97,6 +103,7 @@ const challenges:Challenge[] = [
     difficulty: 'medium',
     description: 'Kiss an animal. The first player to kiss an animal wins.',
     audienceDescription: 'Whose animal was tallest?',
+    nsfw: true,
   },
   {
     category: 'Party',
@@ -180,11 +187,13 @@ const Duel =
       return players.filter((player)=>(player.id !== playerA.id && player.id !== playerB?.id))
     })
 
+    const nsfw = useAppSelector((state)=>state.game.nsfw);
+
     // useEffect(()=>{
     //   if(!playerA || !playerB) dispatch((disp)=>{disp(endMinigame()); disp(triggerNextQueuedAction());})
     // },[playerA, playerB, dispatch])
 
-    const [challenge] = useState(challenges[Math.floor(Math.random() * challenges.length)])
+    const [challenge] = useState(challenges.filter((c:Challenge)=>(!nsfw ? c.nsfw !== true : true))[Math.floor(Math.random() * challenges.length)])
 
     const [actionId] = useState(()=>uuidv4());
 

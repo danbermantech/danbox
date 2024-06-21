@@ -12,8 +12,9 @@ import usePeerDataReceived, { PeerDataCallbackPayload } from "$hooks/useDataRece
 import {v4 as uuidv4} from 'uuid'
 import MuteToggle from "./MuteToggle";
 import { setBoardLayout } from "$store/slices/boardSlice";
-import {boardLayout, boardLayout2, randomLayout} from "$constants/boardLayout";
+import {boardLayout, boardLayout2, } from "$constants/boardLayout";
 import Logo from "./Logo";
+import NSFWToggle from "./NSFWToggle";
 const playerSelector = createSelector(state=>state.players, 
   (players:StoreData['players']) => players.map((player)=>({id:player.id, name:player.name, image:player.image, controls: player.controls})),
   );
@@ -44,8 +45,9 @@ const RegistrationScreen = () => {
   
   const peerDataCallback = useCallback((data:PeerDataCallbackPayload) => {
     // console.log(data);
+    const boardOptions = [boardLayout,boardLayout2];
       if(data.payload.value == "start"){
-        dispatch(setBoardLayout([boardLayout,boardLayout2,boardLayout,boardLayout2, boardLayout2, randomLayout][Math.floor(Math.random()*6)]))
+        dispatch(setBoardLayout(boardOptions[Math.round(Math.random()*boardOptions.length)]))
         dispatch(clearAllPlayerControls());
         dispatch(triggerNextQueuedAction());
       }
@@ -54,7 +56,7 @@ const RegistrationScreen = () => {
   usePeerDataReceived(peerDataCallback, actionId)
 
   return (
-    <div className="text-black flex flex-col gap-2 to-black-400">
+    <div className="text-black flex flex-col gap-2 to-black-400 items-center">
       {/* <h1 className="text-4xl text-bold text-black text-center p-4"> */}
         <Logo />
         {/* </h1> */}
@@ -76,6 +78,7 @@ const RegistrationScreen = () => {
         </div>
         </div>
       <MuteToggle />
+      <NSFWToggle />
       <div className="flex flex-row justify-evenly">
       {players.map((player)=>{
         return (

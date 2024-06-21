@@ -76,7 +76,7 @@ const SignUp = ()=>{
 
       </div>
         {alert && <p className="text-red-600">{alert}</p>}
-        <button className="py-4 px-8 mx-auto font-bold bg-blue-500 w-min text-white rounded-xl tracking-widest disabled:opacity-0" disabled={!selectedSprite.length || tempName.length < 4 || hostId.length < 4} onClick={join}>JOIN</button>
+        <button className="py-4 px-8 mx-auto font-bold bg-blue-500 w-min text-white rounded-xl tracking-widest disabled:opacity-0" disabled={!selectedSprite.length || tempName.length < 4 || hostId.length < 6} onClick={join}>JOIN</button>
       </div>
       {/* </div> */}
       </div>

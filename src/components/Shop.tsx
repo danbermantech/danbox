@@ -34,16 +34,19 @@ const Shop = ()=>{
   
   const player = useAppSelector((state) => state.players.find((player)=>(player.id == activePlayers[0] || player.name == activePlayers[0])));
   
+  const [selectedOption, setSelectedOption] = useState<Item>();
+  
   useEffect(()=>{
     // console.log(activePlayers);
     // console.log(items)
-    if(!player || !options) return;
+    console.log(selectedOption);
+    if(selectedOption) dispatch(setPlayerControls({playerId: activePlayers[0], controls:[]}) )
+    if(!player || !options || selectedOption) return;
     dispatch(setPlayerControls({playerId: activePlayers[0], controls: [{name:'none', id: 'none', price:0},...options].map((item)=>({label: item.name, value: item.id, action: actionId, className: (item.price && item.price > player.gold) ? 'text-gray-500 opacity-50 cursor-default uppercase text-sm' : item.id == 'none' ? 'bg-yellow-500 uppercase' : 'bg-green-400 uppercase'})), }))
   }
-  ,[activePlayers, dispatch, actionId, options, player])
+  ,[activePlayers, dispatch, actionId, options, player, selectedOption])
 
 
-  const [selectedOption, setSelectedOption] = useState<Item>();
 
   useEffect(()=>{
     if(selectedOption) return triggerSoundEffect(`chaching`)
@@ -56,8 +59,9 @@ const Shop = ()=>{
     // console.log(player, item)
     if(!player) return
     if(data.payload.value == 'none'){
+      console.log('selected none')
       setSelectedOption({name: 'Nothing', id:'nothing', description: 'You bought nothing. Maybe next time', price: 0, image: itemPlaceholder, weight: 1, })
-      dispatch(setPlayerControls({playerId: player.id, controls:[]}));
+      dispatch(setPlayerControls({playerId: activePlayers[0], controls:[]}));
       setTimeout(()=>{
         dispatch(triggerNextQueuedAction());
       }, 2000)
@@ -70,7 +74,7 @@ const Shop = ()=>{
 
         disp(givePlayerItem({playerId: player.id, item: {name: item.name, image: item.image, description: item.description, params: item.params,}}))
         disp(givePlayerGold({playerId: player.id, gold: -item.price}))
-        disp(setPlayerControls({playerId: player.id, controls:[]}))
+        disp(setPlayerControls({playerId: activePlayers[0], controls:[]}))
         disp(clearAllPlayerControls())
       })
       setSelectedOption(item);
@@ -82,7 +86,7 @@ const Shop = ()=>{
         dispatch(triggerNextQueuedAction());
       }, 2500)
     }
-  }, [dispatch, player, options])
+  }, [dispatch, player, options, activePlayers])
 
   usePeerDataReceived(dataReceivedCallback,actionId);
 

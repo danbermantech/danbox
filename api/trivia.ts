@@ -901,4 +901,15 @@ const TriviaQuestions:TriviaQuestion[] =[
   },
 ]
 
-export default TriviaQuestions;
+export function GET(request: Request) {
+  const url = new URL(request.url);
+  const params = Object.fromEntries(url.searchParams.entries());
+  let questions = TriviaQuestions;
+  console.log(params);
+  if(!params.nsfw) questions = questions.filter((question)=>(question?.nsfw));
+  if(params.category) questions = questions.filter((question)=>question.category === params.category);
+  if(params.difficulty) questions = questions.filter((question)=>question.difficulty === params.difficulty);
+  questions.sort(()=>Math.random() - 0.5);
+  questions = questions.slice(0, 3);
+  return new Response(JSON.stringify([...questions, params]), {status: 200, statusText: 'OK', headers: new Headers({'Content-Type': 'application/json'})});
+}

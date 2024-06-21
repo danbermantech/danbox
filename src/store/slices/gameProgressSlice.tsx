@@ -15,6 +15,7 @@ const defaultState: GameState = {
   modalOpen: true,
   queuedActions: [],
   activePlayers: [],
+  nsfw: false,
   // board: [],
   maxRounds: 10,
 };
@@ -56,6 +57,10 @@ export const gameSlice = createSlice({
     },
     setGameState: (_, action) => {
       return action.payload;
+    },
+    setNSFW: (state, action) => {
+      state.nsfw = action.payload;
+      return state;
     }
   },
   extraReducers: (builder) => {
@@ -115,7 +120,8 @@ export const {
   openModal,
   endMinigame,
   setMaxRounds,
-  setGameState
+  setGameState,
+  setNSFW
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

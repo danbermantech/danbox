@@ -8,6 +8,7 @@ export type PlayerAction = {
   className?: string;
   style?: React.CSSProperties;
   img?: string;
+  key?: number|string;
 }
 
 export type PlayerActions = PlayerAction[] | string;
@@ -150,6 +151,7 @@ export type GameState = {
   modalOpen: boolean;
   queuedActions: QueueAction[];
   activePlayers: string[];
+  nsfw: boolean;
   // board: BoardSpaceConfig[];
   mode: GAME_MODE | null,
   maxRounds: number;

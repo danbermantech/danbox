@@ -2,7 +2,7 @@ import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import { useAppDispatch, useAppSelector } from "$store/hooks";
 import { useEffect, useState } from "react";
 import PlayerCard from "./PlayerCard";
-import { setPlayerControls, setPlayerInstructions } from "$store/slices/playerSlice";
+import { clearAllPlayerControls, setPlayerControls, setPlayerInstructions } from "$store/slices/playerSlice";
 import usePeerDataReceived from "$hooks/useDataReceived";
 export default function Implore() {
   const dispatch = useAppDispatch();
@@ -15,19 +15,21 @@ export default function Implore() {
       return;
     }
     if(result) return;
+    console.log('setting yes/no')
     dispatch((disp)=>{
-      disp(setPlayerInstructions({playerId: activePlayer.id, instructions: 'Did you get what you wanted?'}))
-      disp(setPlayerControls({playerId: activePlayer.id, controls: [{label:'Yes', value:'yes', className: 'bg-green-200', action:'implore',}, {label:'No', value:'no', action:'implore', className:'bg-red-400'}]}))
+      disp(setPlayerInstructions({playerId: activePlayerName, instructions: 'Did you get what you wanted?'}))
+      disp(setPlayerControls({playerId: activePlayerName, controls: [{label:'Yes', value:'yes', className: 'bg-green-200', action:'implore',}, {label:'No', value:'no', action:'implore', className:'bg-red-400'}]}))
   })
-  },[activePlayer, dispatch, result])
+  },[activePlayer, activePlayerName, dispatch, result])
 
   usePeerDataReceived<{value: string}>((data)=>{
     // if(data.payload.value === 'yes'){
       setResult(data.payload.value);
       
       if(activePlayer){
-        dispatch(setPlayerControls({playerId: activePlayer.id, controls:[]}))
-        dispatch(setPlayerInstructions({playerId: activePlayer.id, instructions: ''}))
+        // dispatch(setPlayerControls({playerId: activePlayer.id, controls:[]}))
+        dispatch(clearAllPlayerControls());
+        dispatch(setPlayerInstructions({playerId: activePlayerName, instructions: ''}))
       }
 
       // dispatch(clearAllPlayerControls());

@@ -92,7 +92,7 @@ const LoseAssetScreen = ()=>{
 
   const filteredOptions = useMemo(()=>createOptions(options, 3),[])
   useEffect(()=>{
-    dispatch(setPlayerControls({playerId: activePlayers[0], controls: [...filteredOptions].map((item)=>({label: item.name, value: item.name, action: actionId}))}))
+    dispatch(setPlayerControls({playerId: activePlayers[0], controls: [...filteredOptions].map((item, index)=>({label: item.name, value: item.name, action: actionId, key:index+1}))}))
   }
   ,[activePlayers, dispatch, filteredOptions, actionId ])
   const [selectedOption, setSelectedOption] = useState<AssetDefinition>();

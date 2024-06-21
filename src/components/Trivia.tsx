@@ -28,10 +28,12 @@ function calculatePoints(difficulty:TriviaQuestion['difficulty']):number{
 const Trivia =
   () => {
 
+    const nsfw = useAppSelector((state) => state.game.nsfw);
     const triviaQuestion = useMemo(() => {
-      const triviaQuestion = TriviaQuestions[Math.floor(Math.random() * TriviaQuestions.length)];
+      const availableQuestions = TriviaQuestions.filter((q)=>(!nsfw ? q.nsfw !== true : true))
+      const triviaQuestion = availableQuestions[Math.floor(Math.random() * TriviaQuestions.length)];
       return triviaQuestion;
-    }, []);
+    }, [nsfw]);
 
     const [actionId] = useState(()=>uuidv4());
     const players = useAppSelector((state) => state.players);
