@@ -2,8 +2,12 @@ import useBoardDimensions from "$hooks/useBoardDimensions";
 import usePeerDataReceived from "$hooks/useDataReceived";
 import type { Player } from "$store/types"
 import { Sprite, useTick } from "@pixi/react";
-import { useState } from "react";
-// import { useSelector } from "react-redux";
+import { useRef, useState } from "react";
+
+// Fraction of velocity retained each tick — lower = more friction/shorter coast
+const FRICTION = 0.92;
+// Max velocity gained per tick when accelerating
+const ACCELERATION = 0.003;
 
 const FrenzyCar = (
   {
@@ -25,46 +29,48 @@ const FrenzyCar = (
   const {boardWidth, boardHeight} = useBoardDimensions();
 
   const [position, setPosition] = useState(()=>({x:0.5, y:0.5, angle:0, velocity:0}));
+  const positionRef = useRef({x:0.5, y:0.5, angle:0, velocity:0});
+  const movementRef = useRef({targetVelocity:0, angle:0});
 
-  const [movementValues, setMovementValues] = useState({targetVelocity:0, angle:0})
-
-  // const playerState = useSelector((state:StoreData)=>state.players.find((p)=>p.id == player.id));
-  // console.log(playerState)
   usePeerDataReceived<{playerId:string, value:{targetVelocity:number, angle:number}, action:string}>((data)=>{
     if(data.payload.playerId !== player.id) return;
-    setMovementValues({targetVelocity: data.payload.value.targetVelocity, angle: data.payload.value.angle})
+    movementRef.current = {targetVelocity: data.payload.value.targetVelocity, angle: data.payload.value.angle};
   }, 'FRENZY'+player.id)
 
   useTick((delta:number) => {
-    setPosition((prev)=>{
-      if(!position || !movementValues) return prev;
-      //set the velocity to ease in towards the target velocity using delta
-      const nextVelocity = Math.min(position.velocity + (movementValues.targetVelocity - position.velocity) * delta, movementValues.targetVelocity);
-      //set the angle to ease in towards the target angle using delta
-      const nextAngle = movementValues.angle? position.angle - movementValues.angle * delta : position.angle;
-      //set the x and y positions based on the velocity and angle
-      const nextX = Math.max(Math.min(position.x + Math.cos(nextAngle) * nextVelocity * delta, boundaries.maxX), boundaries.minX);
-      const nextY = Math.max(Math.min(position.y + Math.sin(nextAngle) * nextVelocity * delta, boundaries.maxY), boundaries.minY);
+    const pos = positionRef.current;
+    const mv = movementRef.current;
 
-      return {x: nextX, y: nextY, angle: nextAngle, velocity: nextVelocity};
-    });
+    // Decay velocity each tick for coasting momentum
+    let nextVelocity = pos.velocity * Math.pow(FRICTION, delta);
+
+    // Accelerate toward the target velocity when throttle is applied
+    const velocityDiff = mv.targetVelocity - nextVelocity;
+    if (velocityDiff > 0) {
+      nextVelocity = Math.min(nextVelocity + ACCELERATION * delta, mv.targetVelocity);
+    }
+
+    const nextAngle = mv.angle ? pos.angle - mv.angle * delta : pos.angle;
+    const nextX = Math.max(Math.min(pos.x + Math.cos(nextAngle) * nextVelocity * delta, boundaries.maxX), boundaries.minX);
+    const nextY = Math.max(Math.min(pos.y + Math.sin(nextAngle) * nextVelocity * delta, boundaries.maxY), boundaries.minY);
+
+    const nextPos = {x: nextX, y: nextY, angle: nextAngle, velocity: nextVelocity};
+    positionRef.current = nextPos;
+    setPosition(nextPos);
 
     points.forEach((point)=>{
-      if(Math.abs(position.x - point.x) < 0.05 && Math.abs(position.y - point.y) < 0.05){
-        // console.log('point collected')
+      if(Math.abs(nextX - point.x) < 0.05 && Math.abs(nextY - point.y) < 0.05){
         onPointCollected(player.id, point.id);
-        return;
       }
-    })
+    });
 
     gold.forEach((point)=>{
-      if(Math.abs(position.x - point.x) < 0.05 && Math.abs(position.y - point.y) <0.05){
-        // console.log('point collected')
+      if(Math.abs(nextX - point.x) < 0.05 && Math.abs(nextY - point.y) < 0.05){
         onGoldCollected(player.id, point.id);
-        return;
       }
-    })
-  })
+    });
+  });
+
   return (<Sprite image={player.image} x={position.x *boardWidth} y={position.y *boardHeight} rotation={position.angle} width={100} height={100} anchor={0.5} />)
 }
 

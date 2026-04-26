@@ -28,9 +28,9 @@ const PlayerCard = (
           {player.name.toLocaleUpperCase()}
         </h2>
       <img src={player.image} width="200" height="200" className="w-24 h-24 min-w-24 rounded-full" />
-      <div className="flex flex-row gap-2">
-      {showPoints && <div className="grid grid-cols-2 items-center justify-items-stretch bg-white p-1 rounded-lg"><img src={points} width="24" height="24" className="aspect-square w-6 min-w-6" /><div className=" text-sm bg-[#ffffff88] rounded-full">{overridePoints ?? player.points}</div></div>}
-        {showGold && <div className="grid grid-cols-2 items-center justify-items-stretch bg-white p-1 rounded-lg"><img src={gold} width="24" height="24" className="aspect-square w-6 min-w-6" /><div className=" text-sm bg-[#ffffff88] rounded-full">{overrideGold ?? player.gold}</div></div>}
+      <div className="flex flex-row gap-3 mt-1">
+        {showPoints && <div className="flex items-center gap-1"><img src={points} width="16" height="16" className="w-4 h-4" /><span className="text-sm font-bold">{overridePoints ?? player.points}</span></div>}
+        {showGold && <div className="flex items-center gap-1"><img src={gold} width="16" height="16" className="w-4 h-4" /><span className="text-sm font-bold">{overrideGold ?? player.gold}</span></div>}
       </div>
       {showItems && 
         <div className="flex flex-row gap-2 pt-2 items-center">

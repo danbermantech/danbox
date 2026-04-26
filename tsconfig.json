@@ -26,7 +26,7 @@
       "$store/*": ["./store/*"],
       "$hooks/*": ["./hooks/*"],
       "$contexts/*": ["./contexts/*"],
-      "$utils/*": ["./utils/*"],
+      "$utils/*": ["./utilities/*"],
       "$constants/*": ["./constants/*"],
     }
   },

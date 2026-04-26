@@ -31,7 +31,7 @@ const Trivia =
     const nsfw = useAppSelector((state) => state.game.nsfw);
     const triviaQuestion = useMemo(() => {
       const availableQuestions = TriviaQuestions.filter((q)=>(!nsfw ? q.nsfw !== true : true))
-      const triviaQuestion = availableQuestions[Math.floor(Math.random() * TriviaQuestions.length)];
+      const triviaQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
       return triviaQuestion;
     }, [nsfw]);
 
@@ -41,6 +41,7 @@ const Trivia =
     const dispatch = useAppDispatch();
 
     const answers = useMemo(()=>{
+      if(!triviaQuestion) return [];
       return [triviaQuestion.answer, ...triviaQuestion.incorrect_answers]
         .sort(()=>{return Math.random() - 0.5})
         .map((answer)=>({label: answer, value: answer, action: actionId}));
@@ -81,7 +82,7 @@ const Trivia =
 
     const dataReceivedCallback = useCallback((data:PeerDataCallbackPayload, peerId:string) => {
       triggerSoundEffect(`dink`)  
-      setPlayerAnswers((prev)=>{
+      setPlayerAnswers((prev)=>{  
         const next = {...prev};
         next[peerId] = data.payload.value;
         return next;

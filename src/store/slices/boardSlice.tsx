@@ -137,6 +137,7 @@ export const gameSlice = createSlice({
       };
 
       [pathsFrom1, pathsFrom2, pathsFrom3].filter((path)=>path !== '').forEach((path)=>{
+        if(!state[path]) return console.log('no space at path', path);
         state[path].connections.push(id);
       });
       // const {}

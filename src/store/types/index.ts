@@ -60,6 +60,7 @@ export type ItemDefinition = {
   params?: UserControlledParam[],
   cost?: number,
   weight: number,
+  tier: number,
 }
 
 export type AssetDefinition = {
@@ -155,6 +156,7 @@ export type GameState = {
   // board: BoardSpaceConfig[];
   mode: GAME_MODE | null,
   maxRounds: number;
+  isPaused: boolean;
 };
 
 export type Board = Record<string, BoardSpaceConfig>;

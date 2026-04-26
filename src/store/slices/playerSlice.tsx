@@ -16,7 +16,7 @@ function isRejectedAction(action: Action): action is RejectedAction {
   return action.type.endsWith("rejected");
 }
 
-const defaultMovesPerRound = 2;
+const DEFAULT_MOVES_PER_ROUND = 3;
 
 export const playerSlice = createSlice({
   name: "players",
@@ -42,10 +42,10 @@ export const playerSlice = createSlice({
         history: [],
         controls: [],
         image: playerPlaceholder,
-        movesPerRound: defaultMovesPerRound,
+        movesPerRound: DEFAULT_MOVES_PER_ROUND,
         hasMoved: false,
         instructions:"",
-        movesRemaining: defaultMovesPerRound,
+        movesRemaining: DEFAULT_MOVES_PER_ROUND,
         ...action.payload,
       });
       return state;
@@ -84,7 +84,7 @@ export const playerSlice = createSlice({
         if (!player) return state;
         if(isEqual(player.controls, controls)) return state;
         player.controls = controls;
-        if(!isEqual(controls, [])) player.hasMoved == true
+        if(!isEqual(controls, [])) player.hasMoved = true
       }
 
       if(typeof(playerId) == 'string'){
@@ -242,13 +242,14 @@ export const playerSlice = createSlice({
       .addCase(movePlayer, (state, action) => {
         const player = state.find((player)=>(player.id == action.payload.playerId));
         if(!player || player.movesRemaining <= 0) return state;
+        if(player.spaceId == action.payload.spaceId) return state;
         player.previousSpaceId= player.spaceId;
         player.spaceId = action.payload.spaceId;
         player.movesRemaining -= 1;
       })
       .addCase(movePlayerFinal, (state, action) => {
         const player = state.find((player)=>(player.id == action.payload.playerId));
-        if(!player || player.movesRemaining <= 0) return state;
+        if(!player) return state;
         player.controls = [];
         player.hasMoved = true;
       })
@@ -328,7 +329,7 @@ export const playerSlice = createSlice({
         player.items = player.items.filter((item)=>(item.id !== action.payload.id));
         })
       .addCase(restart, (state)=>{
-        return state.map((player)=>({...player, spaceId: 'home', previousSpaceId: 'home', points: 0, gold: 0, items:[], movesRemaining: defaultMovesPerRound, hasMoved:false, controls:[]}))
+        return state.map((player)=>({...player, spaceId: 'home', previousSpaceId: 'home', points: 0, gold: 0, items:[], movesRemaining: DEFAULT_MOVES_PER_ROUND, hasMoved:false, controls:[]}))
       })
       .addCase(removeSpace, (state, action)=>{
         return state.map((player)=>({...player, spaceId: player.spaceId == action.payload.id ? 'home' : player.spaceId, previousSpaceId: player.previousSpaceId == action.payload.id ? 'home' : player.previousSpaceId}))

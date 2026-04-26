@@ -12,7 +12,6 @@ const LoseAssetScreen = lazy(async()=>await import('./LoseAssetScreen'));
 const Duel = lazy(async()=>await import("./Duel"));
 const Frenzy = lazy(async()=>await import("./pixi/Frenzy"));
 const PixiHost = lazy(async()=>await import("./pixi/PixiHost"));
-// import Pursuit from "./pixi/Pursuit";
 
 const MainGame = () =>{
   const mode = useSelector((state:StoreData)=>state.game.mode);

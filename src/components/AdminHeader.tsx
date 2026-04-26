@@ -19,7 +19,7 @@ import PlayerCard from "./PlayerCard";
 import { UnknownAction } from "@reduxjs/toolkit";
 import PlayerMap from "./PlayerMap";
 import { Fullscreen } from "@mui/icons-material";
-import { endMinigame } from "$store/slices/gameProgressSlice";
+import { endMinigame, pauseGame, resumeGame } from "$store/slices/gameProgressSlice";
 import items from "$constants/items";
 import { useAppSelector } from "$store/hooks";
 import removeSpace from "$store/actions/removeSpace";
@@ -195,7 +195,7 @@ const removeBoardSpace:ControlDefinition<{id:string}> = {
   ]
 }
 
-const SpecialSelectControl = ({param, value, onChange, className}:{param:SpecialSelectInputParams, value:string, onChange:(name:string, value:string)=>void, className:string})=>{
+const SpecialSelectControl = ({param, value, onChange, className, placeholder}:{param:SpecialSelectInputParams, value:string, onChange:(name:string, value:string)=>void, className:string, placeholder?:string})=>{
 
   const {id, teamId} = useMe()
   const options = useAppSelector((state) => {
@@ -225,7 +225,7 @@ const SpecialSelectControl = ({param, value, onChange, className}:{param:Special
   });
   return (
     <select className={clsx(className, 'accent-blue-400')} value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
-      <option disabled>Select</option>
+      <option disabled value="">{placeholder || 'Select'}</option>
       {options.map(option=>{
         return <option key={option.value} value={option.value}>{option.label}</option>
     })}
@@ -267,7 +267,7 @@ const Control = ({staticProps={}, control}:{staticProps:Record<string,unknown>, 
   const [form, setForm] = useState<{[key:string]:unknown}>(()=>{
     const form:{[key:string]:unknown} = {};
     inputs?.forEach((input)=>{
-      form[input.key] = input.value;
+      form[input.key] = (input.type === InputType.SELECT && !input.value) ? 'select' : input.value;
     })
     return form;
   
@@ -309,7 +309,8 @@ const Control = ({staticProps={}, control}:{staticProps:Record<string,unknown>, 
               }
               return <div key={input.key} className="flex w-full flex-col text-left font-semibold text-lg gap-2 justify-items-stretch">
                 <label>{input.label}</label>
-                <select className="bg-white bg-opacity-50 drop-shadow-xl rounded-xl p-4 w-full" value={form[input.key] as string} onChange={(e)=>{onChange(input.key, e.target.value)}}>
+                <select defaultValue="select" className="bg-white bg-opacity-50 drop-shadow-xl rounded-xl p-4 w-full" value={form[input.key] as string} onChange={(e)=>{onChange(input.key, e.target.value)}}>
+                  <option disabled value="select">Select</option>
                   {
                     input.options.map((option)=>{
                       return <option key={option.id} value={option.id}>{option.label}</option>
@@ -334,6 +335,7 @@ const AdminHeader = () =>{
   const [modalOpen, setModalOpen] = useState(false);
   const me = useMe();
   const players = useSelector((state:StoreData)=>state.players);
+  const isPaused = useSelector((state:StoreData)=>state.game.isPaused);
 
   const sendPeersMessage = usePeer((peer)=>(peer.sendPeersMessage)) as (
     data:{type: string, payload: unknown},
@@ -347,6 +349,13 @@ const AdminHeader = () =>{
               {me?.name}
             </Typography>
           </div>
+            <button
+              className="px-3 py-1 rounded-lg font-bold text-white mr-2"
+              style={{ background: isPaused ? '#16a34a' : '#ca8a04' }}
+              onClick={() => sendPeersMessage({ type: 'admin', payload: isPaused ? resumeGame() : pauseGame() })}
+            >
+              {isPaused ? '▶ Resume' : '⏸ Pause'}
+            </button>
             <PlayerMap />
             <Fullscreen className="flex-shrink" sx={{width:48, height:48}} onClick={()=>{
               if(document.fullscreenElement){

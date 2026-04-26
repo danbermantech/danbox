@@ -4,6 +4,8 @@ import type { Player, PlayerActions, } from "$store/types";
 import useMe from "$hooks/useMe";
 import FrenzyControls from "$components/FrenzyControls";
 import Shrimped from "$components/Shrimped";
+import { useAppSelector } from "$store/hooks";
+import { useEffect, useState } from "react";
 
 function CustomControls({controls}:{controls:PlayerActions}){
   
@@ -12,27 +14,33 @@ function CustomControls({controls}:{controls:PlayerActions}){
   ) => void;
 
   const {id} = useMe();
+  const [disabled, setDisabled] = useState(false);
+
+  // Reset disabled state whenever controls change (e.g. after move is confirmed by host)
+  useEffect(() => { setDisabled(false); }, [controls]);
 
   if(! Array.isArray(controls)) return null  
   return (<>
   {controls.map((opt) => {
-    console.log(opt)
     return (
       
       <RemoteControl
       key={opt.key ? opt.key : opt.value}
       onClick={() => {
-        // console.log("sending message", opt.action, opt.value)
+        if (disabled) return;
+        setDisabled(true);
         sendPeersMessage({
           type: opt.action,
           payload: { playerId: id, action: opt.action, value: opt.value },
         });
+        setTimeout(() => setDisabled(false), 300);
       }}
       value={opt.action}
       label={opt.label}
       classNames={opt.className}
       style={opt?.style ?? {}}
       img={opt.img}
+      disabled={disabled}
       />
       )
     }
@@ -64,6 +72,13 @@ function ControlWrapper({children}:{children:React.ReactNode}){
 
 function PlayerControls(){
   const {controls, effects} = useMe() as Player;
+  const isPaused = useAppSelector((state) => state.game.isPaused);
+
+  if(isPaused) return (
+    <ControlWrapper>
+      <h1 className="text-4xl text-center text-white">⏸ Game Paused</h1>
+    </ControlWrapper>
+  );
 
   if(effects && effects.findIndex((effect)=>effect == 'SHRIMPED') > -1 ) return (<Shrimped />)
   

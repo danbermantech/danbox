@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { clearAllPlayerControls, setPlayerControls } from "$store/slices/playerSlice";
 import usePeerDataReceived from "$hooks/useDataReceived";
@@ -37,6 +37,13 @@ const OptionMachine =
     const [resultsSent, setResultsSent] = useState(false);
 
     const [actionId] = useState(()=>uuidv4());
+
+    const selectionsRef = useRef(selections);
+    useEffect(() => { selectionsRef.current = selections; }, [selections]);
+
+    const spinningRef = useRef(spinning);
+    useEffect(() => { spinningRef.current = spinning; }, [spinning]);
+
     useEffect(() => {
       const interval = setInterval(() => {
         const firstSpinning = spinning.findIndex((s) => s);
@@ -89,73 +96,42 @@ const OptionMachine =
     }, [started, completed, dispatch, forPlayer, actionId]);
 
     const handleOnComplete = useCallback(() => {
+      if (resultsSent) return;
       setCompleted(true);
-      if(!resultsSent){
-        setResultsSent(true);
-        const obj: Record<string, string> = {};
-        options.forEach(({ label }, i) => {
-          obj[label] = options[i].options[selections[i]];
-        });
-        dispatch(clearAllPlayerControls());
-        onComplete({
-          indexes: selections,
-          values: selections.map((s, i) => options[i].options[s]),
-          obj,
-        });
-      }
-    }, [
-      // completed,
-      selections,
-      options,
-      onComplete,
-      resultsSent,
-      setResultsSent,
-      dispatch
-    ]);
+      setResultsSent(true);
+      const sel = selectionsRef.current;
+      const obj: Record<string, string> = {};
+      options.forEach(({ label }, i) => {
+        obj[label] = options[i].options[sel[i]];
+      });
+      dispatch(clearAllPlayerControls());
+      onComplete({
+        indexes: sel,
+        values: sel.map((s, i) => options[i].options[s]),
+        obj,
+      });
+    }, [options, onComplete, resultsSent, dispatch]);
 
     const handleClick = useCallback(() => {
-      // console.log('clicked')
-      let _nextSpinning = [...spinning];
-      setSpinning((prevSpinning) => {
-        const nextSpinning = [...prevSpinning];
-        const firstSpinning = nextSpinning.findIndex((s) => s);
-        nextSpinning[firstSpinning] = false;
-        _nextSpinning = nextSpinning
-        if (firstSpinning == -1) {
-          _nextSpinning = nextSpinning.map(() => true);
-          return nextSpinning.map(() => true);
-        }
-        return nextSpinning;
-      });
-      if(!started) return setStarted(true)
-      if (_nextSpinning.findIndex((x)=>x) == (spinning.length - 1) && started) return handleOnComplete();
-      if (!started) return
-      // setChangeSent(() => _nextSpinning.map((s) => !s));
-      // console.log(_nextSpinning)
-      if (_nextSpinning.every((s) => !s) ) return;
-      onChange(
-        options[spinning.findIndex((x)=>x)].label,
-        options[spinning.findIndex((x)=>x)].options[
-          selections[spinning.findIndex((x)=>x)]
-        ],
-      );
-      return;
-    }, [
-      spinning,
-      setSpinning,
-      started,
-      setStarted,
-      selections,
-      onChange,
-      options,
-      // setChangeSent,
-      handleOnComplete,
-    ]);
-
-    // const dataReceivedCallback = useCallback((data:{type:string, payload:{value:string}}) => {
-    //     handleClick();
-    //   }
-    // }, [handleClick]);
+      if (!started) {
+        setStarted(true);
+        setSpinning(prev => prev.map(() => true));
+        return;
+      }
+      const currentSpinning = spinningRef.current;
+      const firstSpinning = currentSpinning.findIndex((s) => s);
+      if (firstSpinning === -1) return;
+      const nextSpinning = currentSpinning.map((s, i) => i === firstSpinning ? false : s);
+      setSpinning(nextSpinning);
+      if (nextSpinning.every((s) => !s)) {
+        handleOnComplete();
+      } else {
+        onChange(
+          options[firstSpinning].label,
+          options[firstSpinning].options[selectionsRef.current[firstSpinning]],
+        );
+      }
+    }, [started, onChange, options, handleOnComplete]);
 
     usePeerDataReceived(handleClick,actionId)
 
@@ -170,7 +146,7 @@ const OptionMachine =
             style={{
               textAlign: "center",
               width: "100%",
-              height: "300px",
+              height: "200px",
               border: "2px solid white",
               borderRadius: "12px",
               fontSize: "clamp(2rem, 100rem, 4rem)",
@@ -180,7 +156,7 @@ const OptionMachine =
               justifyContent: "center",
               alignItems: "center",
               userSelect: "none",
-              minWidth: "400px",
+              minWidth: "300px",
               color: spinning[i]
                 ? `rgb(${Math.floor(Math.random() * 100) + 50}, 
                 ${Math.floor(Math.random() * 100) + 50}, 

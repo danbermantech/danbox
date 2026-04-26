@@ -7,7 +7,8 @@ const RemoteControl = ({
   label,
   img,
   classNames,
-  style
+  style,
+  // disabled,
 }: {
   onClick: (value: unknown) => void;
   value: string;
@@ -15,6 +16,7 @@ const RemoteControl = ({
   img?: string;
   classNames?: {button:string, image:string} | string;
   style?: React.CSSProperties;
+  disabled?: boolean;
 }) => {
   const onPress = useCallback(() => {
     onClick(value);
@@ -23,10 +25,12 @@ const RemoteControl = ({
   return (
     <button 
       style={style}
+      // disabled={disabled}
       className={clsx([
         "w-full font-titan tracking-wide text-2xl bg-gray-200 rounded-2xl min-h-max flex-grow border-black border-2 border-solid text-black",
         typeof classNames == 'string' && classNames,
-        typeof classNames == 'object' && classNames.button
+        typeof classNames == 'object' && classNames.button,
+        // disabled && "opacity-50 cursor-not-allowed",
       ])} onClick={onPress}>
       {img && 
       <img src={img} alt={label} 

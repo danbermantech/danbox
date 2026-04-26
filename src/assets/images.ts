@@ -16,6 +16,7 @@ import bossBaby from "./images/characters/bossBaby.png";
 import cia from "./images/characters/cia.png";
 import gollum from "./images/characters/gollum.png";
 import gritty from "./images/characters/gritty.png";
+import hearty from "./images/characters/hearty.png";
 import joker from "./images/characters/joker.png";
 import jughead from "./images/characters/jughead.png";
 import kennedy from "./images/characters/kennedy.png";
@@ -77,6 +78,7 @@ export const characters = {
   cia,
   gollum,
   gritty,
+  hearty,
   joker,
   jughead,
   kennedy,
@@ -148,6 +150,7 @@ export {
   cia,
   gollum,
   gritty,
+  hearty,
   joker,
   jughead,
   kennedy,

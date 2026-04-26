@@ -1,5 +1,5 @@
 import { usePeer } from "$hooks/usePeer"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Fader from "./Fader";
 
 const FrenzyControls = () => {
@@ -11,9 +11,18 @@ const FrenzyControls = () => {
 
   const [targetVelocity, setTargetVelocity] = useState(0);
   const [angle, setAngle] = useState(0);
-  
+
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingRef = useRef<{targetVelocity: number, angle: number} | null>(null);
+
   useEffect(()=>{
-    sendPeersMessage({type:'FRENZY'+myPeerId, payload: {playerId: myPeerId, action: 'FRENZY'+myPeerId, value: {targetVelocity, angle}}})
+    pendingRef.current = {targetVelocity, angle};
+    if(debounceRef.current) return;
+    debounceRef.current = setTimeout(()=>{
+      debounceRef.current = null;
+      if(pendingRef.current)
+        sendPeersMessage({type:'FRENZY'+myPeerId, payload: {playerId: myPeerId, action: 'FRENZY'+myPeerId, value: pendingRef.current}});
+    }, 20);
   },[targetVelocity, angle, sendPeersMessage, myPeerId])
 
   return(

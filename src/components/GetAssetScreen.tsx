@@ -1,14 +1,15 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AssetDefinition, Player, StoreData } from '$store/types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { setPlayerControls, givePlayerGold, givePlayerPoints, setPlayerInstructions } from '$store/slices/playerSlice';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { setPlayerControls, givePlayerGold, givePlayerPoints, givePlayerItem, setPlayerInstructions } from '$store/slices/playerSlice';
 import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
-import {gold, points} from '$assets/images.ts';
+import {gold, points, shrimp, magicHat, teleport, cheat, souperSoup, soup, magicHand, wrecking_ball, men_at_work, add_space} from '$assets/images.ts';
 import useAudio from '$hooks/useAudio';
 import usePeerDataReceived, { PeerDataCallbackPayload } from '$hooks/useDataReceived';
 import {v4 as uuidv4} from 'uuid'
 import PlayerCard from './PlayerCard';
 import { endMinigame } from '$store/slices/gameProgressSlice';
+import itemDefs from '$constants/items';
 
 const options:AssetDefinition[] = [
   {
@@ -16,60 +17,145 @@ const options:AssetDefinition[] = [
     value: 5,
     asset: 'gold',
     image: gold,
-    action: (target:string)=>{
-      return givePlayerGold({playerId: target, gold: 5})
-    },
-    weight:10
+    action: (target:string)=>{ return givePlayerGold({playerId: target, gold: 5}) },
+    weight: 20
   },
   {
     name: 'Get 10 gold',
     value: 10,
     asset: 'gold',
     image: gold,
-    action: (target:string)=>{
-      return givePlayerGold({playerId: target, gold: 10})
-    },
-    weight: 5
+    action: (target:string)=>{ return givePlayerGold({playerId: target, gold: 10}) },
+    weight: 12
   },
   {
     name: 'Get 50 gold',
     value: 50,
     asset: 'gold',
     image: gold,
-    action: (target:string)=>{
-      return givePlayerGold({playerId: target, gold: 50})
-    },
-    weight: 1
+    action: (target:string)=>{ return givePlayerGold({playerId: target, gold: 50}) },
+    weight: 5
+  },
+  {
+    name: 'Get 250 gold',
+    value: 250,
+    asset: 'gold',
+    image: gold,
+    action: (target:string)=>{ return givePlayerGold({playerId: target, gold: 250}) },
+    weight: 3
+  },
+  {
+    name: 'Get 1 point',
+    value: 1,
+    asset: 'points',
+    image: points,
+    action: (target:string)=>{ return givePlayerPoints({playerId: target, points: 1}) },
+    weight: 10
   },
   {
     name: 'Get 5 points',
     value: 5,
     asset: 'points',
     image: points,
-    action: (target:string)=>{
-      return givePlayerPoints({playerId: target, points: 5})
-    },
-    weight:10
+    action: (target:string)=>{ return givePlayerPoints({playerId: target, points: 5}) },
+    weight: 20
   },
   {
     name: 'Get 10 points',
     value: 10,
     asset: 'points',
     image: points,
-    action: (target:string)=>{
-      return givePlayerPoints({playerId: target, points: 10})
-    },
-    weight:5
+    action: (target:string)=>{ return givePlayerPoints({playerId: target, points: 10}) },
+    weight: 12
   },
   {
     name: 'Get 50 points',
     value: 50,
     asset: 'points',
     image: points,
-    action: (target:string)=>{
-      return givePlayerPoints({playerId: target, points: 50})
-    },
-    weight:1
+    action: (target:string)=>{ return givePlayerPoints({playerId: target, points: 50}) },
+    weight: 1
+  },
+  // Items — weight inversely proportional to tier
+  {
+    name: 'Get Shrimp',
+    value: 0,
+    asset: 'item',
+    image: shrimp,
+    action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='shrimp')!}) },
+    weight: 8
+  },
+  {
+    name: 'Get Soup',
+    value: 0,
+    asset: 'item',
+    image: soup,
+    action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='soup')!}) },
+    weight: 8
+  },
+  {
+    name: 'Get Magic Hat',
+    value: 0,
+    asset: 'item',
+    image: magicHat,
+    action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='magic hat')!}) },
+    weight: 4
+  },
+  {
+    name: 'Get Teleport',
+    value: 0,
+    asset: 'item',
+    image: teleport,
+    action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='teleport')!}) },
+    weight: 4
+  },
+  {
+    name: 'Get Cheat',
+    value: 0,
+    asset: 'item',
+    image: cheat,
+    action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='cheat')!}) },
+    weight: 4
+  },
+  {
+    name: 'Get Traffic Engineer',
+    value: 0,
+    asset: 'item',
+    image: men_at_work,
+    action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='traffic engineer')!}) },
+    weight: 3
+  },
+  {
+    name: 'Get Demo Crew',
+    value: 0,
+    asset: 'item',
+    image: wrecking_ball,
+    action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='demo crew')!}) },
+    weight: 3
+  },
+  {
+    name: 'Get Construct Crew',
+    value: 0,
+    asset: 'item',
+    image: add_space,
+    action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='construct crew')!}) },
+    weight: 3
+  },
+  {
+    name: 'Get Souper Soup',
+    value: 0,
+    asset: 'item',
+    image: souperSoup,
+    action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='souper soup')!}) },
+    weight: 2
+  },
+  {
+    name: 'Get Magic Hand',
+    value: 0,
+    asset: 'item',
+    image: magicHand,
+    action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='magic hand')!}) },
+    weight: 1
   },
 ]
 
@@ -103,8 +189,12 @@ const GetAssetScreen = ()=>{
   const {triggerSoundEffect} = useAudio();
 
   useEffect(()=>{return triggerSoundEffect('glad')},[triggerSoundEffect])
+
+  const handledRef = useRef(false);
   const peerDataCallback = useCallback((data:PeerDataCallbackPayload) => {
     if(data.payload.action){
+      if(handledRef.current) return;
+      handledRef.current = true;
       dispatch(setPlayerInstructions({playerId: activePlayers[0], instructions: 'Please wait...'}));
       dispatch(setPlayerControls({playerId: activePlayers[0], controls:[]}) )
       setSelectedOption(

@@ -15,6 +15,7 @@ const Paths = () =>{
         to={connectedLocation}
         color={location.color}
         width={4}
+        spaces={Object.values(board)}
       />
     })
   })}

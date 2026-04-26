@@ -66,7 +66,7 @@ export default defineConfig({
       { find:'$store', replacement: resolve(__dirname, './src/store')},
       { find:'$hooks', replacement: resolve(__dirname, './src/hooks')},
       { find:'$contexts', replacement: resolve(__dirname, './src/contexts')},
-      { find:'$utils', replacement: resolve(__dirname, './src/utils')},
+      { find:'$utils', replacement: resolve(__dirname, './src/utilities')},
       { find:'$constants', replacement: resolve(__dirname, './src/constants')},
     
     ]

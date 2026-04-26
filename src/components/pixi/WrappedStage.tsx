@@ -2,10 +2,11 @@ import { Stage} from '@pixi/react';
 import React from 'react';
 import { ReactReduxContext } from 'react-redux';
 import { PeerContext } from '$contexts/PeerContext';
+import { BoardDimensionsContext } from '$contexts/BoardDimensionsContext';
 
 type ContextBridgeProps = {
   children:React.ReactNode,
-  Context: (typeof ReactReduxContext | typeof PeerContext),
+  Context: (typeof ReactReduxContext | typeof PeerContext | typeof BoardDimensionsContext),
   render:(children:React.ReactNode)=>React.ReactNode
 }
 
@@ -28,9 +29,13 @@ export const WrappedStage = ({ children, ...props }:{children:React.ReactNode}) 
       render={(children) => 
       <ContextBridge
         Context={PeerContext}
-        render={(children) => <>
-        <Stage {...props}>{children}</Stage>
-        </>}
+        render={(children) =>
+        <ContextBridge
+          Context={BoardDimensionsContext}
+          render={(children) => <Stage {...props}>{children}</Stage>}
+        >
+          {children}
+        </ContextBridge>}
         >
           {children}
       </ContextBridge>

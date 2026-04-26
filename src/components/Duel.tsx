@@ -193,7 +193,12 @@ const Duel =
     //   if(!playerA || !playerB) dispatch((disp)=>{disp(endMinigame()); disp(triggerNextQueuedAction());})
     // },[playerA, playerB, dispatch])
 
-    const [challenge] = useState(challenges.filter((c:Challenge)=>(!nsfw ? c.nsfw !== true : true))[Math.floor(Math.random() * challenges.length)])
+    const [challenge] = useState(()=>{
+      
+      const filteredChallenges = challenges.filter((c:Challenge)=>(!nsfw ? c.nsfw !== true : true));
+      return filteredChallenges[Math.floor(Math.random() * filteredChallenges.length)];
+    }
+    )
 
     const [actionId] = useState(()=>uuidv4());
 
@@ -229,16 +234,16 @@ const Duel =
           dispatch(setPlayerInstructions({playerId: player.id, instructions: challenge.audienceDescription}))
           dispatch(setPlayerControls({playerId: player.id, controls}) )
         })
-      }, challenge.audienceDelay ?? 1000)
+      }, challenge?.audienceDelay ?? 1000)
       return ()=>{clearTimeout(x)};
-    },[challenge.audienceDelay, dispatch, challenge.audienceDescription, audience, playerB, playerA, actionId])
+    },[challenge, dispatch, audience, playerB, playerA, actionId])
 
 
     useEffect(()=>{
       if(!(playerA && playerB)) return;
       dispatch(setPlayerInstructions({playerId: playerA.id, instructions: challenge.description}))
       dispatch(setPlayerInstructions({playerId: playerB.id, instructions: challenge.description}))
-    },[players, dispatch, playerA, playerB, challenge.description])
+    },[players, dispatch, playerA, playerB, challenge])
 
     const [winner, setWinner] = useState<Player>()
 
@@ -286,7 +291,7 @@ const Duel =
         // const losingPlayer = votesA > votesB ? playerB : playerA;
         setWinner(winningPlayer)
       }
-    },[playerAnswers, players, dispatch, challenge.difficulty, setCompleted, audience, playerA, playerB, winner, completed])
+    },[playerAnswers, players, dispatch, challenge, setCompleted, audience, playerA, playerB, winner, completed])
 
     const [rewardsGranted, setRewardsGranted] = useState(false);
 
@@ -330,39 +335,9 @@ const Duel =
       
     },[dispatch, challenge.difficulty,  playerA, playerB, rewardsGranted, winner]);
 
-    // const endDuel = useCallback(()=>{
-    //   if(!completed) return;
-    //   // let t1: NodeJS.Timeout, t2: NodeJS.Timeout;
-    //   const t = setTimeout(()=>{
-    //     if(rewardsGranted) return;
-    //     dispatch(clearAllPlayerControls());
-    //     setTimeout(()=>{
-    //       dispatch(endMinigame());
-    //       setTimeout(()=>{
-    //       dispatch(triggerNextQueuedAction());
-    //       }, 500)
-    //     },3000)
-    //     giveRewards();
-    //   }, 1000);
-    //   return ()=>{clearTimeout(t);};
-    // },[completed, dispatch, giveRewards, rewardsGranted])
-
-    // useEffect(endDuel,[endDuel])
-
       if(completed && !rewardsGranted) {
-
-        // let t1: NodeJS.Timeout, t2: NodeJS.Timeout;
         dispatch(clearAllPlayerControls());
         giveRewards();
-        // setTimeout(()=>{
-        //   // if(rewardsGranted) return;
-        //   setTimeout(()=>{
-        //     dispatch(endMinigame());
-        //     setTimeout(()=>{
-        //       dispatch(triggerNextQueuedAction());
-        //     }, 500)
-        //   },3000)
-        // }, 1000);
       }
 
     if(rewardsGranted){
@@ -393,7 +368,7 @@ const Duel =
           <div className="w-full flex flex-col">
             <h1 className="text-4xl text-black text-center">Winner!</h1>
             <div className='flex-row flex items-center justify-center w-full p-2'>
-                <PlayerCard player={winner} className={'border-green-800 mx-auto bg-green-400'} />
+              <PlayerCard player={winner} className={'border-green-800 mx-auto bg-green-400'} />
             </div>
           </div>
         }

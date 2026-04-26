@@ -60,7 +60,7 @@ const Shop = ()=>{
     if(!player) return
     if(data.payload.value == 'none'){
       console.log('selected none')
-      setSelectedOption({name: 'Nothing', id:'nothing', description: 'You bought nothing. Maybe next time', price: 0, image: itemPlaceholder, weight: 1, })
+      setSelectedOption({name: 'Nothing', id:'nothing', description: 'You bought nothing. Maybe next time', price: 0, image: itemPlaceholder, weight: 1, tier: 0})
       dispatch(setPlayerControls({playerId: activePlayers[0], controls:[]}));
       setTimeout(()=>{
         dispatch(triggerNextQueuedAction());
@@ -105,25 +105,24 @@ const Shop = ()=>{
         <img width={100} height={100} className="mx-auto p-2 items flex-grow" src={selectedOption.image} />
       </div> 
     : 
-    <div className="grid grid-cols-3 gap-2 place-items-center">
+    <div className="flex flex-col w-full max-w-2xl mx-auto border border-black">
     {options.map(item=>{
-      return <div key={item.id} className="aspect-square w-64 gap-2 font-bold bg-white p-2 flex flex-col border-2 border-black rounded-xl bg-gradient-radial from-sky-200 to-sky-400">
-        <div className=" pb-2 relative">
+      return <div key={item.id} className="flex flex-row items-center gap-4 font-bold bg-white p-3 border-y border-y-black bg-gradient-radial from-sky-200 to-sky-400">
+        <div className="rounded-xl bg-white bg-opacity-20 flex items-center shadow drop-shadow flex-shrink-0">
+          <img width={64} height={64} className="p-1 aspect-square object-contain" src={item.image} />
+        </div>
+        <div className="flex flex-col flex-grow min-w-0">
+          <h2 className="text-xl uppercase tracking-tight leading-none font-bold">{item.name}</h2>
+          <h3 className="font-light tracking-tight text-sm">{item.description}</h3>
+        </div>
+        {/* <h3 className="text-xl flex items-center gap-1 bg-white/20 font-sans px-3 py-1 rounded-xl flex-shrink-0"> */}
+          <span >
 
-        <h2 className="text-3xl uppercase text-left tracking-tight leading-none">{item.name}</h2>
-        <h3 className="text-xl flex place-items-center justify-start bg-white bg-opacity-30 w-max px-2 py-1 rounded-xl absolute right-0 bottom-0">
-          <img width="32" height="32" src={gold} />
+          <img width="12" height="12" src={gold} className=" inline aspect-square mr-1"/>
           {item.price}
-          </h3>
-        </div>
-        <h3 className="text-left font-light tracking-tight ">{item.description}</h3>
-        <div className="flex-grow justify-end flex items-end pb-2">
-        <div className="ring-0.5 w-max item mx-auto rounded-xl ring-white bg-white bg-opacity-20 aspect-square flex items-center shadow drop-shadow">
-
-          <img width={100} height={100} className="mx-auto p-2 items " src={item.image} />
-        </div>
-        </div>
-        </div>
+          </span>
+        {/* </h3> */}
+      </div>
     })}
     </div>
     }

@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePeer } from "$hooks/usePeer";
+import useGameBackup from "$hooks/useGameBackup";
 import movePlayer from "$store/actions/movePlayer";
 import { changePlayerImage, removeEffect, setPlayerControls, setPlayerInstructions, } from "$store/slices/playerSlice";
 import { GAME_MODE, StoreData } from "$store/types";
@@ -21,12 +22,18 @@ const HostStateManager = () => {
   const board = useAppSelector((state) => state.board);
   const dispatch = useAppDispatch();
 
-  const [movementActionId] = useState(()=>uuidv4())
+  const [movementActionId, setMovementActionId] = useState(()=>'movement:'+uuidv4())
   const {triggerSoundEffect} = useAudio();
-
+  useGameBackup();
+  const handledValues = useRef<string[]>([]);
   const movementListener = useCallback((data:{type:string, payload:{action:string, playerId: string, value:string}})=>{
     const player = players.find((player)=>(player.id == data.payload.playerId || player.name == data.payload.playerId));
-    if(!player || gameState.mode !== GAME_MODE.MOVEMENT) return;
+    if(!player || gameState.mode !== GAME_MODE.MOVEMENT || gameState.isPaused) return;
+    
+    const lastColon = data.payload.value.lastIndexOf(':');
+    const spaceId = data.payload.value.slice(lastColon + 1);
+    if(handledValues.current.includes(data.payload.value)) return;
+    handledValues.current.push(data.payload.value);
     triggerSoundEffect('dink')
     //@ts-expect-error I didn't type these yet
     dispatch<ThunkAction<void, StoreData, unknown, UnknownAction>>((disp, getState)=>{
@@ -34,21 +41,22 @@ const HostStateManager = () => {
       // console.log(state);
       
       if(!player.movesRemaining) return;
-      disp(movePlayer({playerId: player.id, spaceId: data.payload.value}))
+      disp(movePlayer({playerId: player.id, spaceId}))
       const nextPlayer = getState().players.find((player)=>(player.id == data.payload.playerId));
       if(nextPlayer && nextPlayer?.movesRemaining > 0 || !nextPlayer) return;
       // console.log(data.payload.value)
-      disp(addQueuedAction({mode: board[data.payload.value].type, for: [player.id], when:'end'}))
-      disp(movePlayerFinal({playerId: player.id, spaceId: data.payload.value}))
+      disp(addQueuedAction({mode: board[spaceId].type, for: [player.id], when:'end'}))
+      disp(movePlayerFinal({playerId: player.id, spaceId}))
       // console.log(getState().players.reduce((acc, player)=>(acc + player.movesRemaining), 0))
       if(getState().players.reduce((acc, player)=>(acc + player.movesRemaining), 0) == 0){
         setTimeout(()=>{
-
+          if((getState() as StoreData).game.isPaused) return;
+          if(getState().players.reduce((acc, player)=>(acc + player.movesRemaining), 0) > 0) return;
           disp(triggerNextQueuedAction())
         },2000)
       }
       })
-  },[players, dispatch, board, gameState.mode, triggerSoundEffect]); 
+  },[players, dispatch, board, gameState.mode, gameState.isPaused, triggerSoundEffect]); 
 
   usePeerDataReceived<{playerId:string, value: string, action:string}>(movementListener, movementActionId)
 
@@ -69,25 +77,47 @@ const HostStateManager = () => {
   }, 'avatar_changed');
 
   useEffect(()=>{
-    if(gameState.mode == 'MOVEMENT') return triggerSoundEffect(`movement`)
+    if(gameState.mode == 'MOVEMENT') {
+      setMovementActionId('movement:'+uuidv4())
+      // handledValues.current = [];
+      return triggerSoundEffect(`movement`)
+    }
   },[gameState.mode, triggerSoundEffect])
+
+  // Track per-player visit state. A new visit token is generated whenever
+  // spaceId or movesRemaining changes, giving each unique visit fresh option UUIDs.
+  const visitStateRef = useRef<Record<string, {spaceId: string; movesRemaining: number; token: string}>>({});
+  const optionsCacheRef = useRef<Record<string, ReturnType<typeof Array.prototype.map>>>({});
 
   useEffect(()=>{
     players.forEach((player)=>{
       if(gameState.mode !== 'MOVEMENT' || gameState.currentRound <= 0) return
       if(player.movesRemaining <= 0){
-        dispatch(setPlayerInstructions({playerId: player.id, instructions: `Please wait...`}))
-        dispatch(setPlayerControls({playerId: player.id, controls:[]}));
+        if(player.instructions !== 'Please wait...') dispatch(setPlayerInstructions({playerId: player.id, instructions: `Please wait...`}))
+        if(!isEqual(player.controls, [])) dispatch(setPlayerControls({playerId: player.id, controls:[]}));
       }else{
         const mySpace = board[player.spaceId];
         const connections = mySpace?.connections
         if(!connections) return;
         const availableSpaces = Object.values(board).filter((space)=>connections.includes(space.id));
-        const options = availableSpaces.map((connection)=>({label:connection.label, value:connection.id, action:movementActionId, style: {backgroundColor: connection.color, fontWeight: 700, color:'white'}, className:'uppercase', } ));
-        if(options.length == 0){
-          options.push({label:mySpace.label, value:mySpace.id, action:movementActionId, style: {backgroundColor: mySpace.color, color:'white', fontWeight:600}, className:'uppercase'})
+
+        // Regenerate visit token whenever the player's position or move count changes
+        const prev = visitStateRef.current[player.id];
+        if(!prev || prev.spaceId !== player.spaceId || prev.movesRemaining !== player.movesRemaining){
+          visitStateRef.current[player.id] = {spaceId: player.spaceId, movesRemaining: player.movesRemaining, token: uuidv4()};
         }
-        dispatch(setPlayerInstructions({playerId: player.id, instructions: `${player.movesRemaining} moves remaining`}))
+        const cacheKey = `${movementActionId}:${visitStateRef.current[player.id].token}`;
+
+        if(!optionsCacheRef.current[cacheKey]){
+          optionsCacheRef.current[cacheKey] = availableSpaces.map((connection)=>({label:connection.label, value:`${uuidv4()}:${connection.id}`, action:movementActionId, style: {backgroundColor: connection.color, fontWeight: 700, color:'white'}, className:'uppercase'}));
+          if(optionsCacheRef.current[cacheKey].length == 0){
+            optionsCacheRef.current[cacheKey] = [{label:mySpace.label, value:`${uuidv4()}:${mySpace.id}`, action:movementActionId, style: {backgroundColor: mySpace.color, color:'white', fontWeight:600}, className:'uppercase'}];
+          }
+        }
+        const options = optionsCacheRef.current[cacheKey];
+
+        const instructions = `${player.movesRemaining} moves remaining`;
+        if(player.instructions !== instructions) dispatch(setPlayerInstructions({playerId: player.id, instructions}))
         if(isEqual(player.controls, options)) return;
         dispatch(setPlayerControls({playerId: player.id, controls:options}))
       }
@@ -97,47 +127,51 @@ const HostStateManager = () => {
   const sendPeersMessage = usePeer((cv) => cv.sendPeersMessage) as (
     data:{type: string, payload: {value:unknown}},
   ) => void;
-  // const setOnConnectSendValue = usePeer((cv) => cv.setOnConnectSendValue) as (
-  //   value: unknown,
-  // ) => void;
-  // const onConnctSendValue = usePeer((cv) => cv.onConnectSendValue) as unknown;
+
   const peerReady = usePeer((cv) => cv.peerReady) as boolean;
 
+  const playersDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingPlayersRef = useRef<typeof players | null>(null);
+
   useEffect(()=>{
-    if(!peerReady || !sendPeersMessage ) return;
-    // if(!isEqual(onConnctSendValue, {state:players})){
-    //   console.log('beep beep', onConnctSendValue, {state:players})
-      // setOnConnectSendValue({state:players});
-      sendPeersMessage({type: 'players', payload: {value: players}})
-    // }
+    if(!peerReady || !sendPeersMessage) return;
+    pendingPlayersRef.current = players;
+    if(playersDebounceRef.current) return;
+    playersDebounceRef.current = setTimeout(()=>{
+      playersDebounceRef.current = null;
+      if(pendingPlayersRef.current)
+        sendPeersMessage({type: 'players', payload: {value: pendingPlayersRef.current}});
+    }, 20);
   },[peerReady, sendPeersMessage, players])
 
+  const gameDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingGameRef = useRef<typeof gameState | null>(null);
+
   useEffect(()=>{
     if(!peerReady || !sendPeersMessage) return;
-    // setOnConnectSendValue({state:players});
-    sendPeersMessage({type: 'game', payload: {value: gameState}})
+    pendingGameRef.current = gameState;
+    if(gameDebounceRef.current) return;
+    gameDebounceRef.current = setTimeout(()=>{
+      gameDebounceRef.current = null;
+      if(pendingGameRef.current)
+        sendPeersMessage({type: 'game', payload: {value: pendingGameRef.current}});
+    }, 20);
   },[peerReady, sendPeersMessage, gameState])
 
+  const boardDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingBoardRef = useRef<typeof board | null>(null);
+
   useEffect(()=>{
     if(!peerReady || !sendPeersMessage) return;
-    // setOnConnectSendValue({state:players});
-    sendPeersMessage({type: 'board', payload: {value: board}})
+    pendingBoardRef.current = board;
+    if(boardDebounceRef.current) return;
+    boardDebounceRef.current = setTimeout(()=>{
+      boardDebounceRef.current = null;
+      if(pendingBoardRef.current)
+        sendPeersMessage({type: 'board', payload: {value: pendingBoardRef.current}});
+    }, 20);
   },[peerReady, sendPeersMessage, board])
 
-  // useEffect(() => {
-  //   if (!peerReady) return;
-  //   if(!isEqual(onConnctSendValue, {state:players})){
-
-  //     console.log('beep beep', onConnctSendValue, {state:players})
-  //     setOnConnectSendValue && setOnConnectSendValue({state:players});
-  //   }
-  //   if(sendPeersMessage){
-  //     sendPeersMessage({ type: "state", payload: { value: {players, game: gameState, board} } });
-  //     sendPeersMessage({type: 'players', payload: {value: players}})
-  //     sendPeersMessage({type: 'game', payload: {value: gameState}})
-  //     sendPeersMessage({type: 'board', payload: {value: board}})
-  //   } 
-  // }, [sendPeersMessage, setOnConnectSendValue, peerReady, players, gameState, board, onConnctSendValue]);
   return null;
 
 };

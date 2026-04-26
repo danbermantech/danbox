@@ -18,6 +18,7 @@ const defaultState: GameState = {
   nsfw: false,
   // board: [],
   maxRounds: 10,
+  isPaused: false,
 };
 export const gameSlice = createSlice({
   name: "game",
@@ -61,7 +62,15 @@ export const gameSlice = createSlice({
     setNSFW: (state, action) => {
       state.nsfw = action.payload;
       return state;
-    }
+    },
+    pauseGame: (state) => {
+      state.isPaused = true;
+      return state;
+    },
+    resumeGame: (state) => {
+      state.isPaused = false;
+      return state;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -121,7 +130,9 @@ export const {
   endMinigame,
   setMaxRounds,
   setGameState,
-  setNSFW
+  setNSFW,
+  pauseGame,
+  resumeGame,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

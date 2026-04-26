@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.4",
     "@mui/material": "^5.15.4",
+    "@pixi/filter-drop-shadow": "^5.2.0",
     "@pixi/react": "^7.1.1",
     "@reduxjs/toolkit": "^2.0.1",
     "@vercel/speed-insights": "^1.0.9",

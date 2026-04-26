@@ -1,7 +1,6 @@
 import { StoreData } from "$store/types";
 import { Fragment } from "react";
 import { useSelector } from "react-redux"
-import Circle from '$components/pixi/Circle';
 import { Text } from "@pixi/react";
 import { TextStyle } from "pixi.js";
 import useBoardDimensions from "$hooks/useBoardDimensions";
@@ -12,15 +11,6 @@ const BoardSpace = ({id}:{id:string}) =>{
   if(!location) return null;
   return(
   <Fragment key={location.id}>
-        <Circle
-          fill={location.color}
-          stroke={location.color}
-          x={location.x * boardWidth}
-          y={location.y * boardHeight}
-          radius={location.width * boardWidth}
-          strokeWidth={10}
-          />
-          
           <Text
             text={location.label.toLocaleUpperCase()} 
             style={new TextStyle({align: 'center',
@@ -28,8 +18,6 @@ const BoardSpace = ({id}:{id:string}) =>{
             fontSize: 50,
             fontWeight: '400',
             fill:['#ffffff', '#cccccc'],
-            // fillGradientType: TEXT_GRADIENT.LINEAR_VERTICAL,
-            // fill: ['#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff',], // gradient
             stroke: '#000000',
             strokeThickness: 8,
             letterSpacing: 1,

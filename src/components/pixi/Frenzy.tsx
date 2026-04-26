@@ -2,24 +2,23 @@ import { useCallback, useEffect, useState, lazy } from 'react';
 import {  Sprite, } from '@pixi/react';
 import { useAppDispatch, useAppSelector } from '$store/hooks';
 import type {  Player, } from '$store/types';
-// import { ReactReduxContext } from 'react-redux';
-// import { PeerContext } from '$contexts/PeerContext';
 import {v4 as uuidv4 } from 'uuid';
 import {gold as goldImg, points as pointImg} from '$assets/images.ts';
 import { givePlayerGold, givePlayerPoints, setPlayerControls } from '$store/slices/playerSlice';
 import { endMinigame } from '$store/slices/gameProgressSlice';
 import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
 import useBoardDimensions from '$hooks/useBoardDimensions';
-// import WrappedStage  from './WrappedStage';
 import ShiftingLavaBackground from './ShiftingLavaBackground';
 import FrenzyCar from './FrenzyCar';
 import useAudio from '$hooks/useAudio';
-// import PlayerCard from '$components/PlayerCard';
+import LeaderboardItem from '$components/LeaderboardItem';
 
-const PlayerCard = lazy(async()=>await import('$components/PlayerCard'));
-// const ShiftingLavaBackground = lazy(async()=>await import('./ShiftingLavaBackground'));
-// const FrenzyCar = lazy(async()=>await import( './FrenzyCar'));
 const WrappedStage = lazy(async()=>await import('./WrappedStage'));
+
+const MIN_GOLD = 1;
+const MAX_GOLD = 1;
+const MIN_POINTS = 1;
+const MAX_POINTS = 1;
 
 
 function seedAssets(count:number):{x:number, y:number, id:string, collected:boolean|string}[]{
@@ -35,8 +34,8 @@ export const Frenzy = () =>
 {
   const {boardWidth, boardHeight } = useBoardDimensions();
   const players = useAppSelector((state) => state.players);
-  const [points, setPoints] = useState(seedAssets(Math.floor(Math.random() * 95 + 5)));
-  const [gold, setGold] = useState(seedAssets(Math.floor(Math.random() * 95 + 5)));
+  const [points, setPoints] = useState(seedAssets(Math.floor(Math.random() * (MAX_POINTS - MIN_POINTS + 1) + MIN_POINTS)));
+  const [gold, setGold] = useState(seedAssets(Math.floor(Math.random() * (MAX_GOLD - MIN_GOLD + 1) + MIN_GOLD)));
   const dispatch = useAppDispatch();
 
   const [playerPoints, setPlayerPoints] = useState<{[key:string]:number}>({});
@@ -102,7 +101,7 @@ export const Frenzy = () =>
     if(gold.filter(g=>!g.collected).length + points.filter(g=>!g.collected).length == 0 && results.length == 0){
       // console.log(results)
       setResults(()=>{
-        return players.sort((a,b)=>{
+        return [...players].sort((a,b)=>{
           if(! (a.id in playerPoints) || ! (b.id in playerPoints)) return 0;
           if(playerPoints[a.id] !== playerPoints[b.id]){
             return playerPoints[a.id] - playerPoints[b.id] 
@@ -168,16 +167,22 @@ export const Frenzy = () =>
   useEffect(endFrenzy,[endFrenzy])
 
   if(results.length){
-    return <div className="flex gap-36 flex-col">
-      <h1 className="text-black text-center text-8xl font-extrabold">RESULTS</h1>
-      <div className="flex flex-row place-items-center justify-center gap-">
-        {
-          results.map((result)=>{
-            return <PlayerCard key={result.id} overrideGold={`+${playerGold[result.id]}`} overridePoints={`+${playerPoints[result.id]}`} player={result} showGold={true} showPoints={true} className='bg-green-200 border-green-400'/>
-          })
-        }
+    const ranked = [...results].reverse();
+    return (
+      <div className="flex gap-8 flex-col items-center justify-center h-full">
+        <h1 className="text-black text-center text-8xl font-extrabold">RESULTS</h1>
+        <div className="flex flex-col rounded-xl overflow-clip divide-y divide-black border-black border w-full max-w-lg">
+          {ranked.map((result, i) => (
+            <LeaderboardItem
+              key={result.id}
+              player={{ ...result, points: playerPoints[result.id] ?? 0, gold: playerGold[result.id] ?? 0 }}
+              rank={i + 1}
+              className={i === 0 ? 'bg-yellow-200' : i === 1 ? 'bg-gray-200' : i === 2 ? 'bg-orange-200' : 'bg-white bg-opacity-70'}
+            />
+          ))}
         </div>
-    </div>
+      </div>
+    );
   }
   const displayPoints = points.filter((point)=>!point.collected);
   const displayGold = gold.filter((point)=>!point.collected);

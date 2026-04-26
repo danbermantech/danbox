@@ -3,7 +3,7 @@ import { Peer } from "peerjs";
 import type { DataConnection } from "peerjs";
 import { addPlayer } from "../store/slices/playerSlice";
 import { useDispatch } from "react-redux";
-import { setCookie } from "../utilities/cookies";
+import { getCookie, setCookie } from "../utilities/cookies";
 export type OnDataReceivedPayload ={
   type: string;
   payload: { deviceName: string, peerId?:string};
@@ -31,6 +31,8 @@ export type PeerContextValue = {
   initialize: (func?: () => void) => void;
   peerErrors: { message: string }[];
   removeOnDataReceivedListener: (id: string) => void;
+  allowClientMessages?: boolean;
+  setAllowClientMessages?: (value: boolean) => void;
 };
 
 const defaultState:PeerContextValue = {
@@ -49,6 +51,8 @@ const defaultState:PeerContextValue = {
   initialize: () => {},
   peerErrors: [],
   removeOnDataReceivedListener: () => {},
+  allowClientMessages: false,
+  setAllowClientMessages: () => {},
 };
 
 
@@ -75,24 +79,14 @@ const PeerContextProvider = ({
 }: {
   children: React.ReactNode;
 }): React.ReactNode => {
-  // const { user } = useSupabase()
-  // const myId = useMemo(() => user.id, [user]);
-  // const location = useLocation();
-  // console.log(location)
 
-  // const location = useLocation();
-  // const [searchParams] = useSearchParams();
-
-  // const myShortId = useMemo(()=>{
-  //   if(location.pathname == '/host') return generateShortId();
-  //     if(getCookie('deviceId')) return getCookie('deviceId');
-  //     const newShortId = generateShortId();
-  //     setCookie('deviceId', newShortId, 14);
-  //   // }
-  //   return newShortId;
-  // },[]);
-
-  const myShortId= useMemo(generateShortId, []);
+  const myShortId = useMemo(() => {
+    const stored = getCookie('deviceId');
+    if (stored) return stored;
+    const newId = generateShortId();
+    setCookie('deviceId', newId, 365);
+    return newId;
+  }, []);
 
   const myPeerId = useMemo(()=>{
     return `${idPrefix}${myShortId}`
@@ -108,9 +102,8 @@ const PeerContextProvider = ({
   }, []);
 
   const [peerReady, setPeerReady] = useState<boolean>(false);
-  const [onConnectSendValue, setOnConnectSendValue] = useState<unknown | null>(
-    null,
-  );
+  const [onConnectSendValue, _setOnConnectSendValue] = useState<unknown | null>(null);
+  const [allowClientMessages, setAllowClientMessages] = useState(true);
   const peerRef = useRef<Peer>(null);
 
   const callbackRef = useRef<
@@ -139,6 +132,13 @@ const PeerContextProvider = ({
   const [peerErrors, setPeerErrors] = useState<{ message: string }[]>([]);
   const [peerConnected, setPeerConnected] = useState(false);
 
+  // Use a ref so connection handlers always see the latest value without stale closures
+  const onConnectSendValueRef = useRef<unknown>(null);
+  const setOnConnectSendValue = useCallback((value: unknown) => {
+    onConnectSendValueRef.current = value;
+    _setOnConnectSendValue(value);
+  }, []);
+
   const dispatch = useDispatch();
 
   const removeOnDataReceivedListener = useCallback(
@@ -157,28 +157,20 @@ const PeerContextProvider = ({
         console.log(peerOptions)
   
         newPeer.on('open', () => {
-          // toast.info('Opening connection');
           setPeerReady(true);
           func && func();
         });
 
-        newPeer.on('error', (e) => {
-          console.log(e)
-          // setMyShortId(generateShortId());
-          // initialize(func);
-          addNotification({
-            message: e.message,
-            level: "error",
-            id: "peer_error",
-          });
-        });
-        newPeer.on('disconnected', (e) => {
-          console.log(e)
+        newPeer.on('disconnected', () => {
           addNotification({
             message: "Disconnected",
             level: "warning",
             id: "disconnected_notification",
           });
+          setPeerConnected(false);
+          if (!newPeer.destroyed) {
+            newPeer.reconnect();
+          }
         })
         newPeer.on("connection", (conn) => {
           conn.on("error", (err) => {
@@ -191,20 +183,21 @@ const PeerContextProvider = ({
           conn.on("open", () => {
             Object.values(onPeerConnectRef.current).forEach((cb) => {
               const result = cb(conn.peer);
+              console.log({result})
               if (result as unknown) conn.send(result);
             });
-            if (onConnectSendValue) {
-              // console.log(onConnectSendValue);
-              conn.send({ type: "state", payload: { ...onConnectSendValue } });
+            if (onConnectSendValueRef.current) {
+              conn.send({ type: "state", payload: { ...onConnectSendValueRef.current as object } });
             }
             conn.on('data', (data) => {
+              console.log('received', data);
+              if(!allowClientMessages) return;
               const { type, payload } = data as {
                 type: string;
                 payload: unknown
               };
               Object.values(callbackRef.current).forEach((cb) => {
-                const result = cb(data as OnDataReceivedPayload, conn.peer);
-                if (result) conn.send(result);
+                cb(data as OnDataReceivedPayload, conn.peer);
               });
               if (type == "connection") {
                 // console.log('connection payload', payload)
@@ -277,10 +270,10 @@ const PeerContextProvider = ({
       myPeerId,
       addNotification,
       callbackRef,
-      onConnectSendValue,
       onPeerConnectRef,
       peerInitialized,
       dispatch,
+      allowClientMessages
     ],
   );
 
@@ -302,10 +295,9 @@ const PeerContextProvider = ({
           // console.log("i sent a message");
 
           conn.on("data", (data) => {
-            // console.log("data received", data);
             const { type, payload } = data as OnDataReceivedPayload & {payload:{peerId:string}};
+            console.log('received', data)
             Object.values(callbackRef.current).forEach((cb) => {
-              // console.log(cb);
               cb({type, payload:{...payload, peerId: conn.peer}});
             });
             if (type === "connection_accepted") {
@@ -314,6 +306,10 @@ const PeerContextProvider = ({
               });
               setPeerConnected(()=>true);
             }
+          });
+          conn.on("close", () => {
+            setPeerConnected(false);
+            setConnections((prev) => prev.filter((c) => c.connectionId !== conn.connectionId));
           });
           setConnections((prev) => [...prev, conn]);
         });
@@ -349,7 +345,7 @@ const PeerContextProvider = ({
         connections: DataConnection[],
       ) => DataConnection[],
     ) => {
-      // console.log("messaging", msg);
+      console.log("sending", msg);
       connections
         .filter(
           filter ??
@@ -406,7 +402,9 @@ const PeerContextProvider = ({
       initialize,
       peerErrors,
       peerConnected,
-      removeOnDataReceivedListener
+      removeOnDataReceivedListener,
+      allowClientMessages,
+      setAllowClientMessages,
     }),
     [
       connect,
@@ -423,7 +421,9 @@ const PeerContextProvider = ({
       initialize,
       peerErrors,
       peerConnected,
-      removeOnDataReceivedListener
+      removeOnDataReceivedListener,
+      allowClientMessages,
+      setAllowClientMessages
     ],
   );
 

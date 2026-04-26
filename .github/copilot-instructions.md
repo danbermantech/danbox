@@ -1,0 +1,1 @@
+Always use pnpm for any package management tasks, including installing dependencies, adding new packages, and running scripts. Do not use npm or yarn unless explicitly instructed to do so. This ensures consistency across the project and takes advantage of pnpm's performance benefits.

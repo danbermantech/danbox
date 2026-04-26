@@ -15,6 +15,7 @@ const items:ItemDefinition[] = [
     }],
     cost: 10,
     weight: 5,
+    tier: 1
   },
   {
     name: 'magic hat', 
@@ -27,6 +28,7 @@ const items:ItemDefinition[] = [
       special: 'players',
     }],
     weight: 1,
+    tier: 2
   },
   {
     name: 'teleport', 
@@ -39,6 +41,8 @@ const items:ItemDefinition[] = [
       special: 'spaces',
     }],
     weight: 1,
+    tier: 2,
+
   },
   {
     name: 'cheat', 
@@ -51,6 +55,7 @@ const items:ItemDefinition[] = [
       special: 'players',
     }],
     weight: 1,
+    tier: 2
   },
   {
     name: 'souper soup',
@@ -63,6 +68,7 @@ const items:ItemDefinition[] = [
       special: 'players',
     }],
     weight: 1,
+    tier:4
   },
   {
     name: 'soup',
@@ -75,6 +81,7 @@ const items:ItemDefinition[] = [
       special: 'players',
     }],
     weight: 5,
+    tier: 1,
   },
   {
     name: 'magic hand',
@@ -87,6 +94,7 @@ const items:ItemDefinition[] = [
       special: 'players',
     }],
     weight: 1,
+    tier:5
   },
   {
     name: 'traffic engineer', 
@@ -111,6 +119,7 @@ const items:ItemDefinition[] = [
       }
     ],
     weight: 5,
+    tier: 3,
   },
   {
     name: 'demo crew', 
@@ -125,6 +134,7 @@ const items:ItemDefinition[] = [
       },
     ],
     weight: 5,
+    tier: 3
   },
   {
     name: 'construct crew', 
@@ -177,6 +187,7 @@ const items:ItemDefinition[] = [
       }
     ],
     weight: 5,
+    tier: 3,
   },
 ]
 
