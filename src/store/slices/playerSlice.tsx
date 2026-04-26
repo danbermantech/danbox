@@ -128,9 +128,18 @@ export const playerSlice = createSlice({
     },
     setMovesPerRound: (state, action) => {
       const { playerId, movesPerRound } = action.payload;
-      const player = state.findIndex((player) => player.id === playerId || player.name === playerId);
-      if (!player) return state;
-      state[player].movesPerRound = movesPerRound;
+      const playerIndex = state.findIndex((player) => player.id === playerId || player.name === playerId);
+      if (playerIndex === -1) return state;
+      state[playerIndex].movesPerRound = Number(movesPerRound);
+      state[playerIndex].movesRemaining = Number(movesPerRound);
+      return state;
+    },
+    setAllPlayersMovesPerRound: (state, action) => {
+      const movesPerRound = Number(action.payload);
+      state.forEach((_, index) => {
+        state[index].movesPerRound = movesPerRound;
+        state[index].movesRemaining = movesPerRound;
+      });
       return state;
     },
     setPlayerInstructions: (state, action) => {
@@ -329,7 +338,7 @@ export const playerSlice = createSlice({
         player.items = player.items.filter((item)=>(item.id !== action.payload.id));
         })
       .addCase(restart, (state)=>{
-        return state.map((player)=>({...player, spaceId: 'home', previousSpaceId: 'home', points: 0, gold: 0, items:[], movesRemaining: DEFAULT_MOVES_PER_ROUND, hasMoved:false, controls:[]}))
+        return state.map((player)=>({...player, spaceId: 'home', previousSpaceId: 'home', points: 0, gold: 0, items:[], movesRemaining: player.movesPerRound, hasMoved:false, controls:[]}))
       })
       .addCase(removeSpace, (state, action)=>{
         return state.map((player)=>({...player, spaceId: player.spaceId == action.payload.id ? 'home' : player.spaceId, previousSpaceId: player.previousSpaceId == action.payload.id ? 'home' : player.previousSpaceId}))
@@ -345,7 +354,7 @@ export const playerSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { addPlayer, changePlayerImage, changePlayerName, removePlayer, removeEffect, givePlayerGold, givePlayerPoints, givePlayerItem, handleTransfer, setPlayers, renamePlayer, setPlayerInstructions, setPlayerControls, clearAllPlayerControls } =
+export const { addPlayer, changePlayerImage, changePlayerName, removePlayer, removeEffect, givePlayerGold, givePlayerPoints, givePlayerItem, handleTransfer, setPlayers, renamePlayer, setPlayerInstructions, setPlayerControls, clearAllPlayerControls, setMovesPerRound, setAllPlayersMovesPerRound } =
   playerSlice.actions;
 
 export default playerSlice.reducer;

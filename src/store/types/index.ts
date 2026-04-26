@@ -156,7 +156,9 @@ export type GameState = {
   // board: BoardSpaceConfig[];
   mode: GAME_MODE | null,
   maxRounds: number;
+  defaultMovesPerRound: number;
   isPaused: boolean;
+  triviaTimeLimit: number;
 };
 
 export type Board = Record<string, BoardSpaceConfig>;

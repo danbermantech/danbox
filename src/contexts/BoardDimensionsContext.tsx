@@ -17,7 +17,10 @@ export function BoardDimensionsProvider({ children }: { children: React.ReactNod
       observerRef.current.disconnect();
       observerRef.current = null;
     }
-    if (!el) return;
+    if (!el) {
+      setSize({ width: 0, height: 0 });
+      return;
+    }
     const observer = new ResizeObserver(([entry]) => {
       const { width, height } = entry.contentRect;
       setSize({ width, height });

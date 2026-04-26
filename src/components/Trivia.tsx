@@ -29,6 +29,7 @@ const Trivia =
   () => {
 
     const nsfw = useAppSelector((state) => state.game.nsfw);
+    const triviaTimeLimit = useAppSelector((state) => state.game.triviaTimeLimit ?? 30);
     const triviaQuestion = useMemo(() => {
       const availableQuestions = TriviaQuestions.filter((q)=>(!nsfw ? q.nsfw !== true : true))
       const triviaQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
@@ -95,6 +96,23 @@ const Trivia =
 
     const [results, setResults] = useState<{[id:string]:boolean}>({});
 
+    const [timeRemaining, setTimeRemaining] = useState(triviaTimeLimit);
+
+    useEffect(()=>{
+      if(completed) return;
+      if(timeRemaining <= 0){
+        setResults((prev)=>{
+          if(Object.keys(prev).length > 0) return prev;
+          const retVal:{[id:string]:boolean} = {};
+          players.forEach((player)=>{retVal[player.id] = (playerAnswers[player.id] == triviaQuestion.answer)});
+          return retVal;
+        });
+        return;
+      }
+      const timer = setTimeout(()=> setTimeRemaining((t)=>t - 1), 1000);
+      return ()=>clearTimeout(timer);
+    },[timeRemaining, completed, players, playerAnswers, triviaQuestion.answer]);
+
     useEffect(()=>{
       if(players && Object.keys(playerAnswers).length == players.length && Object.keys(results).length == 0){
         // setCompleted(true);
@@ -112,7 +130,7 @@ const Trivia =
     },[triggerSoundEffect, completed]);
 
     const endTrivia = useCallback(()=>{
-      let t1: NodeJS.Timeout
+      let t1: ReturnType<typeof setTimeout>
         if(!Object.keys(results).length) return;
         const t = setTimeout(()=>{
           const points = calculatePoints(triviaQuestion.difficulty);
@@ -141,11 +159,21 @@ const Trivia =
       <div
         className="flex flex-col w-full items-center max-w-[50dvw] transition-all" 
       >
+        <div className="fixed top-8 right-10">
+
+          {!completed && (
+            <span className={`font-titan text-4xl font-bold ${timeRemaining <= 5 ? 'text-red-600 animate-pulse' : 'text-black'}`}>
+              {timeRemaining}s
+            </span>
+          )}
+        </div>
         <h1 className="font-titan text-6xl text-black pb-4">
         Trivia Time!
         </h1>
         <div className="bg-slate-100 border-black rounded-t-xl w-full flex flex-col gap-2 p-2 bg-opacity-85 border-4">
-        <h1 className="text-4xl font-titan font-bold text-black pb-2">{triviaQuestion.category}</h1>
+        <div className="flex flex-row justify-between items-center">
+          <h1 className="text-4xl font-titan font-bold text-black pb-2">{triviaQuestion.category}</h1>
+        </div>
         <h2 className="text-4xl text-black max-w-screen">
           {triviaQuestion.question}
         </h2>

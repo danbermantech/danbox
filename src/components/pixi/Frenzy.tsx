@@ -30,12 +30,12 @@ function seedAssets(count:number):{x:number, y:number, id:string, collected:bool
   }))
 }
 
-export const Frenzy = () =>
+export const Frenzy = (props?:{gold?:number, points?:number}) =>
 {
   const {boardWidth, boardHeight } = useBoardDimensions();
   const players = useAppSelector((state) => state.players);
-  const [points, setPoints] = useState(seedAssets(Math.floor(Math.random() * (MAX_POINTS - MIN_POINTS + 1) + MIN_POINTS)));
-  const [gold, setGold] = useState(seedAssets(Math.floor(Math.random() * (MAX_GOLD - MIN_GOLD + 1) + MIN_GOLD)));
+  const [points, setPoints] = useState(seedAssets(props?.points ?? Math.floor(Math.random() * (MAX_POINTS - MIN_POINTS + 1) + MIN_POINTS)));
+  const [gold, setGold] = useState(seedAssets(props?.gold ?? Math.floor(Math.random() * (MAX_GOLD - MIN_GOLD + 1) + MIN_GOLD)));
   const dispatch = useAppDispatch();
 
   const [playerPoints, setPlayerPoints] = useState<{[key:string]:number}>({});

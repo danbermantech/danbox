@@ -15,7 +15,7 @@ const PixiHost = lazy(async()=>await import("./pixi/PixiHost"));
 
 const MainGame = () =>{
   const mode = useSelector((state:StoreData)=>state.game.mode);
-  
+  const playerCount = useSelector((state:StoreData)=>Object.keys(state.players).length);
   switch(mode){
     case GAME_MODE.MOVEMENT:
       return <PixiHost />
@@ -34,9 +34,10 @@ const MainGame = () =>{
     case GAME_MODE.LOSE_ASSET:
       return <LoseAssetScreen />
     case GAME_MODE.DUEL:
+      if(playerCount < 3) return <Trivia />
       return <Duel />
     case GAME_MODE.FRENZY:
-      return <Frenzy />
+      return <Frenzy {...playerCount==1?{points:1, gold:0}:{}}/>
     case GAME_MODE.IMPLORE:
       return <Implore />
     default:

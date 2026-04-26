@@ -66,7 +66,12 @@ const peerOptions = import.meta.env.VITE_DEV_MODE
       // path: '/',
       // debug: 2
     }
-  : {};
+  : {
+    host: '192.168.1.197',
+    port: 9000,
+    path: '/',
+    debug: 2,
+  };
 
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const idPrefix = `danbox000000000000000000000000`
@@ -249,6 +254,18 @@ const PeerContextProvider = ({
                   message: err.message,
                   id: "peer_error_2",
                 });
+                break;
+              case "network":
+              case "socket-error":
+              case "socket-closed":
+                addNotification({
+                  level: "error",
+                  message: "Lost connection to server. Reconnecting...",
+                  id: "peer_error_default",
+                });
+                if (!newPeer.destroyed) {
+                  newPeer.reconnect();
+                }
                 break;
               default:
                 addNotification({

@@ -73,9 +73,16 @@ const PlayerPiece = ({id}:{id:string}) => {
   );
   const playerIndex = playersOnSpace.indexOf(id);
   const totalOnSpace = playersOnSpace.length;
+  const currentX = location?.x ?? 0.5;
+  const currentY = location?.y ?? 0.5;
+  const currentWidth = location?.width ?? 0.06;
 
-  const [destination, setDestination] = useState({x:location.x, y:location.y});
+  const [destination, setDestination] = useState({x: currentX, y: currentY});
   useEffect(()=>{
+    if (!location) {
+      setDestination({ x: currentX, y: currentY });
+      return;
+    }
     if (totalOnSpace <= 1) {
       setDestination({
         x: location.x + Math.random() * location.width - location.width / 2,
@@ -89,7 +96,7 @@ const PlayerPiece = ({id}:{id:string}) => {
         y: location.y + Math.sin(angle) * radius * 0.5,
       });
     }
-  },[location, playerIndex, totalOnSpace])
+  },[location, playerIndex, totalOnSpace, currentX, currentY])
 
   // Travel path: computed when location changes, followed as a smooth Catmull-Rom spline
   const travelPath = useRef<Point[]>([]);
@@ -106,9 +113,9 @@ const PlayerPiece = ({id}:{id:string}) => {
     const waypoints = computeWaypoints(from, to, Object.values(board), excludeIds);
     travelPath.current = [from, ...waypoints, to];
     pathT.current = 0;
-  }, [location]);
+  }, [location, prevLocation, board]);
 
-  const [playerLocation, setPlayerLocation] = useState({x: location.x, y: location.y});
+  const [playerLocation, setPlayerLocation] = useState({x: currentX, y: currentY});
 
   useTick((delta:number) => {
     const path = travelPath.current;
@@ -139,7 +146,7 @@ const PlayerPiece = ({id}:{id:string}) => {
   return (
     <Container
       x={boardWidth * playerLocation.x}
-      y={boardHeight * (playerLocation.y - location.width * .5)}
+      y={boardHeight * (playerLocation.y - currentWidth * .5)}
       zIndex={100}
       key={player.id}
     >

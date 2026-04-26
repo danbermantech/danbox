@@ -6,18 +6,20 @@ import {bg as bgImage} from '$assets/images.ts'
 import MuteToggle from "./MuteToggle";
 import { useEffect, useRef, useCallback, useState } from "react";
 import { useAppSelector, useAppDispatch } from "$store/hooks";
-import { pauseGame, resumeGame, setMaxRounds } from "$store/slices/gameProgressSlice";
+import { pauseGame, resumeGame, setDefaultMovesPerRound, setMaxRounds, setTriviaTimeLimit } from "$store/slices/gameProgressSlice";
 import restart from "$store/actions/restart";
 // import Logo from "./Logo";
 import { useRegistration } from "$contexts/RegistrationContext";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
-import { clearAllPlayerControls, removePlayer } from "$store/slices/playerSlice";
+import { clearAllPlayerControls, removePlayer, setAllPlayersMovesPerRound } from "$store/slices/playerSlice";
 import { setBoardLayout } from "$store/slices/boardSlice";
 import { boardLayout, boardLayout2, generateRandomBoard, createDemoBoard } from "$constants/boardLayout";
 
 const RegistrationPanel = () => {
   const myShortId = usePeer((cv) => cv.myShortId) as string;
   const maxRounds = useAppSelector((state) => state.game.maxRounds);
+  const defaultMovesPerRound = useAppSelector((state) => state.game.defaultMovesPerRound ?? 3);
+  const triviaTimeLimit = useAppSelector((state) => state.game.triviaTimeLimit ?? 30);
   const dispatch = useAppDispatch();
   const { selectedBoard, setSelectedBoard } = useRegistration();
 
@@ -29,9 +31,10 @@ const RegistrationPanel = () => {
       'random': generateRandomBoard,
     };
     dispatch(setBoardLayout(boardOptions[selectedBoard]()));
+    dispatch(setAllPlayersMovesPerRound(defaultMovesPerRound));
     dispatch(clearAllPlayerControls());
     dispatch(triggerNextQueuedAction());
-  }, [dispatch, selectedBoard]);
+  }, [defaultMovesPerRound, dispatch, selectedBoard]);
 
   return (
     <div className="flex flex-col bg-slate-200 rounded-xl p-4 gap-4 h-full overflow-auto bg-gradient-radial from-pink-300 to-fuchsia-300" style={{ height: 'calc(100dvh - 32px)' }}>
@@ -68,6 +71,26 @@ const RegistrationPanel = () => {
             <option value="1">Path to Heaven</option>
             <option value="2">Dream Gate</option>
           </select>
+        </div>
+        <div className="flex flex-col gap-1 bg-white bg-opacity-60 rounded-xl p-3 shadow">
+          <label className=" text-gray-600">Moves Per Round</label>
+          <input
+            className="text-xl bg-white font-sans bg-opacity-70 font-bold border-2 border-gray-300 rounded-lg px-2 py-1 w-full"
+            type="number"
+            min={1}
+            value={defaultMovesPerRound}
+            onChange={(e) => dispatch(setDefaultMovesPerRound(Math.max(1, Number(e.target.value) || 1)))}
+          />
+        </div>
+        <div className="flex flex-col gap-1 bg-white bg-opacity-60 rounded-xl p-3 shadow">
+          <label className=" text-gray-600">Trivia Time Limit (seconds)</label>
+          <input
+            className="text-xl bg-white font-sans bg-opacity-70 font-bold border-2 border-gray-300 rounded-lg px-2 py-1 w-full"
+            type="number"
+            min={5}
+            value={triviaTimeLimit}
+            onChange={(e) => dispatch(setTriviaTimeLimit(Math.max(5, Number(e.target.value) || 5)))}
+          />
         </div>
         <div className="flex justify-center">
           <MuteToggle />

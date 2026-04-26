@@ -486,6 +486,28 @@ function proximitySample(candidates: BoardSpaceConfig[], from: BoardSpaceConfig,
   return result;
 }
 
+function normalizePositionsToBoard(
+  positions: { x: number; y: number }[],
+  padding: number,
+): { x: number; y: number }[] {
+  if (positions.length <= 1) return positions;
+
+  const xs = positions.map(({ x }) => x);
+  const ys = positions.map(({ y }) => y);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  const spanX = maxX - minX;
+  const spanY = maxY - minY;
+  const targetSpan = 1 - padding * 2;
+
+  return positions.map(({ x, y }) => ({
+    x: spanX < 0.001 ? 0.5 : padding + ((x - minX) / spanX) * targetSpan,
+    y: spanY < 0.001 ? 0.5 : padding + ((y - minY) / spanY) * targetSpan,
+  }));
+}
+
 export function generateRandomBoard(spaceCount = 14): Board {
   const PADDING = 0.1;
   const MIN_DIST = 0.15;
@@ -550,8 +572,10 @@ export function generateRandomBoard(spaceCount = 14): Board {
     if (!positions.some(p => Math.hypot(p.x - x, p.y - y) < MIN_DIST)) positions.push({ x, y });
   }
 
+  const normalizedPositions = normalizePositionsToBoard(positions, PADDING);
+
   // --- Create space objects ---
-  const spaces: BoardSpaceConfig[] = positions.map((pos, i) => {
+  const spaces: BoardSpaceConfig[] = normalizedPositions.map((pos, i) => {
     if (i === 0) return { x: pos.x, y: pos.y, width: 0.065, height: 0.065, color: '#ff00ff', id: 'home', label: 'Home', connections: [], type: GAME_MODE.GET_ASSET };
     const def = typePool[Math.floor(Math.random() * typePool.length)];
     const label = pickLabel(def);

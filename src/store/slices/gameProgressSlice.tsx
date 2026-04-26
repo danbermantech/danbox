@@ -8,6 +8,8 @@ function isRejectedAction(action: Action): action is RejectedAction {
   return action.type.endsWith("rejected");
 }
 
+const DEFAULT_MOVES_PER_ROUND = 3;
+
 const defaultState: GameState = {
   currentRound: 0,
   currentMiniGame: null,
@@ -18,7 +20,9 @@ const defaultState: GameState = {
   nsfw: false,
   // board: [],
   maxRounds: 10,
+  defaultMovesPerRound: DEFAULT_MOVES_PER_ROUND,
   isPaused: false,
+  triviaTimeLimit: 30,
 };
 export const gameSlice = createSlice({
   name: "game",
@@ -52,6 +56,10 @@ export const gameSlice = createSlice({
       state.maxRounds = action.payload;
       return state;
     },
+    setDefaultMovesPerRound: (state, action) => {
+      state.defaultMovesPerRound = Number(action.payload);
+      return state;
+    },
     endMinigame: (state) => {
       // state.modalOpen = false;
       state.mode = null;
@@ -61,6 +69,10 @@ export const gameSlice = createSlice({
     },
     setNSFW: (state, action) => {
       state.nsfw = action.payload;
+      return state;
+    },
+    setTriviaTimeLimit: (state, action) => {
+      state.triviaTimeLimit = Number(action.payload);
       return state;
     },
     pauseGame: (state) => {
@@ -76,7 +88,7 @@ export const gameSlice = createSlice({
     builder
       .addCase(setState, (_, action) => {
         // console.log(action);
-        return action.payload.game;
+        return { ...defaultState, ...action.payload.game };
         // action is inferred correctly here if using TS
       })
       .addCase(addQueuedAction, (state, action) => {
@@ -129,8 +141,10 @@ export const {
   openModal,
   endMinigame,
   setMaxRounds,
+  setDefaultMovesPerRound,
   setGameState,
   setNSFW,
+  setTriviaTimeLimit,
   pauseGame,
   resumeGame,
 } = gameSlice.actions;

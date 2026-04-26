@@ -1,10 +1,9 @@
-import { lazy } from 'react';
 import { Sprite, } from '@pixi/react';
 import {bg} from '$assets/images';
 import useBoardDimensions from '$hooks/useBoardDimensions';
-const WrappedStage = lazy(async()=>await import('./WrappedStage'));
-const RoundCounter = lazy(async()=>await import('./RoundCounter'));
-const Board = lazy(async()=>await import('./Board'));
+import WrappedStage from './WrappedStage';
+import RoundCounter from './RoundCounter';
+import Board from './Board';
 
 export const PixiHost = () =>
 {
