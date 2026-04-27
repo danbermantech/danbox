@@ -1,6 +1,6 @@
 import { AppBar, Modal, Toolbar, Typography } from "@mui/material"
 import useMe from '$hooks/useMe'
-import { useCallback, useState } from "react";
+import { useCallback, useId, useState } from "react";
 import { useSelector } from "react-redux";
 import { GAME_MODE, SpecialSelectInputParams, SpecialSelectOptions, StoreData } from "$store/types";
 import { 
@@ -195,7 +195,7 @@ const removeBoardSpace:ControlDefinition<{id:string}> = {
   ]
 }
 
-const SpecialSelectControl = ({param, value, onChange, className, placeholder}:{param:SpecialSelectInputParams, value:string, onChange:(name:string, value:string)=>void, className:string, placeholder?:string})=>{
+const SpecialSelectControl = ({param, value, onChange, className, placeholder, id:controlId}:{param:SpecialSelectInputParams, value:string, onChange:(name:string, value:string)=>void, className:string, placeholder?:string, id?:string})=>{
 
   const {id, teamId} = useMe()
   const options = useAppSelector((state) => {
@@ -224,7 +224,7 @@ const SpecialSelectControl = ({param, value, onChange, className, placeholder}:{
     // state[param.options]
   });
   return (
-    <select className={clsx(className, 'accent-blue-400')} value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
+    <select id={controlId} name={param.name} className={clsx(className, 'accent-blue-400')} value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
       <option disabled value="">{placeholder || 'Select'}</option>
       {options.map(option=>{
         return <option key={option.value} value={option.value}>{option.label}</option>
@@ -258,6 +258,7 @@ const playerControls = [
 ]
 
 const Control = ({staticProps={}, control}:{staticProps:Record<string,unknown>, control:ControlDefinition})=>{
+  const formIdPrefix = useId();
   const {label, action, inputs} = control;
   // const dispatch = useDispatch();
   const sendPeersMessage = usePeer((peer)=>(peer.sendPeersMessage)) as (
@@ -289,27 +290,28 @@ const Control = ({staticProps={}, control}:{staticProps:Record<string,unknown>, 
       <div className="flex flex-col text-black">
       {
         inputs?.map((input)=>{
+          const inputId = `${formIdPrefix}-${input.key}`;
           switch(input.type){
             case InputType.NUMBER:
               return <div key={input.key} className="flex w-full flex-col text-left font-semibold text-lg gap-2 justify-items-stretch">
-                <label>{input.label}</label>
-                <input className="bg-white bg-opacity-50 drop-shadow-xl rounded-xl p-4 w-full" type="number" value={form[input.key] as number} onChange={(e)=>{onChange(input.key, e.target.value)}} />
+                <label htmlFor={inputId}>{input.label}</label>
+                <input id={inputId} name={input.key} className="bg-white bg-opacity-50 drop-shadow-xl rounded-xl p-4 w-full" type="number" value={form[input.key] as number} onChange={(e)=>{onChange(input.key, e.target.value)}} />
               </div>
             case InputType.TEXT:
               return <div key={input.key} className="flex w-full flex-col text-left font-semibold text-lg gap-2 justify-items-stretch">
-                <label>{input.label}</label>
-                <input className="bg-white bg-opacity-50 drop-shadow-xl rounded-xl p-4 w-full" type="text" value={form[input.key] as string} onChange={(e)=>{onChange(input.key, e.target.value)}} />
+                <label htmlFor={inputId}>{input.label}</label>
+                <input id={inputId} name={input.key} className="bg-white bg-opacity-50 drop-shadow-xl rounded-xl p-4 w-full" type="text" value={form[input.key] as string} onChange={(e)=>{onChange(input.key, e.target.value)}} />
               </div>
             case InputType.SELECT:
               if(typeof(input.options) == 'string'){
                 return (<div key={input.key} className="flex w-full flex-col text-left font-semibold text-lg gap-2 justify-items-stretch">
-                <label>{input.label}</label>
-                <SpecialSelectControl className="bg-white bg-opacity-50 drop-shadow-xl rounded-xl p-4 w-full" param={{...input, special:input.options, name:input.key}} value={form[input.key] as string} onChange={onChange} />
+                <label htmlFor={inputId}>{input.label}</label>
+                <SpecialSelectControl id={inputId} className="bg-white bg-opacity-50 drop-shadow-xl rounded-xl p-4 w-full" param={{...input, special:input.options, name:input.key}} value={form[input.key] as string} onChange={onChange} />
                 </div>)
               }
               return <div key={input.key} className="flex w-full flex-col text-left font-semibold text-lg gap-2 justify-items-stretch">
-                <label>{input.label}</label>
-                <select defaultValue="select" className="bg-white bg-opacity-50 drop-shadow-xl rounded-xl p-4 w-full" value={form[input.key] as string} onChange={(e)=>{onChange(input.key, e.target.value)}}>
+                <label htmlFor={inputId}>{input.label}</label>
+                <select id={inputId} name={input.key} defaultValue="select" className="bg-white bg-opacity-50 drop-shadow-xl rounded-xl p-4 w-full" value={form[input.key] as string} onChange={(e)=>{onChange(input.key, e.target.value)}}>
                   <option disabled value="select">Select</option>
                   {
                     input.options.map((option)=>{

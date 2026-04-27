@@ -1,7 +1,7 @@
 import { PeerDataCallbackPayload } from "$hooks/useDataReceived";
 import useMe from "$hooks/useMe"
 import { usePeer } from "$hooks/usePeer";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useId, useMemo, useState } from "react";
 import { itemPlaceholder } from "$assets/images";
 import { Item } from "$store/types";
 import { Modal } from "@mui/material";
@@ -11,10 +11,10 @@ import clsx from "clsx";
 // import activateItem from "$store/actions/activateItem";
 
 
-const ItemStandardParamSelectControl = ({param, value, onChange, className}:{param:StandardSelectInputParams, value:string, onChange:(name:string, value:string)=>void, className: string})=>{
+const ItemStandardParamSelectControl = ({param, value, onChange, className, controlId}:{param:StandardSelectInputParams, value:string, onChange:(name:string, value:string)=>void, className: string, controlId:string})=>{
   
   return (
-    <select className={className} value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
+    <select id={controlId} name={param.name} className={className} value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
       {param.options.map(option=>{
         if(typeof option == 'string') return <option key={option} value={option}>{option}</option>
         return <option key={option.value} value={option.label}>{option.label}</option>
@@ -24,7 +24,7 @@ const ItemStandardParamSelectControl = ({param, value, onChange, className}:{par
   )
 }
 
-const ItemParamSpecialSelectControl = ({param, value, onChange, className}:{param:SpecialSelectInputParams, value:string, onChange:(name:string, value:string)=>void, className: string})=>{
+const ItemParamSpecialSelectControl = ({param, value, onChange, className, controlId}:{param:SpecialSelectInputParams, value:string, onChange:(name:string, value:string)=>void, className: string, controlId:string})=>{
 
   const {id, teamId} = useMe()
   const options = useAppSelector((state) => {
@@ -45,7 +45,7 @@ const ItemParamSpecialSelectControl = ({param, value, onChange, className}:{para
     // state[param.options]
   });
   return (
-    <select className={className} value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
+    <select id={controlId} name={param.name} className={className} value={value} onChange={(event)=>{onChange(param.name, event.target.value)}}>
       <option value="" selected disabled>Select</option>
       {options.map(option=>{
         return <option key={option.value} value={option.value}>{option.label}</option>
@@ -55,25 +55,25 @@ const ItemParamSpecialSelectControl = ({param, value, onChange, className}:{para
 
 }
 
-const ItemParamSelectControl = ({param, value,  onChange, className}:{param:SelectInputParams, value:string, onChange: (name:string, value:string)=>void, className:string})=>{
+const ItemParamSelectControl = ({param, value,  onChange, className, controlId}:{param:SelectInputParams, value:string, onChange: (name:string, value:string)=>void, className:string, controlId:string})=>{
 
   if('special' in param){
-    return <ItemParamSpecialSelectControl value={value}  param={param} onChange={onChange} className={className} />
+    return <ItemParamSpecialSelectControl value={value}  param={param} onChange={onChange} className={className} controlId={controlId} />
   }
-  return <ItemStandardParamSelectControl value={value} param={param} onChange={onChange} className={className} />
+  return <ItemStandardParamSelectControl value={value} param={param} onChange={onChange} className={className} controlId={controlId} />
 
 }
 
-const ItemParamControl = ({param, value, onChange, className}:{param:UserControlledParam,value:string, onChange:(name:string, value:string)=>void, className:string}) =>{
+const ItemParamControl = ({param, value, onChange, className, controlId}:{param:UserControlledParam,value:string, onChange:(name:string, value:string)=>void, className:string, controlId:string}) =>{
   switch(param.type){
     case 'string':
-      return <input type="text" value={value} onChange={(event)=>{onChange(param.name, event.target.value)}} className={className}/>
+      return <input id={controlId} name={param.name} type="text" value={value} onChange={(event)=>{onChange(param.name, event.target.value)}} className={className}/>
     case 'number':
-      return <input type="number" value={value} onChange={(event)=>{onChange(param.name, event.target.value)}} className={className} />
+      return <input id={controlId} name={param.name} type="number" value={value} onChange={(event)=>{onChange(param.name, event.target.value)}} className={className} />
     case 'color':
-      return <input type="color" value={value} onChange={(event)=>{onChange(param.name, event.target.value)}} className={clsx('h-12 w-full',className)} />
+      return <input id={controlId} name={param.name} type="color" value={value} onChange={(event)=>{onChange(param.name, event.target.value)}} className={clsx('h-12 w-full',className)} />
     case 'select':
-      return <ItemParamSelectControl param={param} value={value} onChange={onChange} className={className}/>
+      return <ItemParamSelectControl param={param} value={value} onChange={onChange} className={className} controlId={controlId}/>
     default:
        return null;
   }
@@ -81,6 +81,7 @@ const ItemParamControl = ({param, value, onChange, className}:{param:UserControl
 
 
 const ItemControl = ({item}:{item:Item})=>{
+  const baseId = useId();
   const sendPeersMessage = usePeer((cv) => cv.sendPeersMessage) as (message:PeerDataCallbackPayload<{playerId:string, target:string, action:string, value:Record<string,string>}>)=>void;
   const me = useMe();
   // const players = useAppSelector((state) => state.players);
@@ -120,9 +121,10 @@ const ItemControl = ({item}:{item:Item})=>{
           <div className="flex flex-col flex-wrap gap-2 p-4">
           {
             item.params !== undefined && item.params.map((param)=>{
+              const fieldId = `${baseId}-${param.name}`;
               return <div key={param.name} className="flex flex-col">
-                <div className="uppercase font-semibold">{param.name}</div>
-                <ItemParamControl className="drop-shadow-xl p-2 rounded" param={param} value={state[param.name]} onChange={handleParamChanged} />
+                <label htmlFor={fieldId} className="uppercase font-semibold">{param.name}</label>
+                <ItemParamControl className="drop-shadow-xl p-2 rounded" param={param} value={state[param.name]} onChange={handleParamChanged} controlId={fieldId} />
                 </div>
             })
           }
@@ -147,7 +149,7 @@ const PlayerItemControls = ()=>{
     if(!me?.items) return Array(3).fill({name: '', image: itemPlaceholder})
     const temp = [...me.items];
     while(temp.length < 3){
-      temp.push({name: '', image: itemPlaceholder, id: `empty-${temp.length}`, description: '', price:0, weight:1})
+      temp.push({name: '', image: itemPlaceholder, id: `empty-${temp.length}`, description: '', price:0, weight:1, tier:0})
     }
     return temp
   },[me?.items])

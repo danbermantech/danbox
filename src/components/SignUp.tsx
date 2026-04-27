@@ -72,6 +72,7 @@ const SignUp = () => {
       location.pathname == "/play" &&
       peerReady &&
       !peerConnected &&
+      !connecting &&
       getCookie("lastHostId") == searchParams.get("hostId") &&
       getCookie("playerName") &&
       getCookie("playerSprite")
@@ -88,7 +89,7 @@ const SignUp = () => {
         },
       );
     }
-  }, [location.pathname, peerConnected, peerReady, searchParams, connect]);
+  }, [location.pathname, peerConnected, peerReady, searchParams, connect, connecting]);
   const me = useMe()
   return (
     <div className="w-full flex items-center p-4 justify-items-center content-center justify-center font-titan">
@@ -112,6 +113,7 @@ const SignUp = () => {
             data-length={hostId.length}
             className="animate-fade flex-grow ml-2 tracking-wider animate-delay-500  w-32 placeholder:text-slate-600 border-b-2 text-pink-600 rounded-none text-xl bg-transparent bg-opacity-20 shadow-xl text-center uppercase font-bold"
             id="hostIdInput"
+            name="hostId"
             placeholder="ABCXYZ"
             value={hostId}
             onChange={(event) => {
@@ -137,6 +139,7 @@ const SignUp = () => {
           disabled={hostId.length < 6}
           type="text"
           id="nameInput"
+          name="playerName"
           className="animate-fade flex-grow ml-2 tracking-wider animate-delay-500 placeholder:text-slate-600 border-b-2 text-pink-600 rounded-none text-xl bg-transparent bg-opacity-20 shadow-xl text-center uppercase font-bold"
           placeholder="Mr. Manager"
           value={tempName}

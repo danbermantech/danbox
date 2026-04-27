@@ -59,19 +59,16 @@ const defaultState:PeerContextValue = {
 const PeerContext = createContext<PeerContextValue>({defaultState} as unknown as PeerContextValue);
 export type PeerConnectRef = Record<string, (...args: DataConnection[]) => void>
 
-const peerOptions = import.meta.env.VITE_DEV_MODE
+const peerOptions = import.meta.env.DEV
   ? {
-      // host: '/',
-      // port: 9000,
-      // path: '/',
-      // debug: 2
+      host: '192.168.1.197',
+      port: 9000,
+      path: '/',
+      debug: 2
     }
-  : {
-    host: '192.168.1.197',
-    port: 9000,
-    path: '/',
-    debug: 2,
-  };
+  : {};
+
+  console.log({peerOptions, env: import.meta.env})
 
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const idPrefix = `danbox000000000000000000000000`

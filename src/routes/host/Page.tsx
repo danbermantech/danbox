@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import clsx from "clsx";
 import { BoardDimensionsProvider, useBoardDimensionsContext } from "$contexts/BoardDimensionsContext";
 import { RegistrationProvider } from "$contexts/RegistrationContext";
@@ -8,8 +8,21 @@ const MainGame = lazy(async()=>await import( "$components/MainGame"));
 const ScoreBoard = lazy(async()=>await import( "$components/ScoreBoard"));
 
 function PageContent(): JSX.Element {
-  const { width:boardWidth, containerRef } = useBoardDimensionsContext();
-  if (boardWidth > 0 && boardWidth < 600) {
+  const { containerRef } = useBoardDimensionsContext();
+  const [isSmallViewport, setIsSmallViewport] = useState(() => window.innerWidth < 990);
+
+  useEffect(() => {
+    const onResize = () => {
+      setIsSmallViewport(window.innerWidth < 990);
+    };
+
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+
+  if (isSmallViewport) {
     return <div className="flex flex-col items-center gap-4">
       <Logo />
       <h1 className="text-3xl text-center">

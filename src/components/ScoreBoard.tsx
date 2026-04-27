@@ -51,8 +51,10 @@ const RegistrationPanel = () => {
           <span className="font-mono font-extrabold text-3xl select-text">{myShortId}</span>
         </div>
         <div className="flex flex-col gap-1 bg-white bg-opacity-60 rounded-xl p-3 shadow">
-          <label className=" text-gray-600">Game Length</label>
+          <label htmlFor="host-game-length" className=" text-gray-600">Game Length</label>
           <input
+            id="host-game-length"
+            name="gameLength"
             className="text-xl bg-white font-sans bg-opacity-70 font-bold border-2 border-gray-300 rounded-lg px-2 py-1 w-full"
             type="number"
             value={maxRounds}
@@ -60,8 +62,10 @@ const RegistrationPanel = () => {
           />
         </div>
         <div className="flex flex-col gap-1 bg-white bg-opacity-60 rounded-xl p-3 shadow">
-          <label className=" text-gray-600">Board</label>
+          <label htmlFor="host-board-select" className=" text-gray-600">Board</label>
           <select
+            id="host-board-select"
+            name="board"
             className="text-base bg-white bg-opacity-70 border-2 border-gray-300 rounded-lg px-2 py-1 w-full"
             value={selectedBoard}
             onChange={(e) => setSelectedBoard(e.target.value)}
@@ -73,8 +77,10 @@ const RegistrationPanel = () => {
           </select>
         </div>
         <div className="flex flex-col gap-1 bg-white bg-opacity-60 rounded-xl p-3 shadow">
-          <label className=" text-gray-600">Moves Per Round</label>
+          <label htmlFor="host-moves-per-round" className=" text-gray-600">Moves Per Round</label>
           <input
+            id="host-moves-per-round"
+            name="movesPerRound"
             className="text-xl bg-white font-sans bg-opacity-70 font-bold border-2 border-gray-300 rounded-lg px-2 py-1 w-full"
             type="number"
             min={1}
@@ -83,8 +89,10 @@ const RegistrationPanel = () => {
           />
         </div>
         <div className="flex flex-col gap-1 bg-white bg-opacity-60 rounded-xl p-3 shadow">
-          <label className=" text-gray-600">Trivia Time Limit (seconds)</label>
+          <label htmlFor="host-trivia-time-limit" className=" text-gray-600">Trivia Time Limit (seconds)</label>
           <input
+            id="host-trivia-time-limit"
+            name="triviaTimeLimit"
             className="text-xl bg-white font-sans bg-opacity-70 font-bold border-2 border-gray-300 rounded-lg px-2 py-1 w-full"
             type="number"
             min={5}

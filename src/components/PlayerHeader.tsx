@@ -5,6 +5,7 @@ import { Fullscreen } from "@mui/icons-material";
 import CharacterCarousel from "./CharacterCarousel";
 import { usePeer } from "$hooks/usePeer";
 import { gold, points } from "$assets/images";
+import { useAppSelector } from "$store/hooks";
 
 const PlayerMap = lazy(async()=>await import("./PlayerMap"));
 const PlayerHeader = () =>{
@@ -19,7 +20,7 @@ const PlayerHeader = () =>{
     sendPeersMessage({type: 'avatar_changed', payload: {playerId:me.id, sprite}})
   }
 
-
+  const currentRound = useAppSelector(state=>state.game.currentRound)
 
   return (<AppBar>
         <Toolbar variant="dense" sx={{display:'flex', justifyItems: 'stretch'}}>
@@ -37,19 +38,23 @@ const PlayerHeader = () =>{
             </div>
           </Modal>
           </div>
-          <div className="flex gap-2 px-2">
-
-          <div className="w-max gap-2 font-bold shadow top bg-white bg-opacity-20 p-2 rounded-xl flex flex-row items-center ">
-              <img src={gold} width={24} height={24} />
-              <div>{me?.gold}</div>
-            </div>
-            <div className="w-max gap-2 font-bold shadow bg-white bg-opacity-20 p-2 rounded-xl flex flex-row items-center ">
-              <img src={points} width={24} height={24} />
-              <div>{me?.points}</div>
-            </div>
-          </div>
-
-          <PlayerMap />
+          {
+            currentRound > 0&&
+            <>
+            <div className="flex gap-2 px-2">
+              <div className="w-max gap-2 font-bold shadow top bg-white bg-opacity-20 p-2 rounded-xl flex flex-row items-center ">
+                  <img src={gold} width={24} height={24} />
+                  <div>{me?.gold}</div>
+                </div>
+                <div className="w-max gap-2 font-bold shadow bg-white bg-opacity-20 p-2 rounded-xl flex flex-row items-center ">
+                  <img src={points} width={24} height={24} />
+                  <div>{me?.points}</div>
+                </div>
+              </div>
+    
+              <PlayerMap />
+            </>
+          }
           {
             window.matchMedia("(display-mode: browser)").matches &&
             <Fullscreen className="flex-shrink" sx={{width:48, height:48}} onClick={()=>{
