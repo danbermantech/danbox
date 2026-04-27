@@ -64,15 +64,41 @@ function shuffleBoard(state:Board){
 }
 
 const defaultState: Board = {};
+
+type SetBoardLayoutPayload = Board | { __wrapped: true; board: Board; preserveConnections: boolean };
+
+function isWrappedSetBoardLayoutPayload(payload: unknown): payload is { __wrapped: true; board: Board; preserveConnections: boolean } {
+  if (!payload || typeof payload !== 'object') return false;
+  const record = payload as Record<string, unknown>;
+  return record.__wrapped === true && typeof record.preserveConnections === 'boolean' && Boolean(record.board) && typeof record.board === 'object' && !Array.isArray(record.board);
+}
+
+function parseSetBoardLayoutPayload(payload: SetBoardLayoutPayload): { board: Board; preserveConnections: boolean } {
+  if (isWrappedSetBoardLayoutPayload(payload)) {
+    return {
+      board: payload.board,
+      preserveConnections: Boolean(payload.preserveConnections),
+    };
+  }
+  return {
+    board: payload as Board,
+    preserveConnections: false,
+  };
+}
+
 export const gameSlice = createSlice({
   name: "board",
   initialState: defaultState,
   reducers: {
     setBoardLayout: (state, action) => {
-      // const board = action.payload as Board;
-      state = action.payload;
+      const { board, preserveConnections } = parseSetBoardLayoutPayload(action.payload as SetBoardLayoutPayload);
+      state = board;
         // shuffleBoard(state);
-      
+
+      if (preserveConnections) {
+        return state;
+      }
+
       Object.values(state).forEach((space) => {
         // if(space.connections.length > 0) return;
         if(space.connections.length > 0) return;

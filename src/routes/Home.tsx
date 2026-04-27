@@ -7,6 +7,7 @@ const Home = () => {
       <Logo />
       <Link className="text-4xl bg-slate-700 p-8 rounded-xl" to="/play">Join a game</Link>
       <Link className="text-4xl bg-slate-700 p-8 rounded-xl hidden md:block" to="/host">Host your own</Link>
+      <Link className="text-2xl bg-slate-700 p-4 rounded-xl" to="/designer">Board Designer</Link>
     </div>
   );
 }

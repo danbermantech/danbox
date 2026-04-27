@@ -10,6 +10,7 @@ const AdminPage = lazy(async()=>await import("./admin/Page"));
 const PlayLayout = lazy(async()=>await import("./play/Layout"));
 const HostLayout = lazy(async()=>await import("./host/Layout"));
 const AdminLayout = lazy(async()=>await import("./admin/Layout"));
+const DesignerPage = lazy(async()=>await import("./designer/Page"));
 const Home = lazy(async()=>await import("./Home"));
 const NotFound = lazy(async()=>await import("./NotFound"));
 const router = createBrowserRouter([
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
         path: "/admin",
         element: <AdminLayout />,
         children: [{ index: true, element: <AdminPage /> }]
+      },
+      {
+        path: "/designer",
+        element: <DesignerPage />,
       },
       {
         path: "/j/:host_id",

@@ -1,4 +1,4 @@
-import { GAME_MODE, BoardSpaceConfig, Player } from "$store/types";
+import { Board, GAME_MODE, BoardSpaceConfig, Player } from "$store/types";
 import Leaderboard from "./Leaderboard";
 import { usePeer } from "$hooks/usePeer";
 import QRShare from "./QRShare";
@@ -15,6 +15,47 @@ import { clearAllPlayerControls, removePlayer, setAllPlayersMovesPerRound } from
 import { setBoardLayout } from "$store/slices/boardSlice";
 import { boardLayout, boardLayout2, generateRandomBoard, createDemoBoard } from "$constants/boardLayout";
 
+const DESIGNER_STORAGE_KEY = "danbox-board-designer-v1";
+const DESIGNER_STORAGE_INDEX_KEY = `${DESIGNER_STORAGE_KEY}:index`;
+const DESIGNER_STORAGE_ITEM_PREFIX = `${DESIGNER_STORAGE_KEY}:item:`;
+
+type SavedBoardEntry = {
+  key: string;
+  name: string;
+  updatedAt: number;
+};
+
+function loadSavedBoardIndex(): SavedBoardEntry[] {
+  try {
+    const raw = localStorage.getItem(DESIGNER_STORAGE_INDEX_KEY);
+    const parsed = raw ? (JSON.parse(raw) as SavedBoardEntry[]) : [];
+    const baseList = Array.isArray(parsed)
+      ? parsed.filter((entry) => entry && typeof entry.key === "string" && typeof entry.name === "string")
+      : [];
+
+    // Backward compatibility with older single-slot save format.
+    if (baseList.length === 0 && localStorage.getItem(DESIGNER_STORAGE_KEY)) {
+      return [{ key: "legacy", name: "Legacy Save", updatedAt: 0 }];
+    }
+
+    return baseList.sort((a, b) => b.updatedAt - a.updatedAt);
+  } catch {
+    return [];
+  }
+}
+
+function loadSavedBoardByKey(key: string): Board | null {
+  try {
+    const raw = key === "legacy"
+      ? localStorage.getItem(DESIGNER_STORAGE_KEY)
+      : localStorage.getItem(`${DESIGNER_STORAGE_ITEM_PREFIX}${key}`);
+    if (!raw) return null;
+    return JSON.parse(raw) as Board;
+  } catch {
+    return null;
+  }
+}
+
 const RegistrationPanel = () => {
   const myShortId = usePeer((cv) => cv.myShortId) as string;
   const maxRounds = useAppSelector((state) => state.game.maxRounds);
@@ -22,8 +63,48 @@ const RegistrationPanel = () => {
   const triviaTimeLimit = useAppSelector((state) => state.game.triviaTimeLimit ?? 30);
   const dispatch = useAppDispatch();
   const { selectedBoard, setSelectedBoard } = useRegistration();
+  const [savedBoards, setSavedBoards] = useState<SavedBoardEntry[]>([]);
+
+  useEffect(() => {
+    const refreshSavedBoards = () => {
+      setSavedBoards(loadSavedBoardIndex());
+    };
+
+    refreshSavedBoards();
+    window.addEventListener("focus", refreshSavedBoards);
+    window.addEventListener("storage", refreshSavedBoards);
+
+    return () => {
+      window.removeEventListener("focus", refreshSavedBoards);
+      window.removeEventListener("storage", refreshSavedBoards);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!selectedBoard.startsWith("saved:")) return;
+    const selectedKey = selectedBoard.slice("saved:".length);
+    const stillExists = savedBoards.some((entry) => entry.key === selectedKey);
+    if (!stillExists) {
+      setSelectedBoard("random");
+    }
+  }, [savedBoards, selectedBoard, setSelectedBoard]);
 
   const handleStart = useCallback(() => {
+    if (selectedBoard.startsWith("saved:")) {
+      const savedKey = selectedBoard.slice("saved:".length);
+      const savedBoard = loadSavedBoardByKey(savedKey);
+      if (savedBoard) {
+        dispatch(setBoardLayout({ __wrapped: true, board: savedBoard, preserveConnections: true }));
+      } else {
+        dispatch(setBoardLayout(generateRandomBoard()));
+        setSelectedBoard("random");
+      }
+      dispatch(setAllPlayersMovesPerRound(defaultMovesPerRound));
+      dispatch(clearAllPlayerControls());
+      dispatch(triggerNextQueuedAction());
+      return;
+    }
+
     const boardOptions: Record<string, () => Record<string, BoardSpaceConfig>> = {
       '1': () => boardLayout,
       '2': () => boardLayout2,
@@ -34,7 +115,7 @@ const RegistrationPanel = () => {
     dispatch(setAllPlayersMovesPerRound(defaultMovesPerRound));
     dispatch(clearAllPlayerControls());
     dispatch(triggerNextQueuedAction());
-  }, [defaultMovesPerRound, dispatch, selectedBoard]);
+  }, [defaultMovesPerRound, dispatch, selectedBoard, setSelectedBoard]);
 
   return (
     <div className="flex flex-col bg-slate-200 rounded-xl p-4 gap-4 h-full overflow-auto bg-gradient-radial from-pink-300 to-fuchsia-300" style={{ height: 'calc(100dvh - 32px)' }}>
@@ -66,7 +147,7 @@ const RegistrationPanel = () => {
           <select
             id="host-board-select"
             name="board"
-            className="text-base bg-white bg-opacity-70 border-2 border-gray-300 rounded-lg px-2 py-1 w-full"
+            className="text-base font-sans font-bold bg-white bg-opacity-70 border-2 border-gray-300 rounded-lg px-2 py-1 w-full"
             value={selectedBoard}
             onChange={(e) => setSelectedBoard(e.target.value)}
           >
@@ -74,6 +155,15 @@ const RegistrationPanel = () => {
             <option value="demo">Demo</option>
             <option value="1">Path to Heaven</option>
             <option value="2">Dream Gate</option>
+            {savedBoards.length > 0 && (
+              <optgroup label="Created Maps" className="text-blue-400">
+                {savedBoards.map((entry) => (
+                  <option key={entry.key} value={`saved:${entry.key}`}>
+                    {entry.name}
+                  </option>
+                ))}
+              </optgroup>
+            )}
           </select>
         </div>
         <div className="flex flex-col gap-1 bg-white bg-opacity-60 rounded-xl p-3 shadow">
