@@ -72,23 +72,32 @@ const peerOptions = import.meta.env.DEV
 
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const idPrefix = `danbox000000000000000000000000`
+const MAX_ID_TAKEN_RETRIES = 5;
 
 function generateShortId(){
   return [...Array(6)].map(()=>(chars[Math.floor(Math.random()*chars.length)])).join('');
 }
+
+function getInitialShortId() {
+  const stored = getCookie('deviceId');
+  if (stored) return stored;
+  const newId = generateShortId();
+  setCookie('deviceId', newId, 365);
+  return newId;
+}
+
+function isTakenIdError(err: { type?: string; message?: string }) {
+  if (err.type === "unavailable-id") return true;
+  return /id\s+"[^"]+"\s+is\s+taken/i.test(err.message ?? "");
+}
+
 const PeerContextProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }): React.ReactNode => {
 
-  const myShortId = useMemo(() => {
-    const stored = getCookie('deviceId');
-    if (stored) return stored;
-    const newId = generateShortId();
-    setCookie('deviceId', newId, 365);
-    return newId;
-  }, []);
+  const [myShortId, setMyShortId] = useState<string>(() => getInitialShortId());
 
   const myPeerId = useMemo(()=>{
     return `${idPrefix}${myShortId}`
@@ -106,7 +115,10 @@ const PeerContextProvider = ({
   const [peerReady, setPeerReady] = useState<boolean>(false);
   const [onConnectSendValue, _setOnConnectSendValue] = useState<unknown | null>(null);
   const [allowClientMessages, setAllowClientMessages] = useState(true);
-  const peerRef = useRef<Peer>(null);
+  const peerRef = useRef<Peer | null>(null);
+  const setPeerRef = useCallback((peer: Peer | null) => {
+    (peerRef as { current: Peer | null }).current = peer;
+  }, []);
 
   const callbackRef = useRef<
     Record<string, (data:OnDataReceivedPayload, peerId?:string) => unknown>
@@ -133,6 +145,14 @@ const PeerContextProvider = ({
   const [peerInitialized, setPeerInitialized] = useState(false);
   const [peerErrors, setPeerErrors] = useState<{ message: string }[]>([]);
   const [peerConnected, setPeerConnected] = useState(false);
+  const idRetryCountRef = useRef(0);
+
+  const rotateIdentity = useCallback(() => {
+    const nextShortId = generateShortId();
+    setCookie('deviceId', nextShortId, 365);
+    setMyShortId(nextShortId);
+    return `${idPrefix}${nextShortId}`;
+  }, []);
 
   // Use a ref so connection handlers always see the latest value without stale closures
   const onConnectSendValueRef = useRef<unknown>(null);
@@ -159,6 +179,7 @@ const PeerContextProvider = ({
         console.log(peerOptions)
   
         newPeer.on('open', () => {
+          idRetryCountRef.current = 0;
           setPeerReady(true);
           func && func();
         });
@@ -241,10 +262,28 @@ const PeerContextProvider = ({
           (err: { type: string; message: string }): Peer | void => {
             console.warn(err);
             setPeerErrors((prev) => [...prev, err]);
-            switch (err.type) {
-              case "unavailable-id": {
-                return initializePeer(`${id}-1`);
+            if (isTakenIdError(err)) {
+              if (idRetryCountRef.current >= MAX_ID_TAKEN_RETRIES) {
+                addNotification({
+                  level: "error",
+                  message: `Could not claim a unique host ID after ${MAX_ID_TAKEN_RETRIES} attempts. Please refresh and try again.`,
+                  id: "peer_error_id_taken_exhausted",
+                });
+                return;
               }
+              idRetryCountRef.current += 1;
+              setPeerReady(false);
+              setPeerConnected(false);
+              const nextPeerId = rotateIdentity();
+              setPeerRef(null);
+              if (!newPeer.destroyed) {
+                newPeer.destroy();
+              }
+              const replacementPeer = initializePeer(nextPeerId);
+              setPeerRef(replacementPeer);
+              return replacementPeer;
+            }
+            switch (err.type) {
               case "peer-unavailable":
                 addNotification({
                   level: "error",
@@ -276,12 +315,12 @@ const PeerContextProvider = ({
         setPeerInitialized(true);
         return newPeer;
       };
-      //@ts-expect-error - This is where peerRef should be initialized
-
-      peerRef.current = peerRef.current || initializePeer(myPeerId);
+      setPeerRef(peerRef.current || initializePeer(myPeerId));
     },
     [
       myPeerId,
+      rotateIdentity,
+      setPeerRef,
       addNotification,
       callbackRef,
       onPeerConnectRef,
