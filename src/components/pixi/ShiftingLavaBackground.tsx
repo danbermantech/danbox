@@ -1,36 +1,56 @@
-import { useState } from 'react';
-import { lava0 } from '$assets/images'
-import { Sprite, useTick } from '@pixi/react';
-import { BLEND_MODES } from 'pixi.js';
-import useBoardDimensions from '$hooks/useBoardDimensions';
-const LavaBackground = ({img}:{img:string}) => {
-  
-  const {boardWidth, boardHeight} = useBoardDimensions();
-  const [scale, setScale] = useState(8);
-  const [xPos, setXPos] = useState(boardWidth/2);
-  const [yPos, setYPos] = useState(boardHeight/2);
-  const [angle, setAngle] = useState(Math.random() * Math.PI * 2);
+import { useRef } from "react";
+import { tilingLava } from "$assets/images";
+import { TilingSprite, useTick } from "@pixi/react";
+import {
+  TilingSprite as PixiTilingSprite,
+} from "pixi.js";
+import useBoardDimensions from "$hooks/useBoardDimensions";
 
-  useTick((delta:number) => {
-    setAngle((prev)=>prev + (((0.5-Math.random()) *0.002)* delta));
-    setScale((prev)=>prev + (((0.5 - Math.random()) *0.1)*delta));
-    setXPos((prev)=>Math.max(boardWidth, Math.min(0, prev + Math.cos(angle) * ((Math.random()) * 5 *delta))));
-    setYPos((prev)=>Math.max(boardHeight, Math.min(0, prev + Math.sin(angle) * ((Math.random()) * 5 *delta))));
-  });
-  
-  return (
-    <Sprite x={xPos} y={yPos} anchor={0.5} scale={{x:scale, y:scale}} rotation={angle} blendMode={BLEND_MODES.LIGHTEN} width={1920*4} height={1080*4} image={img} />
-  );
+function hslToInt(h: number, s: number, l: number): number {
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    return l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+  };
+  return (Math.round(f(0) * 255) << 16) | (Math.round(f(8) * 255) << 8) | Math.round(f(4) * 255);
 }
 
-const lavas = [
-  lava0,
-]
+const TiledLava = ({alpha, rate}:{alpha?:number, rate:{x:number, y:number}}) => {
+  const { boardWidth, boardHeight } = useBoardDimensions();
+  const tileRef = useRef<PixiTilingSprite>(null);
+  const initialPosition = useRef({x: Math.random() * 1024, y: Math.random() * 1024});
+  const tintTime = useRef(Math.random() * 1200);
+  const tintRate = useRef(Math.random() * 800 + 400)
+  useTick((delta: number) => {
+    const tile = tileRef.current;
+    if (!tile) return;
+    tile.tilePosition.x += rate.x * delta;
+    tile.tilePosition.y += rate.y * delta;
+    tintTime.current += delta;
+    tile.tint = hslToInt(((tintTime.current / tintRate.current) % 1) * 360, 1, 0.5);
+  });
+  return (
+    <TilingSprite
+      ref={tileRef}
+      image={tilingLava}
+      position={{ x: 0, y: 0 }}
+      tilePosition={initialPosition.current}
+      width={boardWidth * 2}
+      height={boardHeight * 2}
+      alpha={alpha ?? 1}
+    />
+  );
+};
 
 const ShiftingLavaBackground = () => {
-  return <>
-    {lavas.map((lava, i)=><LavaBackground key={i} img={lava} />)}
-  </>
-}
+  return (
+    <>
+      <TiledLava alpha={0.4} rate={{x:0.5, y:0.5}} />
+      <TiledLava alpha={0.3} rate={{x:-0.1, y:0.4}} />
+      <TiledLava alpha={0.2} rate={{x:0.4, y:-0.2}} />
+      <TiledLava alpha={0.1} rate={{x:-0.3, y:-0.3}} />
+    </>
+  );
+};
 
 export default ShiftingLavaBackground;
