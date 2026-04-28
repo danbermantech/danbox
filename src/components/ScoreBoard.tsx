@@ -8,7 +8,6 @@ import { useEffect, useRef, useCallback, useState } from "react";
 import { useAppSelector, useAppDispatch } from "$store/hooks";
 import { pauseGame, resumeGame, setDefaultMovesPerRound, setMaxRounds, setTriviaTimeLimit } from "$store/slices/gameProgressSlice";
 import restart from "$store/actions/restart";
-// import Logo from "./Logo";
 import { useRegistration } from "$contexts/RegistrationContext";
 import triggerNextQueuedAction from "$store/actions/triggerNextQueuedAction";
 import { clearAllPlayerControls, removePlayer, setAllPlayersMovesPerRound } from "$store/slices/playerSlice";
