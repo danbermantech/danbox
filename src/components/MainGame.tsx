@@ -22,6 +22,7 @@ const MainGame = () =>{
     case GAME_MODE.REGISTRATION:
       return <RegistrationScreen />
     case GAME_MODE.GAME_OVER:
+    case GAME_MODE.END:
       return <GameOverScreen />
     case GAME_MODE.SLOTS:
       return <Slots  />
