@@ -59,6 +59,11 @@ export const playerSlice = createSlice({
       player.image = action.payload.image;
     
     },
+    setPlayerSpace: (state, action: { payload: { playerId: string; spaceId: string } }) => {
+      const player = state.find((player) => player.id === action.payload.playerId);
+      if (!player) return state;
+      player.spaceId = action.payload.spaceId;
+    },
     changePlayerName: (state, action) => {
       // console.log('changing')
       const player = state.find((player) => player.id === action.payload.playerId);
@@ -354,7 +359,7 @@ export const playerSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { addPlayer, changePlayerImage, changePlayerName, removePlayer, removeEffect, givePlayerGold, givePlayerPoints, givePlayerItem, handleTransfer, setPlayers, renamePlayer, setPlayerInstructions, setPlayerControls, clearAllPlayerControls, setMovesPerRound, setAllPlayersMovesPerRound } =
+export const { addPlayer, changePlayerImage, changePlayerName, removePlayer, removeEffect, givePlayerGold, givePlayerPoints, givePlayerItem, handleTransfer, setPlayers, renamePlayer, setPlayerInstructions, setPlayerControls, clearAllPlayerControls, setMovesPerRound, setAllPlayersMovesPerRound, setPlayerSpace } =
   playerSlice.actions;
 
 export default playerSlice.reducer;

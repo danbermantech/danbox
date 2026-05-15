@@ -1,4 +1,3 @@
-// import TriviaQuestions from "../triviaQuestions";
 type Challenge = {
   category: string,
   name: string,

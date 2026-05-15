@@ -11,14 +11,23 @@ import PlayerCard from './PlayerCard';
 import { endMinigame } from '$store/slices/gameProgressSlice';
 import itemDefs from '$constants/items';
 
-const options:AssetDefinition[] = [
+type TieredAssetDefinition = AssetDefinition & {
+  rewardTier: number,
+}
+
+type SelectableTieredAsset = TieredAssetDefinition & {
+  id: string,
+}
+
+const options:TieredAssetDefinition[] = [
   {
     name: 'Get 5 gold',
     value: 5,
     asset: 'gold',
     image: gold,
     action: (target:string)=>{ return givePlayerGold({playerId: target, gold: 5}) },
-    weight: 20
+    weight: 20,
+    rewardTier: 1,
   },
   {
     name: 'Get 10 gold',
@@ -26,7 +35,8 @@ const options:AssetDefinition[] = [
     asset: 'gold',
     image: gold,
     action: (target:string)=>{ return givePlayerGold({playerId: target, gold: 10}) },
-    weight: 12
+    weight: 12,
+    rewardTier: 2,
   },
   {
     name: 'Get 50 gold',
@@ -34,7 +44,8 @@ const options:AssetDefinition[] = [
     asset: 'gold',
     image: gold,
     action: (target:string)=>{ return givePlayerGold({playerId: target, gold: 50}) },
-    weight: 5
+    weight: 5,
+    rewardTier: 3,
   },
   {
     name: 'Get 250 gold',
@@ -42,7 +53,8 @@ const options:AssetDefinition[] = [
     asset: 'gold',
     image: gold,
     action: (target:string)=>{ return givePlayerGold({playerId: target, gold: 250}) },
-    weight: 3
+    weight: 3,
+    rewardTier: 5,
   },
   {
     name: 'Get 1 point',
@@ -50,7 +62,8 @@ const options:AssetDefinition[] = [
     asset: 'points',
     image: points,
     action: (target:string)=>{ return givePlayerPoints({playerId: target, points: 1}) },
-    weight: 10
+    weight: 10,
+    rewardTier: 1,
   },
   {
     name: 'Get 5 points',
@@ -58,7 +71,8 @@ const options:AssetDefinition[] = [
     asset: 'points',
     image: points,
     action: (target:string)=>{ return givePlayerPoints({playerId: target, points: 5}) },
-    weight: 20
+    weight: 20,
+    rewardTier: 1,
   },
   {
     name: 'Get 10 points',
@@ -66,7 +80,8 @@ const options:AssetDefinition[] = [
     asset: 'points',
     image: points,
     action: (target:string)=>{ return givePlayerPoints({playerId: target, points: 10}) },
-    weight: 12
+    weight: 12,
+    rewardTier: 2,
   },
   {
     name: 'Get 50 points',
@@ -74,16 +89,17 @@ const options:AssetDefinition[] = [
     asset: 'points',
     image: points,
     action: (target:string)=>{ return givePlayerPoints({playerId: target, points: 50}) },
-    weight: 1
+    weight: 1,
+    rewardTier: 4,
   },
-  // Items — weight inversely proportional to tier
   {
     name: 'Get Shrimp',
     value: 0,
     asset: 'item',
     image: shrimp,
     action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='shrimp')!}) },
-    weight: 8
+    weight: 8,
+    rewardTier: 1,
   },
   {
     name: 'Get Soup',
@@ -91,7 +107,8 @@ const options:AssetDefinition[] = [
     asset: 'item',
     image: soup,
     action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='soup')!}) },
-    weight: 8
+    weight: 8,
+    rewardTier: 1,
   },
   {
     name: 'Get Magic Hat',
@@ -99,7 +116,8 @@ const options:AssetDefinition[] = [
     asset: 'item',
     image: magicHat,
     action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='magic hat')!}) },
-    weight: 4
+    weight: 4,
+    rewardTier: 2,
   },
   {
     name: 'Get Teleport',
@@ -107,7 +125,8 @@ const options:AssetDefinition[] = [
     asset: 'item',
     image: teleport,
     action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='teleport')!}) },
-    weight: 4
+    weight: 4,
+    rewardTier: 2,
   },
   {
     name: 'Get Cheat',
@@ -115,7 +134,8 @@ const options:AssetDefinition[] = [
     asset: 'item',
     image: cheat,
     action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='cheat')!}) },
-    weight: 4
+    weight: 4,
+    rewardTier: 2,
   },
   {
     name: 'Get Traffic Engineer',
@@ -123,7 +143,8 @@ const options:AssetDefinition[] = [
     asset: 'item',
     image: men_at_work,
     action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='traffic engineer')!}) },
-    weight: 3
+    weight: 3,
+    rewardTier: 3,
   },
   {
     name: 'Get Demo Crew',
@@ -131,7 +152,8 @@ const options:AssetDefinition[] = [
     asset: 'item',
     image: wrecking_ball,
     action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='demo crew')!}) },
-    weight: 3
+    weight: 3,
+    rewardTier: 3,
   },
   {
     name: 'Get Construct Crew',
@@ -139,7 +161,8 @@ const options:AssetDefinition[] = [
     asset: 'item',
     image: add_space,
     action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='construct crew')!}) },
-    weight: 3
+    weight: 3,
+    rewardTier: 3,
   },
   {
     name: 'Get Souper Soup',
@@ -147,7 +170,8 @@ const options:AssetDefinition[] = [
     asset: 'item',
     image: souperSoup,
     action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='souper soup')!}) },
-    weight: 2
+    weight: 2,
+    rewardTier: 4,
   },
   {
     name: 'Get Magic Hand',
@@ -155,11 +179,29 @@ const options:AssetDefinition[] = [
     asset: 'item',
     image: magicHand,
     action: (target:string)=>{ return givePlayerItem({playerId: target, item: itemDefs.find(i=>i.name==='magic hand')!}) },
-    weight: 1
+    weight: 1,
+    rewardTier: 5,
   },
 ]
 
-function createOptions(options: AssetDefinition[], count: number = 3) {
+function getTieredOptionsForSpaceTier(spaceTier: number): TieredAssetDefinition[] {
+  return options
+    .filter((option) => option.rewardTier <= spaceTier)
+    .map((option) => {
+      if (option.rewardTier >= spaceTier) {
+        return option;
+      }
+
+      const tierGap = spaceTier - option.rewardTier;
+      const multiplier = Math.max(0.15, 1 - tierGap * 0.2);
+      return {
+        ...option,
+        weight: Math.max(1, Math.round(option.weight * multiplier)),
+      };
+    });
+}
+
+function createOptions(options: TieredAssetDefinition[], count: number = 3): SelectableTieredAsset[] {
   const weightedOptions = options
     .map((option) =>
       Array(option.weight).fill(0).map(() => ({ ...option, id: uuidv4() }))
@@ -172,8 +214,14 @@ function createOptions(options: AssetDefinition[], count: number = 3) {
 const GetAssetScreen = ()=>{
   
   const activePlayers = useSelector((state:StoreData) => state.game.activePlayers);
+  const board = useSelector((state:StoreData) => state.board);
   const dispatch = useDispatch();
-  const filteredOptions = useMemo(()=>(createOptions(options, 3)),[])
+  const player = useSelector((state:StoreData) => state.players.find((player)=>(player.id == activePlayers[0] || player.name == activePlayers[0]))) as Player;
+  const spaceTier = useMemo(() => {
+    const tier = player?.spaceId ? board[player.spaceId]?.tier : undefined;
+    return Math.min(5, Math.max(1, tier ?? 3));
+  }, [board, player?.spaceId]);
+  const filteredOptions = useMemo(()=>(createOptions(getTieredOptionsForSpaceTier(spaceTier), 3)),[spaceTier])
   const [actionId] = useState(()=>uuidv4())
   useEffect(()=>{
     // console.log(activePlayers);
@@ -183,8 +231,6 @@ const GetAssetScreen = ()=>{
   ,[activePlayers, dispatch, filteredOptions, actionId ])
 
   const [selectedOption, setSelectedOption] = useState<AssetDefinition>();
-
-  const player = useSelector((state:StoreData) => state.players.find((player)=>(player.id == activePlayers[0] || player.name == activePlayers[0]))) as Player;
 
   const {triggerSoundEffect} = useAudio();
 

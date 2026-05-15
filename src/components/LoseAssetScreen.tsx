@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AssetDefinition, Player, StoreData } from '$store/types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { setPlayerControls, givePlayerGold, givePlayerPoints } from '$store/slices/playerSlice';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { setPlayerControls, givePlayerGold, givePlayerPoints, setPlayerInstructions } from '$store/slices/playerSlice';
 import triggerNextQueuedAction from '$store/actions/triggerNextQueuedAction';
 import {gold, points} from '$assets/images.ts';
 import usePeerDataReceived, { PeerDataCallbackPayload } from '$hooks/useDataReceived';
@@ -10,70 +10,97 @@ import {v4 as uuidv4} from 'uuid'
 import { endMinigame } from '$store/slices/gameProgressSlice';
 import PlayerCard from './PlayerCard';
 
-const options:AssetDefinition[] = [
+type TieredAssetDefinition = AssetDefinition & {
+  rewardTier: number,
+}
+
+type SelectableTieredAsset = TieredAssetDefinition & {
+  id: string,
+}
+
+const options: TieredAssetDefinition[] = [
   {
     name: 'Lose 5 gold',
     value: 5,
     asset: 'gold',
     image: gold,
-    action: (target:string)=>{
-      return givePlayerGold({playerId: target, gold: -5})
-    },
-    weight: 1
+    action: (target:string) => givePlayerGold({playerId: target, gold: -5}),
+    weight: 8,
+    rewardTier: 1,
   },
   {
     name: 'Lose 10 gold',
     value: 10,
     asset: 'gold',
     image: gold,
-    action: (target:string)=>{
-      return givePlayerGold({playerId: target, gold: -10})
-    },
-    weight: 5
+    action: (target:string) => givePlayerGold({playerId: target, gold: -10}),
+    weight: 12,
+    rewardTier: 2,
   },
   {
     name: 'Lose 50 gold',
     value: 50,
     asset: 'gold',
     image: gold,
-    action: (target:string)=>{
-      return givePlayerGold({playerId: target, gold: -50})
-    },
-    weight: 10
+    action: (target:string) => givePlayerGold({playerId: target, gold: -50}),
+    weight: 10,
+    rewardTier: 3,
+  },
+  {
+    name: 'Lose 250 gold',
+    value: 250,
+    asset: 'gold',
+    image: gold,
+    action: (target:string) => givePlayerGold({playerId: target, gold: -250}),
+    weight: 4,
+    rewardTier: 5,
   },
   {
     name: 'Lose 5 points',
     value: 5,
     asset: 'points',
     image: points,
-    action: (target:string)=>{
-      return givePlayerPoints({playerId: target, points: -5})
-    },
-    weight:1
+    action: (target:string) => givePlayerPoints({playerId: target, points: -5}),
+    weight: 8,
+    rewardTier: 1,
   },
   {
     name: 'Lose 10 points',
     value: 10,
     asset: 'points',
     image: points,
-    action: (target:string)=>{
-      return givePlayerPoints({playerId: target, points: -10})
-    },
-    weight:5
+    action: (target:string) => givePlayerPoints({playerId: target, points: -10}),
+    weight: 12,
+    rewardTier: 2,
   },
   {
     name: 'Lose 50 points',
     value: 50,
     asset: 'points',
     image: points,
-    action: (target:string)=>{
-      return givePlayerPoints({playerId: target, points: -50})
-    },
-    weight: 5
+    action: (target:string) => givePlayerPoints({playerId: target, points: -50}),
+    weight: 5,
+    rewardTier: 4,
   },
 ]
 
-function createOptions(options: AssetDefinition[], count: number = 3) {
+function getTieredOptionsForSpaceTier(spaceTier: number): TieredAssetDefinition[] {
+  return options
+    .filter((option) => option.rewardTier <= spaceTier)
+    .map((option) => {
+      if (option.rewardTier >= spaceTier) {
+        return option;
+      }
+      const tierGap = spaceTier - option.rewardTier;
+      const multiplier = Math.max(0.15, 1 - tierGap * 0.2);
+      return {
+        ...option,
+        weight: Math.max(1, Math.round(option.weight * multiplier)),
+      };
+    });
+}
+
+function createOptions(options: TieredAssetDefinition[], count: number = 3): SelectableTieredAsset[] {
   const weightedOptions = options
     .map((option) =>
       Array(option.weight).fill(0).map(() => ({ ...option, id: uuidv4() }))
@@ -84,20 +111,26 @@ function createOptions(options: AssetDefinition[], count: number = 3) {
 }
 
 const LoseAssetScreen = ()=>{
-  
+
   const activePlayers = useSelector((state:StoreData) => state.game.activePlayers);
+  const board = useSelector((state:StoreData) => state.board);
   const dispatch = useDispatch();
-  
+  const player = useSelector((state:StoreData) => state.players.find((player)=>(player.id == activePlayers[0] || player.name == activePlayers[0])));
+  const spaceTier = useMemo(() => {
+    const tier = player?.spaceId ? board[player.spaceId]?.tier : undefined;
+    return Math.min(5, Math.max(1, tier ?? 2));
+  }, [board, player?.spaceId]);
+
   const [actionId] = useState(()=>uuidv4())
 
-  const filteredOptions = useMemo(()=>createOptions(options, 3),[])
-  useEffect(()=>{
-    dispatch(setPlayerControls({playerId: activePlayers[0], controls: [...filteredOptions].map((item, index)=>({label: item.name, value: item.name, action: actionId, key:index+1}))}))
-  }
-  ,[activePlayers, dispatch, filteredOptions, actionId ])
-  const [selectedOption, setSelectedOption] = useState<AssetDefinition>();
+  const filteredOptions = useMemo(()=>createOptions(getTieredOptionsForSpaceTier(spaceTier), 3), [spaceTier])
 
-  const player = useSelector((state:StoreData) => state.players.find((player)=>(player.id == activePlayers[0] || player.name == activePlayers[0])));
+  useEffect(()=>{
+    dispatch(setPlayerInstructions({playerId: activePlayers[0], instructions: 'Select your sacrifice'}));
+    dispatch(setPlayerControls({playerId: activePlayers[0], controls: filteredOptions.map((item)=>({label: item.name, value: item.id, action: actionId}))}))
+  }, [activePlayers, dispatch, filteredOptions, actionId])
+
+  const [selectedOption, setSelectedOption] = useState<AssetDefinition>();
 
   const {triggerSoundEffect} = useAudio();
 
@@ -105,23 +138,27 @@ const LoseAssetScreen = ()=>{
     return triggerSoundEffect('sad');
   }, [triggerSoundEffect])
 
+  const handledRef = useRef(false);
   const peerDataCallback = useCallback(
-    (data:PeerDataCallbackPayload, ) => {
-      // console.log(data, peerId);
-      dispatch(setPlayerControls({playerId: activePlayers[0], controls:[]}) )
-      setSelectedOption(
-        filteredOptions.find((option)=>(option.name == data.payload.value))
-      );
-      const option = filteredOptions.find((option)=>(option.name == data.payload.value));
-      if(!player || !option) return;
-      dispatch(option.action(player.id));
-      triggerSoundEffect('loss')
-      setTimeout(()=>{
-        dispatch(endMinigame());
-        setTimeout(()=>{
-          dispatch(triggerNextQueuedAction());
-        },1000)
-      }, 2000)
+    (data:PeerDataCallbackPayload) => {
+      if(data.payload.action){
+        if(handledRef.current) return;
+        handledRef.current = true;
+        dispatch(setPlayerInstructions({playerId: activePlayers[0], instructions: 'Please wait...'}));
+        dispatch(setPlayerControls({playerId: activePlayers[0], controls:[]}))
+        setSelectedOption(filteredOptions.find((option)=>(option.id == data.payload.value)));
+        const option = filteredOptions.find((option)=>(option.id == data.payload.value));
+        if(!player || !option) return;
+        dispatch(option.action(player.id));
+        triggerSoundEffect('loss')
+        const timeout = setTimeout(()=>{
+          dispatch(endMinigame());
+          setTimeout(()=>{
+            dispatch(triggerNextQueuedAction());
+          },1000)
+        }, 2000)
+        return ()=>{clearTimeout(timeout)}
+      }
     },
     [
       dispatch,
@@ -131,10 +168,7 @@ const LoseAssetScreen = ()=>{
       activePlayers,
     ]);
 
-  usePeerDataReceived(
-    peerDataCallback,
-    actionId
-  )
+  usePeerDataReceived(peerDataCallback, actionId)
   return (<div className="w-full flex flex-col items-center gap-24 text-black">
     <h1 className="animate-jump-in animate-ease-linear text-8xl text-center bg-gradient-radial from-black w-min p-8 rounded-full aspect-square flex items-center">
     🙁

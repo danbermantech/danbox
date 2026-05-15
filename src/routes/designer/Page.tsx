@@ -1,6 +1,14 @@
 import { Board, BoardSpaceConfig, GAME_MODE } from "$store/types";
-import { boardLayout, boardLayout2, generateRandomBoard } from "$constants/boardLayout";
-import { BoardDimensionsProvider, useBoardDimensionsContext } from "$contexts/BoardDimensionsContext";
+import {
+  boardLayout,
+  boardLayout2,
+  getDefaultSpaceTier,
+  generateRandomBoard,
+} from "$constants/boardLayout";
+import {
+  BoardDimensionsProvider,
+  useBoardDimensionsContext
+} from "$contexts/BoardDimensionsContext";
 import PixiHost from "$components/pixi/PixiClient";
 import { useAppDispatch } from "$store/hooks";
 import { setBoardLayout } from "$store/slices/boardSlice";
@@ -32,31 +40,153 @@ type SavedBoardEntry = {
   updatedAt: number;
 };
 
-const typePresets: Record<
+const typePresets: Partial<Record<
   GAME_MODE,
   { label: string; color: string; width: number; height: number; note: string }
-> = {
-  [GAME_MODE.MOVEMENT]: { label: "Movement", color: "#64748b", width: 0.05, height: 0.05, note: "Generic movement/event space." },
-  [GAME_MODE.REGISTRATION]: { label: "Registration", color: "#64748b", width: 0.05, height: 0.05, note: "Not normally used as board space." },
-  [GAME_MODE.GAME_OVER]: { label: "Game Over", color: "#475569", width: 0.05, height: 0.05, note: "End-state marker space." },
-  [GAME_MODE.RESULTS]: { label: "Results", color: "#475569", width: 0.05, height: 0.05, note: "Results marker space." },
-  [GAME_MODE.TRIVIA]: { label: "Trivia", color: "#8888ff", width: 0.055, height: 0.055, note: "Question prompt space." },
-  [GAME_MODE.SLOTS]: { label: "Slots", color: "#aa6622", width: 0.055, height: 0.055, note: "Casino/slots mini-game space." },
-  [GAME_MODE.HOME]: { label: "Home", color: "#ff00ff", width: 0.065, height: 0.065, note: "Usually the starting hub." },
-  [GAME_MODE.DUEL]: { label: "Duel", color: "#558826", width: 0.055, height: 0.055, note: "Head-to-head challenge space." },
-  [GAME_MODE.EVENT]: { label: "Event", color: "#0ea5e9", width: 0.05, height: 0.05, note: "Custom one-off events." },
-  [GAME_MODE.ITEM]: { label: "Item", color: "#22c55e", width: 0.05, height: 0.05, note: "Item reward/interaction space." },
-  [GAME_MODE.SHOP]: { label: "Shop", color: "#00dddd", width: 0.05, height: 0.05, note: "Buy and trade items." },
-  [GAME_MODE.BANK]: { label: "Bank", color: "#14b8a6", width: 0.05, height: 0.05, note: "Currency/economy interaction space." },
-  [GAME_MODE.START]: { label: "Start", color: "#84cc16", width: 0.06, height: 0.06, note: "Alternative game entry point." },
-  [GAME_MODE.END]: { label: "End", color: "#ef4444", width: 0.06, height: 0.06, note: "Alternative game finish point." },
-  [GAME_MODE.FRENZY]: { label: "Frenzy", color: "#35a6b2", width: 0.05, height: 0.05, note: "Rapid-action phase trigger." },
-  [GAME_MODE.GET_ASSET]: { label: "Get Asset", color: "#22ff22", width: 0.05, height: 0.05, note: "Positive reward/asset gain." },
-  [GAME_MODE.LOSE_ASSET]: { label: "Lose Asset", color: "#ff2222", width: 0.05, height: 0.05, note: "Penalty/asset loss." },
-  [GAME_MODE.IMPLORE]: { label: "Implore", color: "#aa22aa", width: 0.05, height: 0.05, note: "Special traversal choke-point." },
+>> = {
+  [GAME_MODE.MOVEMENT]: {
+    label: "Movement",
+    color: "#64748b",
+    width: 0.05,
+    height: 0.05,
+    note: "Generic movement/event space.",
+  },
+  // [GAME_MODE.REGISTRATION]: {
+  //   label: "Registration",
+  //   color: "#64748b",
+  //   width: 0.05,
+  //   height: 0.05,
+  //   note: "Not normally used as board space.",
+  // },
+  // [GAME_MODE.GAME_OVER]: {
+  //   label: "Game Over",
+  //   color: "#475569",
+  //   width: 0.05,
+  //   height: 0.05,
+  //   note: "End-state marker space.",
+  // },
+  // [GAME_MODE.RESULTS]: {
+  //   label: "Results",
+  //   color: "#475569",
+  //   width: 0.05,
+  //   height: 0.05,
+  //   note: "Results marker space.",
+  // },
+  [GAME_MODE.TRIVIA]: {
+    label: "Trivia",
+    color: "#8888ff",
+    width: 0.055,
+    height: 0.055,
+    note: "Question prompt space.",
+  },
+  [GAME_MODE.SLOTS]: {
+    label: "Slots",
+    color: "#aa6622",
+    width: 0.055,
+    height: 0.055,
+    note: "Casino/slots mini-game space.",
+  },
+  [GAME_MODE.HOME]: {
+    label: "Home",
+    color: "#ff00ff",
+    width: 0.065,
+    height: 0.065,
+    note: "Usually the starting hub.",
+  },
+  [GAME_MODE.DUEL]: {
+    label: "Duel",
+    color: "#558826",
+    width: 0.055,
+    height: 0.055,
+    note: "Head-to-head challenge space.",
+  },
+  [GAME_MODE.EVENT]: {
+    label: "Event",
+    color: "#0ea5e9",
+    width: 0.05,
+    height: 0.05,
+    note: "Custom one-off events.",
+  },
+  [GAME_MODE.ITEM]: {
+    label: "Item",
+    color: "#22c55e",
+    width: 0.05,
+    height: 0.05,
+    note: "Item reward/interaction space.",
+  },
+  [GAME_MODE.SHOP]: {
+    label: "Shop",
+    color: "#00dddd",
+    width: 0.05,
+    height: 0.05,
+    note: "Buy and trade items.",
+  },
+  [GAME_MODE.BANK]: {
+    label: "Bank",
+    color: "#14b8a6",
+    width: 0.05,
+    height: 0.05,
+    note: "Currency/economy interaction space.",
+  },
+  [GAME_MODE.START]: {
+    label: "Start",
+    color: "#84cc16",
+    width: 0.06,
+    height: 0.06,
+    note: "Alternative game entry point.",
+  },
+  [GAME_MODE.END]: {
+    label: "End",
+    color: "#ef4444",
+    width: 0.06,
+    height: 0.06,
+    note: "Ends the game early.",
+  },
+  [GAME_MODE.FRENZY]: {
+    label: "Frenzy",
+    color: "#35a6b2",
+    width: 0.05,
+    height: 0.05,
+    note: "Rapid-action phase trigger.",
+  },
+  [GAME_MODE.GET_ASSET]: {
+    label: "Get Asset",
+    color: "#22ff22",
+    width: 0.05,
+    height: 0.05,
+    note: "Positive reward/asset gain.",
+  },
+  [GAME_MODE.LOSE_ASSET]: {
+    label: "Lose Asset",
+    color: "#ff2222",
+    width: 0.05,
+    height: 0.05,
+    note: "Penalty/asset loss.",
+  },
+  [GAME_MODE.IMPLORE]: {
+    label: "Implore",
+    color: "#aa22aa",
+    width: 0.05,
+    height: 0.05,
+    note: "Special traversal choke-point.",
+  },
+  [GAME_MODE.REST]: {
+    label: "Rest",
+    color: "#888888",
+    width: 0.05,
+    height: 0.05,
+    note: "Take a breather and skip next turn.",
+  },
+  [GAME_MODE.RANDOM]: {
+    label: "Mystery",
+    color: "#aaaaaa",
+    width: 0.05,
+    height: 0.05,
+    note: "Everybody loves a mystery!",
+  },
 };
 
-const modeOptions = Object.values(GAME_MODE);
+const modeOptions = Object.values(GAME_MODE).filter((mode) => typePresets[mode]);
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
@@ -66,8 +196,19 @@ function isValidHexColor(value: string): boolean {
   return /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value.trim());
 }
 
+function normalizeTier(value: number | undefined, type: GAME_MODE): number {
+  if (!Number.isFinite(value)) return getDefaultSpaceTier(type);
+  return clamp(Math.round(value as number), 1, 5);
+}
+
 function createSpace(type: GAME_MODE, x: number, y: number): BoardSpaceConfig {
-  const preset = typePresets[type];
+  const preset = typePresets[type] ?? {
+    label: type,
+    color: "#777777",
+    width: 0.05,
+    height: 0.05,
+    note: "No preset defined for this type.",
+  };
   const id = `${type.toLowerCase()}-${crypto.randomUUID?.() ?? Math.random().toString(36).slice(2, 9)}`;
   return {
     id,
@@ -76,6 +217,7 @@ function createSpace(type: GAME_MODE, x: number, y: number): BoardSpaceConfig {
     y,
     width: preset.width,
     height: preset.height,
+    tier: getDefaultSpaceTier(type),
     color: preset.color,
     label: preset.label,
     connections: [],
@@ -92,7 +234,10 @@ function normalizeBoard(board: Board): Board {
         y: clamp(space.y, 0, 1),
         width: clamp(space.width, 0.02, 0.2),
         height: clamp(space.height ?? space.width, 0.02, 0.2),
-        connections: Array.from(new Set(space.connections)).filter((connId) => connId !== id),
+        tier: normalizeTier(space.tier, space.type),
+        connections: Array.from(new Set(space.connections)).filter(
+          (connId) => connId !== id,
+        ),
       },
     ]),
   );
@@ -105,7 +250,12 @@ function loadSavedBoardIndex(): SavedBoardEntry[] {
     const parsed = JSON.parse(raw) as SavedBoardEntry[];
     if (!Array.isArray(parsed)) return [];
     return parsed
-      .filter((entry) => entry && typeof entry.key === "string" && typeof entry.name === "string")
+      .filter(
+        (entry) =>
+          entry &&
+          typeof entry.key === "string" &&
+          typeof entry.name === "string",
+      )
       .sort((a, b) => b.updatedAt - a.updatedAt);
   } catch {
     return [];
@@ -113,7 +263,11 @@ function loadSavedBoardIndex(): SavedBoardEntry[] {
 }
 
 function makeSaveKey(name: string): string {
-  const normalized = name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const normalized = name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
   return normalized || "board";
 }
 
@@ -127,10 +281,12 @@ const BoardDesignerPageContent = () => {
   const [connectionDraft, setConnectionDraft] = useState("");
   const [colorDraft, setColorDraft] = useState("");
   const [saveName, setSaveName] = useState("My Board");
-  const [savedBoards, setSavedBoards] = useState<SavedBoardEntry[]>(() => loadSavedBoardIndex());
+  const [savedBoards, setSavedBoards] = useState<SavedBoardEntry[]>(() =>
+    loadSavedBoardIndex(),
+  );
   const [selectedSaveKey, setSelectedSaveKey] = useState("");
   const dispatch = useAppDispatch();
-  const { containerRef } = useBoardDimensionsContext();
+  const { containerRef, width } = useBoardDimensionsContext();
   const canvasRef = useRef<HTMLDivElement | null>(null);
 
   const selectedSpace = selectedId ? board[selectedId] : null;
@@ -141,11 +297,15 @@ const BoardDesignerPageContent = () => {
 
   const incomingConnections = useMemo(() => {
     if (!selectedSpace) return [] as BoardSpaceConfig[];
-    return Object.values(board).filter((space) => space.connections.includes(selectedSpace.id));
+    return Object.values(board).filter((space) =>
+      space.connections.includes(selectedSpace.id),
+    );
   }, [board, selectedSpace]);
 
   useEffect(() => {
-    dispatch(setBoardLayout({ __wrapped: true, board, preserveConnections: true }));
+    dispatch(
+      setBoardLayout({ __wrapped: true, board, preserveConnections: true }),
+    );
   }, [board, dispatch]);
 
   useEffect(() => {
@@ -154,45 +314,54 @@ const BoardDesignerPageContent = () => {
     }
   }, [savedBoards, selectedSaveKey]);
 
-  const updateSpace = useCallback((id: string, update: Partial<BoardSpaceConfig>) => {
-    setBoard((prev) => {
-      const existing = prev[id];
-      if (!existing) return prev;
-      const next = {
-        ...existing,
-        ...update,
-      };
-      if (update.x !== undefined) next.x = clamp(update.x, 0, 1);
-      if (update.y !== undefined) next.y = clamp(update.y, 0, 1);
-      if (update.width !== undefined) next.width = clamp(update.width, 0.02, 0.2);
-      if (update.height !== undefined) next.height = clamp(update.height, 0.02, 0.2);
-      return {
-        ...prev,
-        [id]: next,
-      };
-    });
-  }, []);
-
-  const handleCanvasDrop = useCallback(
-    (event: DragEvent<HTMLDivElement>) => {
-      event.preventDefault();
-      const mode = event.dataTransfer.getData("application/x-danbox-space") as GAME_MODE;
-      if (!mode || !modeOptions.includes(mode)) return;
-      if (!canvasRef.current) return;
-      const rect = canvasRef.current.getBoundingClientRect();
-      const x = clamp((event.clientX - rect.left) / rect.width, 0.02, 0.98);
-      const y = clamp((event.clientY - rect.top) / rect.height, 0.02, 0.98);
-      const space = createSpace(mode, x, y);
-      setBoard((prev) => ({ ...prev, [space.id]: space }));
-      setSelectedId(space.id);
-      setMessage(`Added ${space.label}`);
+  const updateSpace = useCallback(
+    (id: string, update: Partial<BoardSpaceConfig>) => {
+      setBoard((prev) => {
+        const existing = prev[id];
+        if (!existing) return prev;
+        const next = {
+          ...existing,
+          ...update,
+        };
+        if (update.x !== undefined) next.x = clamp(update.x, 0, 1);
+        if (update.y !== undefined) next.y = clamp(update.y, 0, 1);
+        if (update.width !== undefined)
+          next.width = clamp(update.width, 0.02, 0.2);
+        if (update.height !== undefined)
+          next.height = clamp(update.height, 0.02, 0.2);
+        if (update.tier !== undefined)
+          next.tier = normalizeTier(update.tier, next.type);
+        return {
+          ...prev,
+          [id]: next,
+        };
+      });
     },
     [],
   );
 
-  const handleCanvasDragOver = useCallback((event: DragEvent<HTMLDivElement>) => {
+  const handleCanvasDrop = useCallback((event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
+    const mode = event.dataTransfer.getData(
+      "application/x-danbox-space",
+    ) as GAME_MODE;
+    if (!mode || !modeOptions.includes(mode)) return;
+    if (!canvasRef.current) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = clamp((event.clientX - rect.left) / rect.width, 0.02, 0.98);
+    const y = clamp((event.clientY - rect.top) / rect.height, 0.02, 0.98);
+    const space = createSpace(mode, x, y);
+    setBoard((prev) => ({ ...prev, [space.id]: space }));
+    setSelectedId(space.id);
+    setMessage(`Added ${space.label}`);
   }, []);
+
+  const handleCanvasDragOver = useCallback(
+    (event: DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+    },
+    [],
+  );
 
   const handleNodePointerDown = useCallback(
     (event: PointerEvent<HTMLButtonElement>, spaceId: string) => {
@@ -273,7 +442,9 @@ const BoardDesignerPageContent = () => {
       Object.keys(next).forEach((id) => {
         next[id] = {
           ...next[id],
-          connections: next[id].connections.filter((targetId) => targetId !== selectedId),
+          connections: next[id].connections.filter(
+            (targetId) => targetId !== selectedId,
+          ),
         };
       });
       return next;
@@ -300,7 +471,9 @@ const BoardDesignerPageContent = () => {
     };
 
     const existing = loadSavedBoardIndex().filter((entry) => entry.key !== key);
-    const nextIndex = [nextEntry, ...existing].sort((a, b) => b.updatedAt - a.updatedAt);
+    const nextIndex = [nextEntry, ...existing].sort(
+      (a, b) => b.updatedAt - a.updatedAt,
+    );
     localStorage.setItem(STORAGE_INDEX_KEY, JSON.stringify(nextIndex));
     setSavedBoards(nextIndex);
     setSelectedSaveKey(key);
@@ -313,7 +486,9 @@ const BoardDesignerPageContent = () => {
       return;
     }
     try {
-      const raw = localStorage.getItem(`${STORAGE_ITEM_PREFIX}${selectedSaveKey}`);
+      const raw = localStorage.getItem(
+        `${STORAGE_ITEM_PREFIX}${selectedSaveKey}`,
+      );
       if (!raw) {
         setMessage("Selected save could not be found.");
         return;
@@ -323,7 +498,9 @@ const BoardDesignerPageContent = () => {
       setBoard(normalized);
       setSelectedId(null);
       setPathStartId(null);
-      const selectedEntry = savedBoards.find((entry) => entry.key === selectedSaveKey);
+      const selectedEntry = savedBoards.find(
+        (entry) => entry.key === selectedSaveKey,
+      );
       if (selectedEntry) {
         setSaveName(selectedEntry.name);
       }
@@ -339,7 +516,9 @@ const BoardDesignerPageContent = () => {
       return;
     }
     localStorage.removeItem(`${STORAGE_ITEM_PREFIX}${selectedSaveKey}`);
-    const nextIndex = loadSavedBoardIndex().filter((entry) => entry.key !== selectedSaveKey);
+    const nextIndex = loadSavedBoardIndex().filter(
+      (entry) => entry.key !== selectedSaveKey,
+    );
     localStorage.setItem(STORAGE_INDEX_KEY, JSON.stringify(nextIndex));
     setSavedBoards(nextIndex);
     setSelectedSaveKey(nextIndex[0]?.key ?? "");
@@ -364,6 +543,7 @@ const BoardDesignerPageContent = () => {
     setConnectionDraft("");
   }, [board, connectionDraft, selectedSpace, updateSpace]);
 
+
   return (
     <div className="h-[100dvh] w-full p-4 text-white bg-slate-900">
       <div className="h-full grid grid-cols-1 lg:grid-cols-[220px_1fr_320px] gap-4">
@@ -371,34 +551,65 @@ const BoardDesignerPageContent = () => {
           <h1 className="text-xl font-bold mb-3">Board Designer</h1>
           <div className="flex gap-2 mb-4">
             <button
-              className={clsx("px-3 py-2 rounded text-sm font-semibold", tool === "move" ? "bg-blue-500" : "bg-slate-700")}
+              className={clsx(
+                "px-3 py-2 rounded text-sm font-semibold",
+                tool === "move" ? "bg-blue-500" : "bg-slate-700",
+              )}
               onClick={() => setTool("move")}
             >
               Move Tool
             </button>
             <button
-              className={clsx("px-3 py-2 rounded text-sm font-semibold", tool === "path" ? "bg-green-600" : "bg-slate-700")}
+              className={clsx(
+                "px-3 py-2 rounded text-sm font-semibold",
+                tool === "path" ? "bg-green-600" : "bg-slate-700",
+              )}
               onClick={() => setTool("path")}
             >
               Path Tool
             </button>
           </div>
 
-          <div className="text-xs uppercase tracking-wider text-slate-300 mb-2">Drag New Spaces</div>
+          <div className="text-xs uppercase tracking-wider text-slate-300 mb-2">
+            Drag New Spaces
+          </div>
           <div className="grid grid-cols-2 gap-2">
             {modeOptions.map((mode) => (
               <button
                 key={mode}
                 draggable
                 onDragStart={(event) => {
-                  event.dataTransfer.setData("application/x-danbox-space", mode);
+                  event.dataTransfer.setData(
+                    "application/x-danbox-space",
+                    mode,
+                  );
                 }}
                 className="rounded px-2 py-2 text-xs font-bold border border-slate-600"
-                style={{ background: typePresets[mode].color, color: "black" }}
+                style={{ background: typePresets[mode]?.color, color: "black" }}
               >
                 {mode}
               </button>
             ))}
+          </div>
+          <div className="mt-4 space-y-2">
+            <button
+              className="w-full bg-red-700 rounded py-2 font-semibold disabled:opacity-50"
+              disabled={!selectedId}
+              onClick={deleteSelected}
+            >
+              Delete Selected
+            </button>
+            <button
+              className="w-full bg-red-900 rounded py-2 font-semibold"
+              onClick={() => {
+                setBoard({});
+                setSelectedId(null);
+                setPathStartId(null);
+                setMessage("Board cleared.");
+              }}
+            >
+              Clear Board
+            </button>
           </div>
 
           <div className="mt-4 space-y-2">
@@ -408,7 +619,12 @@ const BoardDesignerPageContent = () => {
               value={saveName}
               onChange={(event) => setSaveName(event.target.value)}
             />
-            <button className="w-full bg-indigo-600 rounded py-2 font-semibold" onClick={saveToLocalStorage}>Save As</button>
+            <button
+              className="w-full bg-indigo-600 rounded py-2 font-semibold"
+              onClick={saveToLocalStorage}
+            >
+              Save As
+            </button>
             <select
               className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1"
               value={selectedSaveKey}
@@ -421,12 +637,36 @@ const BoardDesignerPageContent = () => {
                 </option>
               ))}
             </select>
-            <button className="w-full bg-indigo-500 rounded py-2 font-semibold" onClick={loadFromLocalStorage}>Load Selected</button>
-            <button className="w-full bg-red-800 rounded py-2 font-semibold" onClick={deleteSavedBoard}>Delete Selected Save</button>
-            <button className="w-full bg-slate-700 rounded py-2 font-semibold" onClick={() => loadTemplate(boardLayout)}>Template: Board 1</button>
-            <button className="w-full bg-slate-700 rounded py-2 font-semibold" onClick={() => loadTemplate(boardLayout2)}>Template: Board 2</button>
-            <button className="w-full bg-slate-700 rounded py-2 font-semibold" onClick={() => loadTemplate(generateRandomBoard(14))}>Template: Random</button>
-            <button className="w-full bg-red-700 rounded py-2 font-semibold disabled:opacity-50" disabled={!selectedId} onClick={deleteSelected}>Delete Selected</button>
+            <button
+              className="w-full bg-indigo-500 rounded py-2 font-semibold"
+              onClick={loadFromLocalStorage}
+            >
+              Load Selected
+            </button>
+            <button
+              className="w-full bg-red-800 rounded py-2 font-semibold"
+              onClick={deleteSavedBoard}
+            >
+              Delete Selected Save
+            </button>
+            <button
+              className="w-full bg-slate-700 rounded py-2 font-semibold"
+              onClick={() => loadTemplate(boardLayout)}
+            >
+              Template: Board 1
+            </button>
+            <button
+              className="w-full bg-slate-700 rounded py-2 font-semibold"
+              onClick={() => loadTemplate(boardLayout2)}
+            >
+              Template: Board 2
+            </button>
+            <button
+              className="w-full bg-slate-700 rounded py-2 font-semibold"
+              onClick={() => loadTemplate(generateRandomBoard(14))}
+            >
+              Template: Random
+            </button>
           </div>
 
           <div className="mt-4 text-xs text-slate-300 min-h-6">{message}</div>
@@ -434,10 +674,15 @@ const BoardDesignerPageContent = () => {
 
         <section className="bg-slate-800 rounded-xl p-3 flex flex-col min-h-0">
           <div className="text-sm text-slate-300 mb-2">
-            {tool === "move" ? "Move tool: drag spaces around." : "Path tool: click source then target to add/remove a directed path."}
+            {tool === "move"
+              ? "Move tool: drag spaces around."
+              : "Path tool: click source then target to add/remove a directed path."}
             {pathStartId ? ` Path source: ${pathStartId}` : ""}
           </div>
-          <div ref={containerRef} className="relative flex-1 rounded-lg bg-slate-900 border border-slate-700 overflow-hidden">
+          <div
+            ref={containerRef}
+            className="relative flex-1 rounded-lg bg-slate-900 border border-slate-700 overflow-hidden"
+          >
             <PixiHost />
             <div
               ref={canvasRef}
@@ -453,30 +698,26 @@ const BoardDesignerPageContent = () => {
               {Object.values(board).map((space) => (
                 <button
                   key={space.id}
-                  onPointerDown={(event) => handleNodePointerDown(event, space.id)}
+                  onPointerDown={(event) =>
+                    handleNodePointerDown(event, space.id)
+                  }
                   onPointerUp={(event) => handleNodePointerUp(event, space.id)}
                   onClick={(event) => {
                     event.stopPropagation();
                     setSelectedId(space.id);
                   }}
                   className={clsx(
-                    "absolute -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-transparent",
-                    selectedId === space.id ? "ring-4 ring-white" : "",
+                    "absolute -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-transparent",
+                    selectedId === space.id ? "ring-4 ring-white/60" : "",
                     pathStartId === space.id ? "ring-4 ring-emerald-300" : "",
                   )}
                   style={{
                     left: `${space.x * 100}%`,
                     top: `${space.y * 100}%`,
+                    width: `${space.width * width*1.55}px`,
+                    height: `${space.width * width*1.55}px`,
                   }}
                 >
-                  <span
-                    className={clsx(
-                      "pointer-events-none inline-block rounded-full border-2 text-[9px] font-bold text-white px-1 py-0.5 bg-black/30 border-black/60",
-                      selectedId === space.id ? "border-white bg-black/50" : "",
-                    )}
-                  >
-                    {space.id}
-                  </span>
                 </button>
               ))}
             </div>
@@ -485,12 +726,18 @@ const BoardDesignerPageContent = () => {
 
         <section className="bg-slate-800 rounded-xl p-3 overflow-auto">
           <h2 className="text-lg font-bold mb-2">Properties</h2>
-          {!selectedSpace && <div className="text-slate-300 text-sm">Select a space to edit properties.</div>}
+          {!selectedSpace && (
+            <div className="text-slate-300 text-sm">
+              Select a space to edit properties.
+            </div>
+          )}
           {selectedSpace && (
             <div className="space-y-3 text-sm">
               <div>
                 <label className="block text-slate-300 mb-1">Space Id</label>
-                <div className="px-2 py-1 rounded bg-slate-900 border border-slate-700 break-all">{selectedSpace.id}</div>
+                <div className="px-2 py-1 rounded bg-slate-900 border border-slate-700 break-all">
+                  {selectedSpace.id}
+                </div>
               </div>
 
               <div>
@@ -500,11 +747,18 @@ const BoardDesignerPageContent = () => {
                   value={selectedSpace.type}
                   onChange={(event) => {
                     const nextType = event.target.value as GAME_MODE;
-                    updateSpace(selectedSpace.id, { type: nextType });
+                    updateSpace(selectedSpace.id, {
+                      type: nextType,
+                      tier:
+                        selectedSpace.tier ??
+                        getDefaultSpaceTier(nextType),
+                    });
                   }}
                 >
                   {modeOptions.map((mode) => (
-                    <option key={mode} value={mode}>{mode}</option>
+                    <option key={mode} value={mode}>
+                      {mode}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -513,11 +767,13 @@ const BoardDesignerPageContent = () => {
                 className="w-full bg-slate-700 rounded px-2 py-1"
                 onClick={() => {
                   const preset = typePresets[selectedSpace.type];
+                  if(!preset) return console.error("No preset for type", selectedSpace.type);
                   updateSpace(selectedSpace.id, {
                     label: preset.label,
                     color: preset.color,
                     width: preset.width,
                     height: preset.height,
+                    tier: getDefaultSpaceTier(selectedSpace.type),
                   });
                 }}
               >
@@ -525,7 +781,7 @@ const BoardDesignerPageContent = () => {
               </button>
 
               <div className="text-xs text-slate-300 bg-slate-900 border border-slate-700 rounded p-2">
-                {typePresets[selectedSpace.type].note}
+                {typePresets[selectedSpace.type]?.note}
               </div>
 
               <div>
@@ -533,7 +789,9 @@ const BoardDesignerPageContent = () => {
                 <input
                   className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1"
                   value={selectedSpace.label}
-                  onChange={(event) => updateSpace(selectedSpace.id, { label: event.target.value })}
+                  onChange={(event) =>
+                    updateSpace(selectedSpace.id, { label: event.target.value })
+                  }
                 />
               </div>
 
@@ -556,7 +814,9 @@ const BoardDesignerPageContent = () => {
                   }}
                 />
                 {colorDraft.length > 0 && !isValidHexColor(colorDraft) && (
-                  <div className="text-xs text-red-300 mt-1">Use a valid hex code like #fff or #a1b2c3.</div>
+                  <div className="text-xs text-red-300 mt-1">
+                    Use a valid hex code like #fff or #a1b2c3.
+                  </div>
                 )}
               </div>
 
@@ -570,7 +830,11 @@ const BoardDesignerPageContent = () => {
                     max={1}
                     className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1"
                     value={selectedSpace.x}
-                    onChange={(event) => updateSpace(selectedSpace.id, { x: Number(event.target.value) })}
+                    onChange={(event) =>
+                      updateSpace(selectedSpace.id, {
+                        x: Number(event.target.value),
+                      })
+                    }
                   />
                 </div>
                 <div>
@@ -582,7 +846,11 @@ const BoardDesignerPageContent = () => {
                     max={1}
                     className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1"
                     value={selectedSpace.y}
-                    onChange={(event) => updateSpace(selectedSpace.id, { y: Number(event.target.value) })}
+                    onChange={(event) =>
+                      updateSpace(selectedSpace.id, {
+                        y: Number(event.target.value),
+                      })
+                    }
                   />
                 </div>
                 <div>
@@ -594,7 +862,11 @@ const BoardDesignerPageContent = () => {
                     max={0.2}
                     className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1"
                     value={selectedSpace.width}
-                    onChange={(event) => updateSpace(selectedSpace.id, { width: Number(event.target.value) })}
+                    onChange={(event) =>
+                      updateSpace(selectedSpace.id, {
+                        width: Number(event.target.value),
+                      })
+                    }
                   />
                 </div>
                 <div>
@@ -606,13 +878,35 @@ const BoardDesignerPageContent = () => {
                     max={0.2}
                     className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1"
                     value={selectedSpace.height ?? selectedSpace.width}
-                    onChange={(event) => updateSpace(selectedSpace.id, { height: Number(event.target.value) })}
+                    onChange={(event) =>
+                      updateSpace(selectedSpace.id, {
+                        height: Number(event.target.value),
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-300 mb-1">Tier</label>
+                  <input
+                    type="number"
+                    step="1"
+                    min={1}
+                    max={5}
+                    className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1"
+                    value={selectedSpace.tier ?? getDefaultSpaceTier(selectedSpace.type)}
+                    onChange={(event) =>
+                      updateSpace(selectedSpace.id, {
+                        tier: Number(event.target.value),
+                      })
+                    }
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-300 mb-1">Outgoing Connections</label>
+                <label className="block text-slate-300 mb-1">
+                  Outgoing Connections
+                </label>
                 <div className="flex gap-2 mb-2">
                   <select
                     className="flex-1 bg-slate-900 border border-slate-700 rounded px-2 py-1"
@@ -623,20 +917,32 @@ const BoardDesignerPageContent = () => {
                     {Object.values(board)
                       .filter((space) => space.id !== selectedSpace.id)
                       .map((space) => (
-                        <option key={space.id} value={space.id}>{space.label} ({space.id})</option>
+                        <option key={space.id} value={space.id}>
+                          {space.label} ({space.id})
+                        </option>
                       ))}
                   </select>
-                  <button className="bg-blue-600 rounded px-2" onClick={addConnectionDraft}>Add -&gt;</button>
+                  <button
+                    className="bg-blue-600 rounded px-2"
+                    onClick={addConnectionDraft}
+                  >
+                    Add -&gt;
+                  </button>
                 </div>
                 <div className="space-y-1">
                   {selectedSpace.connections.map((connectionId) => (
-                    <div key={connectionId} className="flex items-center justify-between rounded bg-slate-900 border border-slate-700 px-2 py-1">
+                    <div
+                      key={connectionId}
+                      className="flex items-center justify-between rounded bg-slate-900 border border-slate-700 px-2 py-1"
+                    >
                       <span className="text-xs break-all">{connectionId}</span>
                       <button
                         className="text-red-300"
                         onClick={() => {
                           updateSpace(selectedSpace.id, {
-                            connections: selectedSpace.connections.filter((id) => id !== connectionId),
+                            connections: selectedSpace.connections.filter(
+                              (id) => id !== connectionId,
+                            ),
                           });
                         }}
                       >
@@ -648,19 +954,28 @@ const BoardDesignerPageContent = () => {
               </div>
 
               <div>
-                <label className="block text-slate-300 mb-1">Incoming Connections</label>
+                <label className="block text-slate-300 mb-1">
+                  Incoming Connections
+                </label>
                 <div className="space-y-1">
                   {incomingConnections.length === 0 && (
                     <div className="text-xs text-slate-400">None</div>
                   )}
                   {incomingConnections.map((sourceSpace) => (
-                    <div key={sourceSpace.id} className="flex items-center justify-between rounded bg-slate-900 border border-slate-700 px-2 py-1">
-                      <span className="text-xs break-all">{sourceSpace.label} ({sourceSpace.id})</span>
+                    <div
+                      key={sourceSpace.id}
+                      className="flex items-center justify-between rounded bg-slate-900 border border-slate-700 px-2 py-1"
+                    >
+                      <span className="text-xs break-all">
+                        {sourceSpace.label} ({sourceSpace.id})
+                      </span>
                       <button
                         className="text-red-300"
                         onClick={() => {
                           updateSpace(sourceSpace.id, {
-                            connections: sourceSpace.connections.filter((id) => id !== selectedSpace.id),
+                            connections: sourceSpace.connections.filter(
+                              (id) => id !== selectedSpace.id,
+                            ),
                           });
                         }}
                       >

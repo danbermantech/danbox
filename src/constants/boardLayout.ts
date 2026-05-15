@@ -1,5 +1,33 @@
 import { Board, BoardSpaceConfig, GAME_MODE } from "$store/types";
 import {v4 as uuidv4} from 'uuid';
+
+const defaultSpaceTierByType: Partial<Record<GAME_MODE, number>> = {
+  [GAME_MODE.GET_ASSET]: 3,
+  [GAME_MODE.LOSE_ASSET]: 2,
+  [GAME_MODE.TRIVIA]: 3,
+  [GAME_MODE.SHOP]: 3,
+  [GAME_MODE.DUEL]: 4,
+  [GAME_MODE.FRENZY]: 4,
+  [GAME_MODE.SLOTS]: 4,
+  [GAME_MODE.IMPLORE]: 5,
+};
+
+export function getDefaultSpaceTier(type: GAME_MODE): number {
+  return defaultSpaceTierByType[type] ?? 3;
+}
+
+function withDefaultSpaceTiers(board: Board): Board {
+  return Object.fromEntries(
+    Object.entries(board).map(([id, space]) => [
+      id,
+      {
+        ...space,
+        tier: space.tier ?? getDefaultSpaceTier(space.type),
+      },
+    ])
+  ) as Board;
+}
+
 const trivia: BoardSpaceConfig = {
   x: 0.1,
   y: 0.1,
@@ -43,12 +71,13 @@ function randomLocation(){
 }
 
 
-export function createTriviaSpace({x=randomLocation(), y=randomLocation(), label='trivia', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
+export function createTriviaSpace({x=randomLocation(), y=randomLocation(), label='trivia', id=uuidv4(), connections=[], color=randomColor({}), tier=getDefaultSpaceTier(GAME_MODE.TRIVIA)}):BoardSpaceConfig{
   return {
     x,
     y,
     width: 0.06,
     height: 0.06,
+    tier,
     color: color,
     id,
     label,
@@ -69,12 +98,13 @@ const duel: BoardSpaceConfig = {
   type: GAME_MODE.DUEL,
 }
 
-export function createDuelSpace({x=randomLocation(), y=randomLocation(), label='duel', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
+export function createDuelSpace({x=randomLocation(), y=randomLocation(), label='duel', id=uuidv4(), connections=[], color=randomColor({}), tier=getDefaultSpaceTier(GAME_MODE.DUEL)}):BoardSpaceConfig{
   return {
     x,
     y,
     width: 0.06,
     height: 0.06,
+    tier,
     color: color,
     id,
     label,
@@ -107,12 +137,13 @@ const shop2: BoardSpaceConfig = {
   type: GAME_MODE.SHOP,
 }
 
-export function createShopSpace({x=randomLocation(), y=randomLocation(), label='shop', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
+export function createShopSpace({x=randomLocation(), y=randomLocation(), label='shop', id=uuidv4(), connections=[], color=randomColor({}), tier=getDefaultSpaceTier(GAME_MODE.SHOP)}):BoardSpaceConfig{
   return {
     x,
     y,
     width: 0.06,
     height: 0.06,
+    tier,
     color: color,
     id,
     label,
@@ -157,12 +188,13 @@ const stormy: BoardSpaceConfig = {
   type: GAME_MODE.SLOTS
 }
 
-export const createSlotsSpace = ({x=randomLocation(), y=randomLocation(), label='random', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig=>{
+export const createSlotsSpace = ({x=randomLocation(), y=randomLocation(), label='random', id=uuidv4(), connections=[], color=randomColor({}), tier=getDefaultSpaceTier(GAME_MODE.SLOTS)}):BoardSpaceConfig=>{
   return {
     x,
     y,
     width: 0.06,
     height: 0.06,
+    tier,
     color: color,
     id,
     label,
@@ -183,12 +215,13 @@ const middleLeft: BoardSpaceConfig = {
   type: GAME_MODE.GET_ASSET
 }
 
-export function createGetAssetSpace({x=randomLocation(), y=randomLocation(), label='get asset', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
+export function createGetAssetSpace({x=randomLocation(), y=randomLocation(), label='get asset', id=uuidv4(), connections=[], color=randomColor({}), tier=getDefaultSpaceTier(GAME_MODE.GET_ASSET)}):BoardSpaceConfig{
   return {
     x,
     y,
     width: 0.045,
     height: 0.045,
+    tier,
     color: color,
     id,
     label,
@@ -209,12 +242,13 @@ const frenzy: BoardSpaceConfig = {
   connections: ['duel', 'stormy', 'home'],
 }
 
-export function createFrenzySpace({x=randomLocation(), y=randomLocation(), label='frenzy', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
+export function createFrenzySpace({x=randomLocation(), y=randomLocation(), label='frenzy', id=uuidv4(), connections=[], color=randomColor({}), tier=getDefaultSpaceTier(GAME_MODE.FRENZY)}):BoardSpaceConfig{
   return {
     x,
     y,
     width: 0.045,
     height: 0.045,
+    tier,
     color: color,
     id,
     label,
@@ -247,12 +281,13 @@ export const middleBottom: BoardSpaceConfig = {
   type: GAME_MODE.LOSE_ASSET,
 }
 
-export function createLoseAssetSpace({x=randomLocation(), y=randomLocation(), label='lose asset', id=uuidv4(), connections=[], color=randomColor({})}):BoardSpaceConfig{
+export function createLoseAssetSpace({x=randomLocation(), y=randomLocation(), label='lose asset', id=uuidv4(), connections=[], color=randomColor({}), tier=getDefaultSpaceTier(GAME_MODE.LOSE_ASSET)}):BoardSpaceConfig{
   return {
     x,
     y,
     width: 0.045,
     height: 0.045,
+    tier,
     color: color,
     id,
     label,
@@ -285,7 +320,7 @@ const implore2: BoardSpaceConfig = {
   type: GAME_MODE.IMPLORE,
 }
 
-export const boardLayout: Board = {
+export const boardLayout: Board = withDefaultSpaceTiers({
   trivia,
   duel,
   shop,
@@ -299,9 +334,9 @@ export const boardLayout: Board = {
   implore,
   implore2,
   shop2
-}
+})
 
-export const boardLayout2: Board = {
+export const boardLayout2: Board = withDefaultSpaceTiers({
   home:{
     x: 0.1,
     y: 0.5,
@@ -466,8 +501,8 @@ export const boardLayout2: Board = {
     label: 'Frenzy',
     connections: ['frown bottom'],
     type: GAME_MODE.FRENZY,
-  }
-}
+  },
+})
 
 function proximitySample(candidates: BoardSpaceConfig[], from: BoardSpaceConfig, n: number): BoardSpaceConfig[] {
   const pool = candidates.map(s => ({
@@ -515,13 +550,15 @@ export function generateRandomBoard(spaceCount = 14): Board {
 
   // IMPLORE is excluded here — exactly one is placed deterministically below
   const spaceTypeDefs = [
-    { type: GAME_MODE.TRIVIA,     labels: ['Trivia', 'Quiz', 'Brain Buster', 'Think Fast', 'Pop Quiz'],           color: '#7777ee', size: 0.055, weight: 2 },
-    { type: GAME_MODE.LOSE_ASSET, labels: ['Bad Luck', 'Rotten Luck', 'Tough Break', 'Misfortune', 'Rough Patch'], color: '#ee4444', size: 0.05,  weight: 5 },
-    { type: GAME_MODE.GET_ASSET,  labels: ['Good Luck', 'Fortune', 'Lucky Break', 'Windfall', 'Payday'],           color: '#44bb44', size: 0.05,  weight: 5 },
-    { type: GAME_MODE.SHOP,       labels: ['Shop', 'Market', 'Bazaar', 'Emporium', 'Trading Post'],                color: '#00dddd', size: 0.05,  weight: 3 },
-    { type: GAME_MODE.DUEL,       labels: ['Showdown', 'Face Off', 'Challenge', 'Rivalry', 'Clash'],               color: '#558826', size: 0.055, weight: 2 },
-    { type: GAME_MODE.SLOTS,      labels: ['Slots', 'Spin', 'Lucky Spin', 'Take a Chance', 'Roll the Dice'],       color: '#aa6622', size: 0.055, weight: 3 },
-    { type: GAME_MODE.FRENZY,     labels: ['Frenzy', 'Chaos', 'Mayhem', 'Wild Card', 'Pandemonium'],               color: '#35a6b2', size: 0.05,  weight: 2 },
+    { type: GAME_MODE.TRIVIA,     labels: ['Trivia', 'Quiz', 'Brain Buster', 'Think Fast', 'Pop Quiz'],             color: '#7777ee', size: 0.055, weight: 2, tier: getDefaultSpaceTier(GAME_MODE.TRIVIA) },
+    { type: GAME_MODE.LOSE_ASSET, labels: ['Bad Luck', 'Rotten Luck', 'Tough Break', 'Misfortune', 'Rough Patch'],  color: '#ee4444', size: 0.05,  weight: 5, tier: getDefaultSpaceTier(GAME_MODE.LOSE_ASSET) },
+    { type: GAME_MODE.GET_ASSET,  labels: ['Good Luck', 'Fortune', 'Lucky Break', 'Windfall', 'Payday'],            color: '#44bb44', size: 0.05,  weight: 5, tier: getDefaultSpaceTier(GAME_MODE.GET_ASSET) },
+    { type: GAME_MODE.SHOP,       labels: ['Shop', 'Market', 'Bazaar', 'Emporium', 'Trading Post'],                 color: '#00dddd', size: 0.05,  weight: 3, tier: getDefaultSpaceTier(GAME_MODE.SHOP) },
+    { type: GAME_MODE.DUEL,       labels: ['Showdown', 'Face Off', 'Challenge', 'Rivalry', 'Clash'],                color: '#558826', size: 0.055, weight: 2, tier: getDefaultSpaceTier(GAME_MODE.DUEL) },
+    { type: GAME_MODE.SLOTS,      labels: ['Slots', 'Spin', 'Lucky Spin', 'Take a Chance', 'Roll the Dice'],        color: '#aa6622', size: 0.055, weight: 3, tier: getDefaultSpaceTier(GAME_MODE.SLOTS) },
+    { type: GAME_MODE.FRENZY,     labels: ['Frenzy', 'Chaos', 'Mayhem', 'Wild Card', 'Pandemonium'],                color: '#35a6b2', size: 0.05,  weight: 2, tier: getDefaultSpaceTier(GAME_MODE.FRENZY) },
+    { type: GAME_MODE.REST,       labels: ['Rest', 'Relax', 'Breathe', 'Meditate', 'Unwindulax'],                   color: '#888888', size: 0.05,  weight: 3, tier: getDefaultSpaceTier(GAME_MODE.REST) },
+    { type: GAME_MODE.RANDOM,    labels: ['Mystery'], color: '#aaaaaa', size: 0.05, weight: 2}, // Placeholder for unknown types
   ];
   const typePool = spaceTypeDefs.flatMap(def => Array(def.weight).fill(def));
   const pickLabel = (def: typeof spaceTypeDefs[0]) => def.labels[Math.floor(Math.random() * def.labels.length)];
@@ -576,10 +613,10 @@ export function generateRandomBoard(spaceCount = 14): Board {
 
   // --- Create space objects ---
   const spaces: BoardSpaceConfig[] = normalizedPositions.map((pos, i) => {
-    if (i === 0) return { x: pos.x, y: pos.y, width: 0.065, height: 0.065, color: '#ff00ff', id: 'home', label: 'Home', connections: [], type: GAME_MODE.GET_ASSET };
+    if (i === 0) return { x: pos.x, y: pos.y, width: 0.065, height: 0.065, color: '#ff00ff', id: 'home', label: 'Home', connections: [], type: GAME_MODE.GET_ASSET, tier: getDefaultSpaceTier(GAME_MODE.GET_ASSET) };
     const def = typePool[Math.floor(Math.random() * typePool.length)];
     const label = pickLabel(def);
-    return { x: pos.x, y: pos.y, width: def.size, height: def.size, color: def.color, id: `${def.type}-${label}-${uuidv4()}`, label, connections: [], type: def.type };
+    return { x: pos.x, y: pos.y, width: def.size, height: def.size, color: def.color, id: `${def.type}-${label}-${uuidv4()}`, label, connections: [], type: def.type, tier: def.tier };
   });
 
   // --- Assign exactly one implore space (random non-home) ---
@@ -588,6 +625,7 @@ export function generateRandomBoard(spaceCount = 14): Board {
   imploreSpace.type = GAME_MODE.IMPLORE;
   imploreSpace.label = 'Implore';
   imploreSpace.color = '#aa22aa';
+  imploreSpace.tier = getDefaultSpaceTier(GAME_MODE.IMPLORE);
 
   // --- Enforce constraints on non-home, non-implore spaces ---
   const adjustable = spaces.filter(s => s.id !== 'home' && s.id !== imploreSpace.id);
@@ -596,7 +634,7 @@ export function generateRandomBoard(spaceCount = 14): Board {
   const getAssetDef = spaceTypeDefs.find(d => d.type === GAME_MODE.GET_ASSET)!;
   const loseAssetDef = spaceTypeDefs.find(d => d.type === GAME_MODE.LOSE_ASSET)!;
   const applyDef = (s: BoardSpaceConfig, def: typeof getAssetDef) => {
-    s.type = def.type; s.label = pickLabel(def); s.color = def.color; s.width = def.size; s.height = def.size;
+    s.type = def.type; s.label = pickLabel(def); s.color = def.color; s.width = def.size; s.height = def.size; s.tier = def.tier;
   };
   {
     const gets = adjustable.filter(s => s.type === GAME_MODE.GET_ASSET);

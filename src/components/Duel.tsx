@@ -20,6 +20,7 @@ type Challenge = {
   audienceDescription: string,
   audienceDelay?: number,
   nsfw?: boolean,
+  rewardTier: number,
 }
 
 const challenges:Challenge[] = [
@@ -31,6 +32,7 @@ const challenges:Challenge[] = [
     audienceDescription: 'Vote for the best lie.',
     audienceDelay: 30000,
     nsfw: true,
+    rewardTier: 1,
   },
   {
     category: 'Task',
@@ -38,6 +40,7 @@ const challenges:Challenge[] = [
     difficulty: 'easy',
     description: 'Touch a doorknob. The first player to touch a doorknob wins. I kinda ran out of ideas, sorry.',
     audienceDescription: 'Who touched a doorknob first',
+    rewardTier: 1,
   },
   {
     category:'Friendship',
@@ -46,6 +49,7 @@ const challenges:Challenge[] = [
     description: 'Compliment someone. The player who gives the most sincere compliment wins.',
     audienceDescription: 'Whose compliment was better?',
     audienceDelay: 30000,
+    rewardTier: 2,
   },
   {
     category: 'Party',
@@ -54,6 +58,7 @@ const challenges:Challenge[] = [
     description: 'Take a shot of whatever you want. Whoever takes their shot first wins.',
     audienceDescription: 'Who took their shot first?',
     nsfw: true,
+    rewardTier: 1,
   },
   {
     category: 'Ego',
@@ -62,6 +67,7 @@ const challenges:Challenge[] = [
     description: 'Tell a story about meeting someone famous. The player with the most famous namedrop wins.',
     audienceDescription: 'Whose story was the most interesting?',
     audienceDelay: 30000,
+    rewardTier: 2,
   },
   {
     category: 'Ego',
@@ -70,6 +76,7 @@ const challenges:Challenge[] = [
     description: 'Tell a story about meeting someone famous. The player with the most famous namedrop wins.',
     audienceDescription: 'Whose story happened most recently?',
     audienceDelay: 30000,
+    rewardTier: 2,
   },
   {
     category: 'Party',
@@ -79,6 +86,7 @@ const challenges:Challenge[] = [
     audienceDescription: 'Whose piece of clothing was lighter?',
     audienceDelay: 20000,
     nsfw: true,
+    rewardTier: 3,
   },
   {
     category: 'Party',
@@ -88,6 +96,7 @@ const challenges:Challenge[] = [
     audienceDescription: 'Whose piece of clothing was darker?',
     audienceDelay: 20000,
     nsfw: true,
+    rewardTier: 3,
   },
   {
     category: 'Ego',
@@ -96,6 +105,7 @@ const challenges:Challenge[] = [
     description: 'Kiss an animal. The first player to kiss an animal wins.',
     audienceDescription: 'Who kissed an animal first?',
     nsfw: true,
+    rewardTier: 3,
   },
   {
     category: 'Ego',
@@ -104,6 +114,7 @@ const challenges:Challenge[] = [
     description: 'Kiss an animal. The first player to kiss an animal wins.',
     audienceDescription: 'Whose animal was tallest?',
     nsfw: true,
+    rewardTier: 3,
   },
   {
     category: 'Party',
@@ -112,6 +123,7 @@ const challenges:Challenge[] = [
     description: 'Dance. The player who does the most interesting dance wins.',
     audienceDescription: 'Whose dance was the most out of character?',
     audienceDelay: 30000,
+    rewardTier: 2,
   },
   {
     category: 'Party',
@@ -120,6 +132,7 @@ const challenges:Challenge[] = [
     description: 'Dance. The player who does the most interesting dance wins.',
     audienceDescription: 'Whose dance was the most old school?',
     audienceDelay: 30000,
+    rewardTier: 2,
   },
   {
     category: 'Party',
@@ -128,6 +141,7 @@ const challenges:Challenge[] = [
     description: 'Dance. The player who does the most interesting dance wins.',
     audienceDescription: 'Whose dance was the most athletic?',
     audienceDelay: 30000,
+    rewardTier: 2,
   },
   {
     category: 'Party',
@@ -136,6 +150,7 @@ const challenges:Challenge[] = [
     description: 'Dance. The player who does the most interesting dance wins.',
     audienceDescription: 'Whose dance was longer?',
     audienceDelay: 30000,
+    rewardTier: 2,
   },
   {
     category: 'Ego',
@@ -144,6 +159,7 @@ const challenges:Challenge[] = [
     description: 'Tell a joke. The player with the funniest joke wins.',
     audienceDescription: 'Who do you feel more pity for right now?',
     audienceDelay: 30000,
+    rewardTier: 2,
   },
   {
     category: 'Task',
@@ -152,6 +168,7 @@ const challenges:Challenge[] = [
     description: 'Touch something blue. The first player to touch something blue wins.',
     audienceDescription: 'Whose blue was the bluest blue?',
     audienceDelay: 20000,
+    rewardTier: 2,
   },
 ];
 
@@ -159,6 +176,7 @@ const Duel =
   () => {
 
     const players = useAppSelector((state) => state.players);
+    const board = useAppSelector((state) => state.board);
 
     const dispatch = useAppDispatch();
     
@@ -175,6 +193,11 @@ const Duel =
       return player.id == activePlayers[0] || player.name == activePlayers[0]
     }) as Player
     ),[players, activePlayers])
+
+    const spaceTier = useMemo(() => {
+      const tier = playerA?.spaceId ? board[playerA.spaceId]?.tier : undefined;
+      return Math.min(5, Math.max(1, tier ?? 4));
+    }, [board, playerA?.spaceId]);
 
     const [playerB] = useState<Player>(()=>{
       const notA = players.filter((player)=>(player.id !== playerA.id))
@@ -194,11 +217,12 @@ const Duel =
     // },[playerA, playerB, dispatch])
 
     const [challenge] = useState(()=>{
-      
-      const filteredChallenges = challenges.filter((c:Challenge)=>(!nsfw ? c.nsfw !== true : true));
-      return filteredChallenges[Math.floor(Math.random() * filteredChallenges.length)];
-    }
-    )
+      const filteredChallenges = challenges.filter((c: Challenge) =>
+        (!nsfw ? c.nsfw !== true : true) && c.rewardTier <= spaceTier
+      );
+      const pool = filteredChallenges.length > 0 ? filteredChallenges : challenges.filter((c) => c.rewardTier === 1);
+      return pool[Math.floor(Math.random() * pool.length)];
+    })
 
     const [actionId] = useState(()=>uuidv4());
 
@@ -288,7 +312,6 @@ const Duel =
         }
   
         const winningPlayer = votesA > votesB ? playerA : playerB;
-        // const losingPlayer = votesA > votesB ? playerB : playerA;
         setWinner(winningPlayer)
       }
     },[playerAnswers, players, dispatch, challenge, setCompleted, audience, playerA, playerB, winner, completed])
@@ -300,40 +323,24 @@ const Duel =
       if(rewardsGranted) return;
       setRewardsGranted(()=>true);
       if(!winner) return;
-      // console.log('giving rewards')
-      // const votesA = Object.values(playerAnswers).filter((answer)=>answer == playerA.id).length;
-      // const votesB = Object.values(playerAnswers).filter((answer)=>answer == playerB.id).length;
-      // if(votesA == votesB){
-      //   setRewardsGranted(true);
-      //   return;
-      // }
 
-      // const winningPlayer = votesA > votesB ? playerA : playerB;
-      // // const losingPlayer = votesA > votesB ? playerB : playerA;
-      // setWinner(winningPlayer)
-
-      const points = (()=>{
+      const basePoints = (()=>{
         switch(challenge.difficulty){
-          case 'easy':
-            return 5;
-          case 'medium':
-            return 10;
-          case 'hard':
-            return 20;
-          case 'expert':
-            return 50;
-          default:
-            return 5;
+          case 'easy':   return 5;
+          case 'medium': return 10;
+          case 'hard':   return 20;
+          case 'expert': return 50;
+          default:       return 5;
         }
       })()
+      const tierMultiplier = spaceTier >= 5 ? 3 : spaceTier >= 4 ? 2 : spaceTier >= 3 ? 1.5 : 1;
+      const points = Math.round(basePoints * tierMultiplier);
       dispatch((disp)=>{
-        // disp(setPlayerInstructions({playerId: winningPlayer.id, instructions: `You won! You get ${points} points and ${points} gold!`}))
         disp(givePlayerPoints({playerId: winner.id, points }));
         disp(givePlayerGold({playerId: winner.id, gold: points }));
-        // disp(setPlayerInstructions({playerId: losingPlayer.id, instructions: `You lost! You get nothing!`}))
       })
       
-    },[dispatch, challenge.difficulty,  playerA, playerB, rewardsGranted, winner]);
+    },[dispatch, challenge.difficulty, spaceTier, playerA, playerB, rewardsGranted, winner]);
 
       if(completed && !rewardsGranted) {
         dispatch(clearAllPlayerControls());
@@ -363,7 +370,6 @@ const Duel =
         </h3>
         </div>
         <div className="bg-white border-4 rounded-b-xl border-black w-full items-center flex p-8">
-        {/* <div className="grid grid-flow-dense"> */}
         {completed && winner !== undefined &&
           <div className="w-full flex flex-col">
             <h1 className="text-4xl text-black text-center">Winner!</h1>
@@ -398,7 +404,6 @@ const Duel =
         </div>
         </div>}
         </div>
-        {/* </div> */}
       </div>
     );
   };

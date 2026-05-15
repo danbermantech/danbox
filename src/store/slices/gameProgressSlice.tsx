@@ -45,6 +45,7 @@ export const gameSlice = createSlice({
       return state;
     },
     setGameMode: (state, action) => {
+      console.log('setting game mode', action.payload)
       state.mode = action.payload;
       return state;
     },

@@ -1,9 +1,10 @@
 import { Container, Sprite, Text, useTick,  } from "@pixi/react";
 import { TextStyle } from "pixi.js";
-import type { Player } from "$store/types";
-import { useEffect, useRef, useState } from "react";
+import { GAME_MODE, type Player } from "$store/types";
+import { useEffect, useMemo, useRef, useState } from "react";
 import useBoardDimensions from "$hooks/useBoardDimensions";
-import { useAppSelector } from "$store/hooks";
+import { useAppSelector, useAppDispatch } from "$store/hooks";
+import { setPlayerSpace } from "$store/slices/playerSlice";
 
 type Point = { x: number; y: number };
 
@@ -61,10 +62,19 @@ function catmullRomPoint(pts: Point[], t: number): Point {
 const PlayerPiece = ({id}:{id:string}) => {
 
   const {boardWidth, boardHeight} = useBoardDimensions();
+  const dispatch = useAppDispatch();
   const player = useAppSelector((state)=>state.players.find((p)=>p.id == id)) as Player;
   const location = useAppSelector((state)=>state.board[player.spaceId]);
   const prevLocation = useAppSelector((state)=>state.board[player.previousSpaceId]);
   const board = useAppSelector((state)=>state.board);
+
+  const fallbackLocation = useMemo(()=>{
+    const spaces = Object.values(board);
+    const homes = spaces.filter((space) => space.type === GAME_MODE.HOME);
+    if(homes.length) return homes[Math.floor(Math.random() * homes.length)];
+    return spaces[Math.floor(Math.random() * spaces.length)];
+  },[board]);
+
   const playersOnSpace = useAppSelector((state) =>
     state.players
       .filter((p) => p.spaceId === player.spaceId)
@@ -73,8 +83,8 @@ const PlayerPiece = ({id}:{id:string}) => {
   );
   const playerIndex = playersOnSpace.indexOf(id);
   const totalOnSpace = playersOnSpace.length;
-  const currentX = location?.x ?? 0.5;
-  const currentY = location?.y ?? 0.5;
+  const currentX = location?.x ?? fallbackLocation.x;
+  const currentY = location?.y ?? fallbackLocation.y;
   const currentWidth = location?.width ?? 0.06;
 
   const [destination, setDestination] = useState({x: currentX, y: currentY});
@@ -102,7 +112,14 @@ const PlayerPiece = ({id}:{id:string}) => {
   const travelPath = useRef<Point[]>([]);
   const pathT = useRef<number>(0);
   // Tracks where the piece actually was when this move started (updated on arrival)
-  const arrivedAt = useRef<Point>({ x: location.x, y: location.y });
+
+  useEffect(()=>{
+    if (!location && fallbackLocation) {
+      dispatch(setPlayerSpace({ playerId: id, spaceId: fallbackLocation.id }));
+    }
+  },[location, fallbackLocation, id, dispatch])
+  
+  const arrivedAt = useRef<Point>({ x: location?.x ?? fallbackLocation.x, y: location?.y ?? fallbackLocation.y });
 
   useEffect(() => {
     if (!location) return;

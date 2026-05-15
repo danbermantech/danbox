@@ -124,6 +124,9 @@ export enum GAME_MODE {
   GET_ASSET = 'GET_ASSET',
   LOSE_ASSET = 'LOSE_ASSET',
   IMPLORE = 'IMPLORE',
+  REST = 'REST',
+  RANDOM = 'RANDOM',
+  MYSTERY = 'MYSTERY',
 }
 
 export type QueueAction =  {
@@ -137,6 +140,7 @@ export interface BoardSpaceConfig {
   y: number,
   width: number,
   height?: number,
+  tier?: number,
   color: string,
   alpha?: number,
   image?: string,
