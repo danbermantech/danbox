@@ -4,20 +4,20 @@ import { ReactReduxContext } from 'react-redux';
 import { PeerContext } from '$contexts/PeerContext';
 import { BoardDimensionsContext } from '$contexts/BoardDimensionsContext';
 
-type ContextBridgeProps = {
+type ContextBridgeProps<T> = {
   children: React.ReactNode;
-  Context:
-    | typeof ReactReduxContext
-    | typeof PeerContext
-    | typeof BoardDimensionsContext;
+  Context: React.Context<T>;
   render: (children: React.ReactNode) => React.ReactNode;
 };
 
-const ContextBridge = ({ children, Context, render }: ContextBridgeProps) => {
+const ContextBridge = <T,>({
+  children,
+  Context,
+  render,
+}: ContextBridgeProps<T>) => {
   return (
     <Context.Consumer>
       {(value) => {
-        //@ts-expect-error Value is weirdly typed
         return render(
           <Context.Provider value={value}>{children}</Context.Provider>,
         );
