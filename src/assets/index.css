@@ -11,43 +11,43 @@ body {
     Roboto,
     -apple-system,
     BlinkMacSystemFont,
-    "Helvetica Neue",
-    "Segoe UI",
-    "Oxygen",
-    "Ubuntu",
-    "Cantarell",
-    "Open Sans",
+    'Helvetica Neue',
+    'Segoe UI',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Open Sans',
     sans-serif;
   color: #86a5b1;
   background-color: #2f3241;
 }
 
-.titan-one{
+.titan-one {
   font-family: 'Titan One', Roboto, sans-serif;
 }
 
-.scoreboardContainer::-webkit-scrollbar{
+.scoreboardContainer::-webkit-scrollbar {
   background: var(--f);
-  width:0px;
-  height:0px;
+  width: 0px;
+  height: 0px;
 }
 
-.scoreBoardContainer::webkit-scrollbar-track{
-  width:1px;
+.scoreboardContainer::-webkit-scrollbar-track {
+  width: 1px;
 }
 
 .scoreboardContainer::-webkit-scrollbar-thumb {
   background-color: var(--none);
   border-radius: 32px;
-  border:none;
-  width:0px;
+  border: none;
+  width: 0px;
   /* border: 2px solid white; */
 }
 /* Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
   background: #ffffff44;
-  border-radius:8px;
-  height:16px;
+  border-radius: 8px;
+  height: 16px;
 }
 
 *::-webkit-scrollbar-track {
@@ -61,7 +61,6 @@ body {
   border-radius: 32px;
   border: 2px solid white;
 }
-
 
 * {
   padding: 0;
@@ -114,7 +113,7 @@ a:hover {
   float: none;
   clear: both;
   overflow: hidden;
-  font-family: "Menlo", "Lucida Console", monospace;
+  font-family: 'Menlo', 'Lucida Console', monospace;
   color: #c2f5ff;
   line-height: 1;
   transition: all 0.3s;

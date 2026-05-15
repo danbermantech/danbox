@@ -1,4 +1,14 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type RefCallback } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type RefCallback,
+} from 'react';
 
 interface BoardDimensions {
   width: number;
@@ -6,9 +16,15 @@ interface BoardDimensions {
   containerRef: RefCallback<HTMLDivElement>;
 }
 
-export const BoardDimensionsContext = createContext<BoardDimensions | null>(null);
+export const BoardDimensionsContext = createContext<BoardDimensions | null>(
+  null,
+);
 
-export function BoardDimensionsProvider({ children }: { children: React.ReactNode }) {
+export function BoardDimensionsProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const observerRef = useRef<ResizeObserver | null>(null);
   const observedElementRef = useRef<HTMLDivElement | null>(null);
   const frameRef = useRef<number | null>(null);
@@ -36,7 +52,9 @@ export function BoardDimensionsProvider({ children }: { children: React.ReactNod
     if (!el) {
       latestRectRef.current = null;
       sizeRef.current = { width: 0, height: 0 };
-      setSize((prev) => (prev.width === 0 && prev.height === 0 ? prev : { width: 0, height: 0 }));
+      setSize((prev) =>
+        prev.width === 0 && prev.height === 0 ? prev : { width: 0, height: 0 },
+      );
       return;
     }
 
@@ -94,6 +112,9 @@ export function BoardDimensionsProvider({ children }: { children: React.ReactNod
 
 export function useBoardDimensionsContext(): BoardDimensions {
   const ctx = useContext(BoardDimensionsContext);
-  if (!ctx) throw new Error("useBoardDimensionsContext must be used within BoardDimensionsProvider");
+  if (!ctx)
+    throw new Error(
+      'useBoardDimensionsContext must be used within BoardDimensionsProvider',
+    );
   return ctx;
 }

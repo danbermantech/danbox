@@ -5,6 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": "src",
     "paths": {
       "$components/*": ["./components/*"],
@@ -12,7 +13,7 @@
       "$store/*": ["./store/*"],
       "$hooks/*": ["./hooks/*"],
       "$contexts/*": ["./contexts/*"],
-      "$utils/*": ["./utilities/*"],
+      "$utils/*": ["./utilities/*"]
     }
   },
   "include": ["vite.config.ts"]

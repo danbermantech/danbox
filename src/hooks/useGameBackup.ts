@@ -1,6 +1,11 @@
 import { useEffect } from 'react';
 import { useAppSelector } from '$store/hooks';
-import { GAME_MODE, type GameState, type Players, type Board } from '$store/types';
+import {
+  GAME_MODE,
+  type GameState,
+  type Players,
+  type Board,
+} from '$store/types';
 
 const BACKUP_KEY = 'danbox_game_backup';
 
@@ -11,7 +16,11 @@ type GameBackup = {
   savedAt: number;
 };
 
-export function saveGameBackup(state: { game: GameState; players: Players; board: Board }) {
+export function saveGameBackup(state: {
+  game: GameState;
+  players: Players;
+  board: Board;
+}) {
   try {
     const backup: GameBackup = { ...state, savedAt: Date.now() };
     localStorage.setItem(BACKUP_KEY, JSON.stringify(backup));
@@ -44,21 +53,18 @@ const useGameBackup = () => {
   const board = useAppSelector((state) => state.board);
 
   // Save to localStorage each time a new round begins (i.e., the previous round just ended)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (game.currentRound > 0 && game.mode === GAME_MODE.MOVEMENT) {
       saveGameBackup({ game, players, board });
     }
-  // Only re-run when the round number or mode changes, not on every state mutation
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game.currentRound, game.mode]);
+    // Only re-run when the round number or mode changes, not on every state mutation
+  }, [game, players, board]);
 
   // Clear the backup once the game finishes normally so we don't offer a stale restore
   useEffect(() => {
     if (game.mode === GAME_MODE.GAME_OVER) {
       clearGameBackup();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game.mode]);
 };
 

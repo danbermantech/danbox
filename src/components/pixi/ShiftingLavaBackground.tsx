@@ -1,10 +1,9 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { tilingLava2 } from '$assets/images';
-import { Text, TilingSprite, useTick } from '@pixi/react';
+import { TilingSprite, useTick } from '@pixi/react';
 import {
   BLEND_MODES,
   TilingSprite as PixiTilingSprite,
-  TextStyle,
   Transform,
 } from 'pixi.js';
 import useBoardDimensions from '$hooks/useBoardDimensions';
@@ -79,37 +78,6 @@ const TiledLava = ({
     />
   );
 };
-const FPSDisplay = () => {
-  const [fps, setFps] = useState(0);
-  const lastTime = useRef(performance.now());
-  const frameCount = useRef(0);
-  useTick(() => {
-    frameCount.current++;
-    const now = performance.now();
-    if (now - lastTime.current >= 1000) {
-      setFps(frameCount.current);
-      frameCount.current = 0;
-      lastTime.current = now;
-    }
-  });
-  return (
-    <Text
-      text={`${fps} FPS`}
-      style={
-        new TextStyle({
-          align: 'left',
-          fontFamily: '"Source Code Pro", monospace',
-          fontSize: 24,
-          fill: '#ffffff',
-          stroke: '#000000',
-          strokeThickness: 4,
-        })
-      }
-      x={10}
-      y={10}
-    />
-  );
-};
 
 const ShiftingLavaBackground = () => {
   return (
@@ -119,7 +87,7 @@ const ShiftingLavaBackground = () => {
       <TiledLava alpha={0.3} rate={{ x: -0.1, y: 0.4 }} />
       <TiledLava alpha={0.2} rate={{ x: 0.4, y: -0.2 }} />
       <TiledLava alpha={0.1} rate={{ x: -0.3, y: -0.3 }} />
-      <FPSDisplay />
+      {/* <FPSDisplay /> */}
     </>
   );
 };

@@ -1,65 +1,70 @@
-import { Suspense, lazy } from "react";
-import { createBrowserRouter, Outlet, redirect } from "react-router-dom";
-import { PeerContextProvider } from "../contexts/PeerContext";
-import { RouterProvider } from "react-router-dom";
+import { Suspense, lazy } from 'react';
+import {
+  createBrowserRouter,
+  Outlet,
+  redirect,
+  RouterProvider,
+  type LoaderFunctionArgs,
+} from 'react-router';
+import { PeerContextProvider } from '../contexts/PeerContext';
 // import Logo from "$components/Logo";
-import DefaultSuspense from "$components/DefaultSuspense";
-const HostPage = lazy(async()=>await import("./host/Page"));
-const PlayPage = lazy(async()=>await import("./play/Page"));
-const AdminPage = lazy(async()=>await import("./admin/Page"));
-const PlayLayout = lazy(async()=>await import("./play/Layout"));
-const HostLayout = lazy(async()=>await import("./host/Layout"));
-const AdminLayout = lazy(async()=>await import("./admin/Layout"));
-const DesignerPage = lazy(async()=>await import("./designer/Page"));
-const Home = lazy(async()=>await import("./Home"));
-const NotFound = lazy(async()=>await import("./NotFound"));
+import DefaultSuspense from '$components/DefaultSuspense';
+const HostPage = lazy(async () => await import('./host/Page'));
+const PlayPage = lazy(async () => await import('./play/Page'));
+const AdminPage = lazy(async () => await import('./admin/Page'));
+const PlayLayout = lazy(async () => await import('./play/Layout'));
+const HostLayout = lazy(async () => await import('./host/Layout'));
+const AdminLayout = lazy(async () => await import('./admin/Layout'));
+const DesignerPage = lazy(async () => await import('./designer/Page'));
+const Home = lazy(async () => await import('./Home'));
+const NotFound = lazy(async () => await import('./NotFound'));
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: (
       <Suspense fallback={<DefaultSuspense />}>
         <PeerContextProvider>
-            <Outlet />
+          <Outlet />
         </PeerContextProvider>
       </Suspense>
     ),
     children: [
-      { index: true, 
-        // loader: () => redirect("/play") 
-        element: <Home />
+      {
+        index: true,
+        // loader: () => redirect('/play')
+        element: <Home />,
       },
       {
-        path: "/host",
+        path: '/host',
         element: <HostLayout />,
         children: [{ index: true, element: <HostPage /> }],
       },
       {
-        path: "/play",
+        path: '/play',
         element: <PlayLayout />,
         children: [{ index: true, element: <PlayPage /> }],
       },
       {
-        path: "/admin",
+        path: '/admin',
         element: <AdminLayout />,
-        children: [{ index: true, element: <AdminPage /> }]
+        children: [{ index: true, element: <AdminPage /> }],
       },
       {
-        path: "/designer",
+        path: '/designer',
         element: <DesignerPage />,
       },
       {
-        path: "/j/:host_id",
-        loader: ({ params }) => redirect(`/play?hostId=${params.host_id}`),
+        path: '/j/:host_id',
+        loader: ({ params }: LoaderFunctionArgs) =>
+          redirect(`/play?hostId=${params.host_id}`),
       },
       {
-        path: "*",
+        path: '*',
         element: <NotFound />,
       },
     ],
   },
 ]);
-
-
 
 function Router() {
   return <RouterProvider router={router} />;

@@ -1,19 +1,27 @@
-import { usePeer } from "$hooks/usePeer";
-import clsx from "clsx";
-import { useMemo } from "react";
-import QRCode from "react-qr-code";
+import { usePeer } from '$hooks/usePeer';
+import clsx from 'clsx';
+import { useMemo } from 'react';
+import QRCodeImport from 'react-qr-code';
 
+const QRCode =
+  (QRCodeImport as unknown as { default?: typeof QRCodeImport }).default ??
+  QRCodeImport;
 
-const QRShare = ({className}:{className?:string}) => {
+const QRShare = ({ className }: { className?: string }) => {
   const myShortId = usePeer((cv) => cv.myShortId) as string;
   const qrValue = useMemo(
     () => `${window.location.host}/play?hostId=${myShortId}`,
-    [myShortId]
+    [myShortId],
   );
-  return (<QRCode
-  value={qrValue}
-  className={clsx('p-2 rounded-xl border-black border-4 bg-white mx-auto', className)}
-  />)
-}
+  return (
+    <QRCode
+      value={qrValue}
+      className={clsx(
+        'p-2 rounded-xl border-black border-4 bg-white mx-auto',
+        className,
+      )}
+    />
+  );
+};
 
 export default QRShare;

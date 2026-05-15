@@ -19,6 +19,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": "src",
     "paths": {
       "$components/*": ["./components/*"],
@@ -27,7 +28,7 @@
       "$hooks/*": ["./hooks/*"],
       "$contexts/*": ["./contexts/*"],
       "$utils/*": ["./utilities/*"],
-      "$constants/*": ["./constants/*"],
+      "$constants/*": ["./constants/*"]
     }
   },
   "include": ["src"],

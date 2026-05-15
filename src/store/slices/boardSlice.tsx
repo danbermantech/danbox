@@ -1,28 +1,33 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { Board, BoardSpaceConfig, GAME_MODE } from "../types";
-import setState from "$store/actions/setState";
-import removeSpace from "$store/actions/removeSpace";
-import restart from "$store/actions/restart";
-import activateItem from "$store/actions/activateItem";
+import { createSlice } from '@reduxjs/toolkit';
+import { Board, BoardSpaceConfig, GAME_MODE } from '../types';
+import setState from '$store/actions/setState';
+import removeSpace from '$store/actions/removeSpace';
+import restart from '$store/actions/restart';
+import activateItem from '$store/actions/activateItem';
 // import { random } from "lodash";
 
 const minDistance = 0.2;
 
-function onlyUnique<T>(value:T, index:number, array: T[]) {
+function onlyUnique<T>(value: T, index: number, array: T[]) {
   return array.indexOf(value) === index;
 }
 
-function distanceBetween(space:BoardSpaceConfig, otherSpace:BoardSpaceConfig){
-return Math.sqrt((space.x - otherSpace.x)**2 + (space.y - otherSpace.y)**2);
+function distanceBetween(
+  space: BoardSpaceConfig,
+  otherSpace: BoardSpaceConfig,
+) {
+  return Math.sqrt(
+    (space.x - otherSpace.x) ** 2 + (space.y - otherSpace.y) ** 2,
+  );
 }
 
-function incrementString(str:string) {
+function incrementString(str: string) {
   // Find the trailing number or it will match the empty string
   const count = str.match(/\d*$/);
-  if(!count) return str + '1';
+  if (!count) return str + '1';
   // Take the substring up until where the integer was matched
   // Concatenate it to the matched count incremented by 1
-  return str.substring(0, count.index) + (count[0]+1);
+  return str.substring(0, count.index) + (count[0] + 1);
 }
 
 function boardHasConflicts(board: Board) {
@@ -31,49 +36,65 @@ function boardHasConflicts(board: Board) {
     Object.values(board)
       .filter((otherSpace) => space.id !== otherSpace.id)
       .forEach((otherSpace) => {
-        const distanceBetweenSpaces = distanceBetween(space, otherSpace)
+        const distanceBetweenSpaces = distanceBetween(space, otherSpace);
         if (distanceBetweenSpaces < minDistance) {
           result = true;
         }
       });
-  })
+  });
   return result;
 }
 
-function randomPosition(){
+function randomPosition() {
   return Math.min(1 - minDistance, Math.max(minDistance, Math.random()));
 }
 
-function shuffleBoard(state:Board){
+function shuffleBoard(state: Board) {
   // console.log(state);
-  if(!boardHasConflicts(state)) return state;
+  if (!boardHasConflicts(state)) return state;
   Object.entries(state).forEach(([spaceId, space], index) => {
-  let conflictPotentiallyResolved = false;
+    let conflictPotentiallyResolved = false;
     Object.entries(state)
-    .filter(([otherSpaceId], otherIndex)=>spaceId !== otherSpaceId && otherIndex < index)
-    .forEach(([, otherSpace]) => {
-      if(conflictPotentiallyResolved) return;
-      if(distanceBetween(space, otherSpace) < minDistance){
-        state[spaceId].x = randomPosition();
-        state[spaceId].y = randomPosition();
-        conflictPotentiallyResolved = true;
-      }
-    });
+      .filter(
+        ([otherSpaceId], otherIndex) =>
+          spaceId !== otherSpaceId && otherIndex < index,
+      )
+      .forEach(([, otherSpace]) => {
+        if (conflictPotentiallyResolved) return;
+        if (distanceBetween(space, otherSpace) < minDistance) {
+          state[spaceId].x = randomPosition();
+          state[spaceId].y = randomPosition();
+          conflictPotentiallyResolved = true;
+        }
+      });
   });
   return shuffleBoard(state);
 }
 
 const defaultState: Board = {};
 
-type SetBoardLayoutPayload = Board | { __wrapped: true; board: Board; preserveConnections: boolean };
+type SetBoardLayoutPayload =
+  | Board
+  | { __wrapped: true; board: Board; preserveConnections: boolean };
 
-function isWrappedSetBoardLayoutPayload(payload: unknown): payload is { __wrapped: true; board: Board; preserveConnections: boolean } {
+function isWrappedSetBoardLayoutPayload(
+  payload: unknown,
+): payload is { __wrapped: true; board: Board; preserveConnections: boolean } {
   if (!payload || typeof payload !== 'object') return false;
   const record = payload as Record<string, unknown>;
-  return record.__wrapped === true && typeof record.preserveConnections === 'boolean' && Boolean(record.board) && typeof record.board === 'object' && !Array.isArray(record.board);
+  return (
+    record.__wrapped === true &&
+    typeof record.preserveConnections === 'boolean' &&
+    Boolean(record.board) &&
+    typeof record.board === 'object' &&
+    !Array.isArray(record.board)
+  );
 }
 
-function parseSetBoardLayoutPayload(payload: SetBoardLayoutPayload): { board: Board; preserveConnections: boolean } {
+function parseSetBoardLayoutPayload(payload: SetBoardLayoutPayload): {
+  board: Board;
+  preserveConnections: boolean;
+} {
   if (isWrappedSetBoardLayoutPayload(payload)) {
     return {
       board: payload.board,
@@ -87,13 +108,15 @@ function parseSetBoardLayoutPayload(payload: SetBoardLayoutPayload): { board: Bo
 }
 
 export const gameSlice = createSlice({
-  name: "board",
+  name: 'board',
   initialState: defaultState,
   reducers: {
     setBoardLayout: (state, action) => {
-      const { board, preserveConnections } = parseSetBoardLayoutPayload(action.payload as SetBoardLayoutPayload);
+      const { board, preserveConnections } = parseSetBoardLayoutPayload(
+        action.payload as SetBoardLayoutPayload,
+      );
       state = board;
-        // shuffleBoard(state);
+      // shuffleBoard(state);
 
       if (preserveConnections) {
         return state;
@@ -101,12 +124,16 @@ export const gameSlice = createSlice({
 
       Object.values(state).forEach((space) => {
         // if(space.connections.length > 0) return;
-        if(space.connections.length > 0) return;
-        const otherSpaces = Object.values(state).filter((otherSpace)=>otherSpace.id !== space.id);
-        otherSpaces.sort((a, b)=>distanceBetween(space, a) - distanceBetween(space, b));
+        if (space.connections.length > 0) return;
+        const otherSpaces = Object.values(state).filter(
+          (otherSpace) => otherSpace.id !== space.id,
+        );
+        otherSpaces.sort(
+          (a, b) => distanceBetween(space, a) - distanceBetween(space, b),
+        );
         space.connections = [
-          otherSpaces[0].id, 
-          otherSpaces[1].id, 
+          otherSpaces[0].id,
+          otherSpaces[1].id,
           // otherSpaces[Math.floor(Math.random() * otherSpaces.length-2)+ 2].id
         ];
       });
@@ -115,19 +142,23 @@ export const gameSlice = createSlice({
     },
     randomizeBoard: (state) => {
       for (const space of Object.values(state)) {
-        space.x = randomPosition()
+        space.x = randomPosition();
         space.y = randomPosition();
       }
-      for (const space of Object.values(state)){
-        const otherSpaces = Object.values(state).filter((otherSpace)=>otherSpace.id !== space.id);
-        otherSpaces.sort((a, b)=>distanceBetween(space, a) - distanceBetween(space, b));
-        space.connections = []
-        for(let i = 0; i < 5; i++){
-          if(Math.random()>0.5){
-            space.connections.push(otherSpaces[i].id)
+      for (const space of Object.values(state)) {
+        const otherSpaces = Object.values(state).filter(
+          (otherSpace) => otherSpace.id !== space.id,
+        );
+        otherSpaces.sort(
+          (a, b) => distanceBetween(space, a) - distanceBetween(space, b),
+        );
+        space.connections = [];
+        for (let i = 0; i < 5; i++) {
+          if (Math.random() > 0.5) {
+            space.connections.push(otherSpaces[i].id);
           }
         }
-        if(space.connections.length === 0){
+        if (space.connections.length === 0) {
           space.connections.push(otherSpaces[0].id);
         }
       }
@@ -149,23 +180,42 @@ export const gameSlice = createSlice({
       // {label: 'Path To 2', value:'', type: InputType.SELECT, options: 'spaces', key:'pathsTo2'},
       // {label: 'Path To 3', value:'', type: InputType.SELECT, options: 'spaces', key:'pathsTo3'}
       // {label: 'connections', type: InputType.SELECT, options: 'spaces', value: [], key:'connections'},
-      const {id, label, x, y, color, width, height, type, pathsFrom1, pathsFrom2, pathsFrom3, pathsTo1, pathsTo2, pathsTo3} = action.payload;
+      const {
+        id,
+        label,
+        x,
+        y,
+        color,
+        width,
+        height,
+        type,
+        pathsFrom1,
+        pathsFrom2,
+        pathsFrom3,
+        pathsTo1,
+        pathsTo2,
+        pathsTo3,
+      } = action.payload;
       state[id] = {
         id,
         label,
-        x:Number(x),
-        y:Number(y),
+        x: Number(x),
+        y: Number(y),
         color,
-        width:Number(width),
-        height:Number(height),
+        width: Number(width),
+        height: Number(height),
         type,
-        connections: [pathsTo1, pathsTo2, pathsTo3].filter((path)=>path !== ''),
+        connections: [pathsTo1, pathsTo2, pathsTo3].filter(
+          (path) => path !== '',
+        ),
       };
 
-      [pathsFrom1, pathsFrom2, pathsFrom3].filter((path)=>path !== '').forEach((path)=>{
-        if(!state[path]) return console.log('no space at path', path);
-        state[path].connections.push(id);
-      });
+      [pathsFrom1, pathsFrom2, pathsFrom3]
+        .filter((path) => path !== '')
+        .forEach((path) => {
+          if (!state[path]) return console.log('no space at path', path);
+          state[path].connections.push(id);
+        });
       // const {}
       return state;
     },
@@ -192,7 +242,9 @@ export const gameSlice = createSlice({
       return state;
     },
     removePath: (state, action) => {
-      state[action.payload.from].connections = state[action.payload.from].connections.filter((id) => id !== action.payload.to);
+      state[action.payload.from].connections = state[
+        action.payload.from
+      ].connections.filter((id) => id !== action.payload.to);
       return state;
     },
   },
@@ -203,51 +255,68 @@ export const gameSlice = createSlice({
         return action.payload.board;
         // action is inferred correctly here if using TS
       })
-      .addCase(restart, ()=>{
+      .addCase(restart, () => {
         return defaultState;
       })
       .addCase(removeSpace, (state, action) => {
         delete state[action.payload.id];
         Object.values(state).forEach((space) => {
-          space.connections = space.connections.filter((id) => id !== action.payload.id);
+          space.connections = space.connections.filter(
+            (id) => id !== action.payload.id,
+          );
         });
         return state;
       })
       .addCase(activateItem, (state, action) => {
-        const {payload} = action;
-        switch(action.payload.item){
-          case('traffic engineer'):{
+        const { payload } = action;
+        switch (action.payload.item) {
+          case 'traffic engineer': {
             // console.log('traffing engineer', payload)
-            const {value} = payload as unknown as {value:{action: string, from: string, to: string}};
-            switch(value.action){
-              case('add'):
+            const { value } = payload as unknown as {
+              value: { action: string; from: string; to: string };
+            };
+            switch (value.action) {
+              case 'add':
                 state[value.from].connections.push(value.to);
                 return state;
-              case('remove'):
-                state[value.from].connections = state[value.from].connections.filter((id) => id !== value.to);
+              case 'remove':
+                state[value.from].connections = state[
+                  value.from
+                ].connections.filter((id) => id !== value.to);
                 return state;
             }
             break;
           }
-          case('demolition crew'):{
-            // console.log(payload);
-            const {value} = payload as unknown as {value:{space: string}}
-            if(value.space === 'home') return state;
-            // const {[value.space_id]:_, ...rest} = state;
-            // console.log(Object.keys(state));
-            // console.log('removed', _)
-            // console.log(value)
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const {[value.space]:_, ...next} = state;
-            // delete state[value.space];
+          case 'demolition crew': {
+            const { value } = payload as unknown as {
+              value: { space: string };
+            };
+            if (value.space === 'home') return state;
+            const { [value.space]: _, ...next } = state;
             Object.values(next).forEach((space) => {
-              space.connections = space.connections.filter((id) => id !== value.space).filter(onlyUnique);
+              space.connections = space.connections
+                .filter((id) => id !== value.space)
+                .filter(onlyUnique);
             });
             return next;
           }
-          case('construction crew'):{
-            const {value} = payload as unknown as {value:{label:string, color:string, type:GAME_MODE, pathsFrom1:string, pathsFrom2:string, pathsFrom3:string, pathsTo1:string, pathsTo2:string, pathsTo3:string}};
-            const label = Object.keys(state).includes(value.label) ? incrementString(value.label) : value.label;
+          case 'construction crew': {
+            const { value } = payload as unknown as {
+              value: {
+                label: string;
+                color: string;
+                type: GAME_MODE;
+                pathsFrom1: string;
+                pathsFrom2: string;
+                pathsFrom3: string;
+                pathsTo1: string;
+                pathsTo2: string;
+                pathsTo3: string;
+              };
+            };
+            const label = Object.keys(state).includes(value.label)
+              ? incrementString(value.label)
+              : value.label;
             state[label] = {
               id: label,
               label: label,
@@ -257,16 +326,21 @@ export const gameSlice = createSlice({
               width: 0.06,
               height: 0.06,
               type: value.type,
-              connections: [value.pathsTo1, value.pathsTo2, value.pathsTo3].filter((path)=>path !== '').filter(onlyUnique),
+              connections: [value.pathsTo1, value.pathsTo2, value.pathsTo3]
+                .filter((path) => path !== '')
+                .filter(onlyUnique),
             };
-            [value.pathsFrom1, value.pathsFrom2, value.pathsFrom3].filter((path)=>path !== '').forEach((path)=>{
-              state[path].connections.push(label);
-              state[path].connections = state[path].connections.filter(onlyUnique);
-            });
+            [value.pathsFrom1, value.pathsFrom2, value.pathsFrom3]
+              .filter((path) => path !== '')
+              .forEach((path) => {
+                state[path].connections.push(label);
+                state[path].connections =
+                  state[path].connections.filter(onlyUnique);
+              });
             return state;
           }
         }
-      })
+      });
   },
 });
 

@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState } from 'react';
 
 interface RegistrationContextValue {
   selectedBoard: string;
@@ -10,7 +11,11 @@ const RegistrationContext = createContext<RegistrationContextValue>({
   setSelectedBoard: () => {},
 });
 
-export function RegistrationProvider({ children }: { children: React.ReactNode }) {
+export function RegistrationProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [selectedBoard, setSelectedBoard] = useState('random');
   return (
     <RegistrationContext.Provider value={{ selectedBoard, setSelectedBoard }}>
