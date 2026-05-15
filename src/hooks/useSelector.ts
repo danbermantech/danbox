@@ -1,4 +1,4 @@
-import { useRef, useContext, Context } from "react";
+import { useRef, useContext, Context } from 'react';
 
 // Define the type for the selector function
 export type SelectorFunction<State, Selected> = (state: State) => Selected;
@@ -8,8 +8,8 @@ function useSelectorHelper<State, Selected>(
   selector: SelectorFunction<State, Selected>,
   contextValue: State | undefined,
 ): Selected {
-  const latestSelectedStateRef = useRef<Selected>();
-  const latestSelectedResultRef = useRef<Selected>();
+  const latestSelectedStateRef = useRef<Selected | undefined>(undefined);
+  const latestSelectedResultRef = useRef<Selected | undefined>(undefined);
 
   const selectedState = selector(contextValue as State);
 

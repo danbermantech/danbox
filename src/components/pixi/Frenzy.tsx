@@ -227,58 +227,57 @@ export const Frenzy = (props?: { gold?: number; points?: number }) => {
   const displayPoints = points.filter((point) => !point.collected);
   const displayGold = gold.filter((point) => !point.collected);
   return (
-    //@ts-expect-error I need to figure out the className thing
-    <WrappedStage
-      className="w-full mx-auto rounded-xl"
-      width={boardWidth - 32}
-      height={boardHeight - 32}
-      options={{ backgroundColor: 0x222222, antialias: true }}
-    >
-      {/* <Sprite x={0} y={0} width={boardWidth} height={boardHeight} image={bg} scale={{x:boardWidth/1920, y: boardHeight/1080}} /> */}
-      <ShiftingLavaBackground />
-      {displayPoints.map((point) => {
-        return (
-          <Sprite
-            key={point.id}
-            x={point.x * boardWidth}
-            y={point.y * boardHeight}
-            width={40}
-            height={40}
-            image={pointImg}
-          />
-        );
-      })}
-      {displayGold.map((point) => {
-        return (
-          <Sprite
-            key={point.id}
-            x={point.x * boardWidth}
-            y={point.y * boardHeight}
-            width={40}
-            height={40}
-            image={goldImg}
-          />
-        );
-      })}
-      {players.map((player) => {
-        return (
-          <FrenzyCar
-            points={displayPoints}
-            gold={displayGold}
-            onGoldCollected={handleGoldCollected}
-            onPointCollected={handlePointCollected}
-            key={player.id}
-            player={player}
-            boundaries={{
-              minX: 0.025,
-              minY: 0.025,
-              maxX: 0.975,
-              maxY: 0.975,
-            }}
-          />
-        );
-      })}
-    </WrappedStage>
+    <div className="w-full mx-auto rounded-xl">
+      <WrappedStage
+        width={boardWidth - 32}
+        height={boardHeight - 32}
+        options={{ backgroundColor: 0x222222, antialias: true }}
+      >
+        <ShiftingLavaBackground />
+        {displayPoints.map((point) => {
+          return (
+            <Sprite
+              key={point.id}
+              x={point.x * boardWidth}
+              y={point.y * boardHeight}
+              width={40}
+              height={40}
+              image={pointImg}
+            />
+          );
+        })}
+        {displayGold.map((point) => {
+          return (
+            <Sprite
+              key={point.id}
+              x={point.x * boardWidth}
+              y={point.y * boardHeight}
+              width={40}
+              height={40}
+              image={goldImg}
+            />
+          );
+        })}
+        {players.map((player) => {
+          return (
+            <FrenzyCar
+              points={displayPoints}
+              gold={displayGold}
+              onGoldCollected={handleGoldCollected}
+              onPointCollected={handlePointCollected}
+              key={player.id}
+              player={player}
+              boundaries={{
+                minX: 0.025,
+                minY: 0.025,
+                maxX: 0.975,
+                maxY: 0.975,
+              }}
+            />
+          );
+        })}
+      </WrappedStage>
+    </div>
   );
 };
 
